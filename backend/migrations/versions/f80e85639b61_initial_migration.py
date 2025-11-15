@@ -1,8 +1,8 @@
-"""table props refactor: names, enums, lesson online, subject + semester
+"""Initial migration
 
-Revision ID: 785e99bd5d10
-Revises: 35836614651a
-Create Date: 2025-09-18 10:49:34.699085
+Revision ID: f80e85639b61
+Revises: 
+Create Date: 2025-11-14 23:17:02.534074
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '785e99bd5d10'
-down_revision: Union[str, None] = '35836614651a'
+revision: str = 'f80e85639b61'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
