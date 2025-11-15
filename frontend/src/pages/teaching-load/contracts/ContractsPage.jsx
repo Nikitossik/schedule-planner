@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { columns } from "./columns";
+import { useContractColumns } from "./columns";
+import { useTranslation } from "react-i18next";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
 import { useFilterComposer } from "@/components/datatable/toolbar/filters/useFilterComposer";
 import { useAcademicYearFilter } from "@/components/datatable/toolbar/filters/AcademicYearFilter";
@@ -8,6 +9,8 @@ import { useSemesterFilter } from "@/components/datatable/toolbar/filters/Semest
 import ContractModal from "./ContractModal";
 
 export default function ContractsPage() {
+  const { t } = useTranslation();
+  const columns = useContractColumns();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingContract, setEditingContract] = useState(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
@@ -48,21 +51,24 @@ export default function ContractsPage() {
     <div className="container mx-auto py-3">
       <DataTableWrapper
         entity="professor_contract"
-        pageLabel="Contracts"
+        pageLabel={t("sidebar.contracts")}
         columns={columns}
         defaultFilters={{ q: "" }}
         defaultSorting={[{ id: "id", desc: false }]}
         localStorageKey="contractsTableState"
-        searchPlaceholder={"Search contracts..."}
+        searchPlaceholder={t("contracts.table.searchPlaceholder")}
         addButton={{
-          label: "+ Create contract",
+          label: t("contracts.table.addButton"),
           onClick: handleCreate,
         }}
         sortFields={[
-          { label: "ID", value: "id" },
-          { label: "Total hours", value: "total_hours" },
+          { label: t("contracts.table.columns.id"), value: "id" },
+          {
+            label: t("contracts.table.columns.totalHours"),
+            value: "total_hours",
+          },
           // на беке исправить сортировку по этому полю
-          //{ label: "Total workload hours", value: "total_workload_hours" },
+          //{ label: t('contracts.table.columns.usedHours'), value: "total_workload_hours" },
         ]}
         filterSchema={filterSchema}
         onEdit={handleEdit}

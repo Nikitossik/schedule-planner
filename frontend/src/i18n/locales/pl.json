@@ -1,0 +1,1111 @@
+{
+  "common": {
+    "loading": "Ładowanie...",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "add": "Dodaj",
+    "search": "Szukaj",
+    "noData": "Brak danych",
+    "selectLanguage": "Wybierz język",
+    "actions": "Akcje",
+    "confirm": "Potwierdź",
+    "close": "Zamknij",
+    "yes": "Tak",
+    "no": "Nie",
+    "buttons": {
+      "cancel": "Anuluj",
+      "create": "Utwórz",
+      "update": "Aktualizuj",
+      "saving": "Zapisywanie..."
+    }
+  },
+  "navigation": {
+    "dashboard": "Panel główny",
+    "schedule": "Harmonogram",
+    "users": "Użytkownicy",
+    "classrooms": "Sale",
+    "subjects": "Przedmioty",
+    "groups": "Grupy",
+    "faculties": "Wydziały",
+    "settings": "Ustawienia"
+  },
+  "navUser": {
+    "logOut": "Wyloguj się",
+    "userMenu": "Menu użytkownika",
+    "defaultUserName": "Użytkownik"
+  },
+  "breadcrumbs": {
+    "home": "Strona główna",
+    "academicManagement": "Zarządzanie akademickie",
+    "academicStructure": "Struktura akademicka",
+    "facultiesDirections": "Wydziały i kierunki",
+    "academicYearsSemesters": "Lata akademickie i semestry",
+    "contracts": "Kontrakty",
+    "workloads": "Obciążenia",
+    "directions": "Kierunki"
+  },
+  "filters": {
+    "filterBy": "Filtruj według {{field}}",
+    "noOptionsAvailable": "Brak dostępnych opcji",
+    "selectedCount": "Wybrano {{count}}",
+    "clearFilters": "Wyczyść filtry",
+    "applyFilters": "Zastosuj filtry"
+  },
+  "datatable": {
+    "sortAsc": "Sortuj rosnąco",
+    "sortDesc": "Sortuj malejąco",
+    "hideColumn": "Ukryj kolumnę",
+    "showColumns": "Pokaż kolumny",
+    "rowsPerPage": "Wierszy na stronę",
+    "page": "Strona",
+    "of": "z",
+    "selected": "wybrano",
+    "loading": "Ładowanie...",
+    "error": "Błąd ładowania danych tabeli",
+    "noResults": "Brak wyników.",
+    "selectedRows": "{{selected}} z {{total}} wierszy wybrano.",
+    "actions": "Akcje",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "deleteSelected": "Usuń wybrane",
+    "confirmDelete": "Czy na pewno chcesz usunąć ten {{item}}?",
+    "confirmDeleteSelected": "Czy na pewno chcesz usunąć wybrane {{items}}?",
+    "deleteSuccess": "{{item}} usunięty",
+    "deleteManySuccess": "Usunięto {{count}} {{items}}",
+    "deleteFailed": "Nie udało się usunąć",
+    "sorting": "Sortowanie",
+    "filtering": "Filtrowanie",
+    "reset": "Resetuj",
+    "goToFirstPage": "Idź do pierwszej strony",
+    "goToPreviousPage": "Idź do poprzedniej strony",
+    "goToNextPage": "Idź do następnej strony",
+    "goToLastPage": "Idź do ostatniej strony",
+    "sortBy": "Sortuj według",
+    "order": "Kolejność",
+    "asc": "Rosnąco",
+    "desc": "Malejąco",
+    "noOptionsAvailable": "Brak dostępnych opcji"
+  },
+  "schedule": {
+    "title": "Harmonogram",
+    "createLesson": "Utwórz lekcję",
+    "editLesson": "Edytuj lekcję",
+    "deleteLesson": "Usuń lekcję",
+    "lesson": "Lekcja",
+    "time": "Czas",
+    "room": "Sala",
+    "group": "Grupa",
+    "teacher": "Nauczyciel"
+  },
+  "forms": {
+    "required": "To pole jest wymagane",
+    "invalidEmail": "Wprowadź prawidłowy adres email",
+    "passwordTooShort": "Hasło musi mieć co najmniej 8 znaków",
+    "passwordsNotMatch": "Hasła nie są zgodne"
+  },
+  "pages": {
+    "academicManagement": {
+      "title": "Zarządzanie akademickie"
+    },
+    "facultiesDirections": {
+      "title": "Wydziały i kierunki",
+      "tabs": {
+        "faculties": "Wydziały",
+        "directions": "Kierunki"
+      }
+    },
+    "academicYearsSemesters": {
+      "title": "Lata akademickie i semestry",
+      "tabs": {
+        "academicYears": "Lata akademickie",
+        "semesters": "Semestry"
+      }
+    }
+  },
+  "academicYears": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Nazwa",
+        "startDate": "Data Rozpoczęcia",
+        "endDate": "Data Zakończenia",
+        "semesters": "Semestry",
+        "current": "Bieżący"
+      },
+      "searchPlaceholder": "Szukaj lat akademickich...",
+      "addButton": "+ Utwórz rok akademicki",
+      "semestersCount": "{{count}} semestrów"
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz Rok Akademicki",
+        "edit": "Edytuj Rok Akademicki"
+      },
+      "fields": {
+        "name": {
+          "label": "Nazwa",
+          "placeholder": "np. 2024/2025"
+        },
+        "startDate": {
+          "label": "Data Rozpoczęcia"
+        },
+        "endDate": {
+          "label": "Data Zakończenia"
+        },
+        "isCurrent": {
+          "label": "Ustaw jako bieżący rok akademicki",
+          "description": "Oznacz ten rok akademicki jako bieżący. Tylko jeden rok akademicki może być bieżący w danym czasie."
+        }
+      },
+      "validation": {
+        "nameRequired": "Nazwa roku akademickiego jest wymagana",
+        "startDateRequired": "Data rozpoczęcia jest wymagana",
+        "endDateRequired": "Data zakończenia jest wymagana",
+        "endDateAfterStart": "Data zakończenia musi być po lub równa dacie rozpoczęcia"
+      },
+      "buttons": {
+        "create": "Utwórz",
+        "update": "Aktualizuj",
+        "cancel": "Anuluj",
+        "saving": "Zapisywanie..."
+      }
+    },
+    "messages": {
+      "createSuccess": "Rok akademicki został utworzony pomyślnie",
+      "updateSuccess": "Rok akademicki został zaktualizowany pomyślnie",
+      "createError": "Nie udało się utworzyć roku akademickiego",
+      "updateError": "Nie udało się zaktualizować roku akademickiego"
+    }
+  },
+  "semesters": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Nazwa",
+        "academicYear": "Rok Akademicki",
+        "number": "Numer",
+        "period": "Okres",
+        "startDate": "Data Rozpoczęcia",
+        "endDate": "Data Zakończenia",
+        "current": "Bieżący",
+        "semesterNumber": "Semestr {{number}}"
+      },
+      "searchPlaceholder": "Szukaj semestrów...",
+      "addButton": "+ Utwórz semestr"
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz Semestr",
+        "edit": "Edytuj Semestr"
+      },
+      "fields": {
+        "name": {
+          "label": "Nazwa",
+          "placeholder": "np. Semestr 3 zimowy 2024-2025"
+        },
+        "number": {
+          "label": "Numer"
+        },
+        "period": {
+          "label": "Okres",
+          "placeholder": "Wybierz okres",
+          "winter": "Zimowy",
+          "summer": "Letni"
+        },
+        "academicYear": {
+          "label": "Rok Akademicki",
+          "placeholder": "Wybierz rok akademicki",
+          "current": "(Bieżący)"
+        },
+        "startDate": {
+          "label": "Data Rozpoczęcia"
+        },
+        "endDate": {
+          "label": "Data Zakończenia"
+        }
+      },
+      "validation": {
+        "nameRequired": "Nazwa semestru jest wymagana",
+        "numberRequired": "Numer jest wymagany",
+        "periodRequired": "Okres jest wymagany",
+        "academicYearRequired": "Rok akademicki jest wymagany",
+        "startDateRequired": "Data rozpoczęcia jest wymagana",
+        "endDateRequired": "Data zakończenia jest wymagana",
+        "endDateAfterStart": "Data zakończenia musi być po lub równa dacie rozpoczęcia"
+      },
+      "buttons": {
+        "create": "Utwórz",
+        "update": "Aktualizuj",
+        "cancel": "Anuluj",
+        "saving": "Zapisywanie..."
+      },
+      "loading": "Ładowanie...",
+      "noAcademicYears": "Nie znaleziono lat akademickich"
+    },
+    "messages": {
+      "createSuccess": "Semestr został utworzony pomyślnie",
+      "updateSuccess": "Semestr został zaktualizowany pomyślnie",
+      "createError": "Nie udało się utworzyć semestru",
+      "updateError": "Nie udało się zaktualizować semestru"
+    }
+  },
+  "faculties": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Nazwa",
+        "directionsCount": "Liczba Kierunków",
+        "directionsText": "{{count}} kierunków"
+      },
+      "searchPlaceholder": "Szukaj wydziałów...",
+      "addButton": "+ Utwórz wydział"
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz wydział",
+        "edit": "Edytuj wydział"
+      },
+      "fields": {
+        "name": {
+          "label": "Nazwa",
+          "placeholder": "Wprowadź nazwę wydziału"
+        }
+      },
+      "validation": {
+        "nameRequired": "Nazwa wydziału jest wymagana"
+      },
+      "buttons": {
+        "create": "Utwórz",
+        "update": "Aktualizuj",
+        "cancel": "Anuluj",
+        "saving": "Zapisywanie..."
+      }
+    },
+    "messages": {
+      "createSuccess": "Wydział został utworzony pomyślnie",
+      "updateSuccess": "Wydział został zaktualizowany pomyślnie",
+      "createError": "Nie udało się utworzyć wydziału",
+      "updateError": "Nie udało się zaktualizować wydziału"
+    }
+  },
+  "directions": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Nazwa",
+        "code": "Kod",
+        "faculty": "Wydział",
+        "studyForms": "Formy Studiów"
+      },
+      "searchPlaceholder": "Szukaj kierunków...",
+      "addButton": "+ Utwórz kierunek"
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz kierunek",
+        "edit": "Edytuj kierunek"
+      },
+      "fields": {
+        "name": {
+          "label": "Nazwa",
+          "placeholder": "Wprowadź nazwę kierunku"
+        },
+        "code": {
+          "label": "Kod",
+          "placeholder": "Wprowadź kod kierunku"
+        },
+        "faculty": {
+          "label": "Wydział",
+          "placeholder": "Wybierz wydział",
+          "loading": "Ładowanie...",
+          "noFaculties": "Brak wydziałów"
+        },
+        "studyForms": {
+          "title": "Formy Studiów",
+          "fullTime": {
+            "label": "Stacjonarne",
+            "description": "Studia stacjonarne (zajęcia dzienne)"
+          },
+          "partTime": {
+            "label": "Niestacjonarne",
+            "description": "Studia niestacjonarne (zajęcia wieczorowe/zdalne)"
+          }
+        }
+      },
+      "editNote": "Uwaga: Wydział i Formy Studiów nie mogą być zmieniane podczas edycji kierunku. Można modyfikować tylko Nazwę i Kod.",
+      "validation": {
+        "nameRequired": "Nazwa kierunku jest wymagana",
+        "codeRequired": "Kod jest wymagany",
+        "facultyRequired": "Wydział jest wymagany",
+        "studyFormRequired": "Musi być wybrana co najmniej jedna forma studiów"
+      },
+      "buttons": {
+        "create": "Utwórz",
+        "update": "Aktualizuj",
+        "cancel": "Anuluj",
+        "saving": "Zapisywanie..."
+      }
+    },
+    "messages": {
+      "createSuccess": "Kierunek został utworzony pomyślnie",
+      "updateSuccess": "Kierunek został zaktualizowany pomyślnie",
+      "createError": "Błąd podczas tworzenia kierunku",
+      "updateError": "Błąd podczas aktualizacji kierunku"
+    },
+    "studyForms": {
+      "fullTime": "Stacjonarne",
+      "partTime": "Niestacjonarne"
+    }
+  },
+  "subjects": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Nazwa",
+        "code": "Kod",
+        "faculty": "Wydział",
+        "direction": "Kierunek",
+        "academicYear": "Rok Akademicki",
+        "semester": "Semestr",
+        "color": "Kolor"
+      },
+      "searchPlaceholder": "Szukaj przedmiotów...",
+      "addButton": "+ Utwórz przedmiot",
+      "semesterFormat": "Semestr {{number}} - {{period}}"
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz przedmiot",
+        "edit": "Edytuj przedmiot"
+      },
+      "fields": {
+        "name": "Nazwa",
+        "code": "Kod",
+        "direction": "Kierunek",
+        "academicYear": "Rok Akademicki",
+        "semester": "Semestr",
+        "color": "Kolor"
+      },
+      "placeholders": {
+        "name": "Wprowadź nazwę przedmiotu",
+        "code": "Wprowadź kod przedmiotu",
+        "direction": "Wybierz kierunek",
+        "academicYear": "Wybierz rok akademicki",
+        "semester": "Wybierz semestr"
+      },
+      "validation": {
+        "nameRequired": "Nazwa przedmiotu jest wymagana",
+        "codeRequired": "Kod przedmiotu jest wymagany",
+        "directionRequired": "Kierunek jest wymagany",
+        "academicYearRequired": "Rok akademicki jest wymagany",
+        "semesterRequired": "Semestr jest wymagany",
+        "colorInvalid": "Kolor musi być prawidłowym kolorem hex"
+      },
+      "editNote": "Uwaga: Kierunek, Rok Akademicki i Semestr nie mogą być zmieniane podczas edycji przedmiotu. Można modyfikować tylko Nazwę, Kod i Kolor.",
+      "noDirections": "Brak kierunków",
+      "noAcademicYears": "Brak lat akademickich",
+      "noSemesters": "Brak semestrów"
+    },
+    "messages": {
+      "createSuccess": "Przedmiot został utworzony pomyślnie",
+      "updateSuccess": "Przedmiot został zaktualizowany pomyślnie",
+      "createError": "Błąd podczas tworzenia przedmiotu",
+      "updateError": "Błąd podczas aktualizacji przedmiotu"
+    }
+  },
+  "sidebar": {
+    "academicManagement": "Zarządzanie akademickie",
+    "academicYearsSemesters": "Lata akademickie i semestry",
+    "facultiesDirections": "Wydziały i kierunki",
+    "subjects": "Przedmioty",
+    "peopleManagement": "Zarządzanie ludźmi",
+    "users": "Użytkownicy",
+    "groups": "Grupy",
+    "teachingLoad": "Obciążenie dydaktyczne",
+    "contracts": "Kontrakty",
+    "workloads": "Obciążenia",
+    "scheduleResources": "Harmonogram i zasoby",
+    "schedules": "Harmonogramy",
+    "classrooms": "Sale lekcyjne"
+  },
+  "rooms": {
+    "title": "Sale lekcyjne",
+    "table": {
+      "columns": {
+        "id": "ID",
+        "number": "Numer",
+        "capacity": "Pojemność"
+      },
+      "searchPlaceholder": "Szukaj sal...",
+      "addButton": "+ Utwórz salę"
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz nową salę",
+        "edit": "Edytuj salę"
+      },
+      "description": {
+        "create": "Wypełnij szczegóły, aby utworzyć nową salę.",
+        "edit": "Zaktualizuj informacje o sali poniżej."
+      },
+      "fields": {
+        "number": "Numer sali",
+        "capacity": "Pojemność"
+      },
+      "placeholders": {
+        "number": "Wprowadź numer sali",
+        "capacity": "Wprowadź pojemność sali"
+      },
+      "validation": {
+        "numberRequired": "Numer sali jest wymagany",
+        "capacityMin": "Pojemność musi być co najmniej 1"
+      }
+    },
+    "messages": {
+      "createSuccess": "Sala została utworzona pomyślnie",
+      "updateSuccess": "Sala została zaktualizowana pomyślnie",
+      "createError": "Błąd podczas tworzenia sali",
+      "updateError": "Błąd podczas aktualizacji sali"
+    }
+  },
+  "filterLabels": {
+    "academicYear": "Rok Akademicki",
+    "direction": "Kierunek",
+    "faculty": "Wydział",
+    "period": "Okres",
+    "semester": "Semestr",
+    "studyForm": "Forma Studiów",
+    "userRole": "Rola",
+    "userType": "Typ Użytkownika",
+    "periods": {
+      "winter": "Zima",
+      "summer": "Lato"
+    },
+    "studyForms": {
+      "fullTime": "Stacjonarne",
+      "partTime": "Niestacjonarne"
+    },
+    "userRoles": {
+      "admin": "Administrator",
+      "coordinator": "Koordynator",
+      "user": "Użytkownik"
+    },
+    "userTypes": {
+      "student": "Student",
+      "professor": "Profesor"
+    }
+  },
+  "errorPages": {
+    "notFound": {
+      "title": "Strona Nie Znaleziona",
+      "description": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
+      "goBack": "Wróć",
+      "goHome": "Strona Główna"
+    },
+    "forbidden": {
+      "title": "Dostęp Zabroniony",
+      "description": "Nie masz uprawnień do dostępu do tego zasobu.",
+      "goBackHome": "Wróć do Strony Głównej"
+    }
+  },
+  "users": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Imię",
+        "surname": "Nazwisko",
+        "email": "Email",
+        "role": "Rola",
+        "userType": "Typ"
+      },
+      "searchPlaceholder": "Szukaj użytkowników...",
+      "addButton": "+ Utwórz Użytkownika"
+    },
+    "form": {
+      "sections": {
+        "basicInfo": "Podstawowe Informacje",
+        "roleAndType": "Rola i Typ Użytkownika",
+        "studentProfile": "Profil Studenta"
+      },
+      "title": {
+        "create": "Utwórz Użytkownika",
+        "edit": "Edytuj Użytkownika"
+      },
+      "fields": {
+        "name": "Imię",
+        "surname": "Nazwisko",
+        "email": "Email",
+        "password": "Hasło",
+        "role": "Rola",
+        "userType": "Typ Użytkownika",
+        "academicYear": "Rok Akademicki",
+        "semester": "Semestr",
+        "group": "Grupa"
+      },
+      "placeholders": {
+        "name": "Wprowadź imię",
+        "surname": "Wprowadź nazwisko",
+        "email": "Wprowadź adres email",
+        "password": "Wprowadź hasło",
+        "role": "Wybierz rolę",
+        "userType": "Wybierz typ",
+        "academicYear": "Wybierz rok akademicki",
+        "semester": "Wybierz semestr",
+        "group": "Wybierz grupę",
+        "selectAcademicYearFirst": "Najpierw wybierz rok akademicki",
+        "selectSemesterFirst": "Najpierw wybierz semestr"
+      },
+      "validation": {
+        "passwordLength": "Hasło musi mieć co najmniej 6 znaków"
+      },
+      "roles": {
+        "admin": "Administrator",
+        "coordinator": "Koordynator",
+        "user": "Użytkownik"
+      },
+      "userTypes": {
+        "student": "Student",
+        "professor": "Profesor"
+      },
+      "sections": {
+        "basicInfo": "Podstawowe informacje",
+        "roleAndType": "Rola i typ użytkownika",
+        "studentProfile": "Profil studenta"
+      },
+      "noData": {
+        "noAcademicYears": "Nie znaleziono lat akademickich",
+        "noSemesters": "Brak semestrów dla wybranego roku",
+        "noGroups": "Brak grup dla wybranego semestru"
+      },
+      "semesterFormat": "Semestr {{number}} {{period}}"
+    },
+    "messages": {
+      "createSuccess": "Użytkownik został utworzony pomyślnie",
+      "updateSuccess": "Użytkownik został zaktualizowany pomyślnie",
+      "createError": "Nie udało się utworzyć użytkownika",
+      "updateError": "Nie udało się zaktualizować użytkownika"
+    }
+  },
+  "groups": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Nazwa",
+        "studentsCount": "Liczba studentów",
+        "directionAndStudyForm": "Kierunek i forma studiów",
+        "academicYear": "Rok akademicki",
+        "semester": "Semestr"
+      },
+      "searchPlaceholder": "Szukaj grup...",
+      "addButton": "+ Utwórz grupę",
+      "studentsText": "{{count}} studentów",
+      "semesterFormat": "Semestr {{number}} - {{period}}"
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz nową grupę",
+        "edit": "Edytuj grupę"
+      },
+      "fields": {
+        "name": "Nazwa",
+        "studyForm": "Forma studiów",
+        "academicYear": "Rok akademicki",
+        "semester": "Semestr"
+      },
+      "placeholders": {
+        "name": "Wprowadź nazwę grupy",
+        "studyForm": "Wybierz formę studiów",
+        "academicYear": "Wybierz rok akademicki",
+        "semester": "Wybierz semestr",
+        "selectAcademicYearFirst": "Najpierw wybierz rok akademicki"
+      },
+      "validation": {
+        "nameRequired": "Nazwa grupy jest wymagana",
+        "studyFormRequired": "Forma studiów jest wymagana",
+        "academicYearRequired": "Rok akademicki jest wymagany",
+        "semesterRequired": "Semestr jest wymagany"
+      },
+      "noData": {
+        "noStudyForms": "Brak form studiów",
+        "noAcademicYears": "Nie znaleziono lat akademickich",
+        "noSemesters": "Brak semestrów dla wybranego roku"
+      },
+      "sections": {
+        "basicInfo": "Podstawowe informacje",
+        "academicDetails": "Szczegóły akademickie"
+      }
+    },
+    "messages": {
+      "createSuccess": "Grupa została utworzona pomyślnie",
+      "updateSuccess": "Grupa została zaktualizowana pomyślnie",
+      "createError": "Błąd podczas tworzenia grupy",
+      "updateError": "Błąd podczas aktualizacji grupy"
+    }
+  },
+  "contracts": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "professor": "Profesor",
+        "academicYear": "Rok akademicki",
+        "semester": "Semestr",
+        "totalHours": "Łączne godziny kontraktu",
+        "usedHours": "Łączne wykorzystane godziny",
+        "remainingHours": "Pozostałe godziny"
+      },
+      "searchPlaceholder": "Szukaj kontraktów...",
+      "addButton": "+ Utwórz kontrakt",
+      "semesterFormat": "Semestr {{number}} - {{period}}"
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz kontrakt",
+        "edit": "Edytuj kontrakt"
+      },
+      "fields": {
+        "professor": "Profesor",
+        "academicYear": "Rok akademicki",
+        "semester": "Semestr",
+        "hours": "Godziny"
+      },
+      "placeholders": {
+        "professor": "Wybierz profesora",
+        "academicYear": "Wybierz rok akademicki",
+        "semester": "Wybierz semestr",
+        "selectAcademicYearFirst": "Najpierw wybierz rok akademicki",
+        "hours": "Wprowadź całkowitą liczbę godzin"
+      },
+      "validation": {
+        "professorRequired": "Profesor jest wymagany",
+        "academicYearRequired": "Rok akademicki jest wymagany",
+        "semesterRequired": "Semestr jest wymagany",
+        "hoursRequired": "Godziny są wymagane",
+        "hoursMin": "Godziny muszą być większe lub równe 0"
+      },
+      "noData": {
+        "noProfessors": "Nie znaleziono profesorów",
+        "noAcademicYears": "Nie znaleziono lat akademickich",
+        "noSemesters": "Brak semestrów dla wybranego roku"
+      },
+      "editNote": "Uwaga: Profesor, rok akademicki i semestr nie mogą być zmieniane podczas edycji kontraktu. Można modyfikować tylko godziny."
+    },
+    "messages": {
+      "createSuccess": "Kontrakt został utworzony pomyślnie",
+      "updateSuccess": "Kontrakt został zaktualizowany pomyślnie",
+      "createError": "Błąd podczas tworzenia kontraktu",
+      "updateError": "Błąd podczas aktualizacji kontraktu"
+    }
+  },
+  "workloads": {
+    "title": "Obciążenia",
+    "searchPlaceholder": "Szukaj obciążeń...",
+    "addButton": "+ Utwórz obciążenie",
+    "table": {
+      "columns": {
+        "id": "ID",
+        "professor": "Profesor",
+        "faculty": "Wydział",
+        "directionAndStudyForm": "Kierunek i forma studiów",
+        "academicYear": "Rok akademicki",
+        "semester": "Semestr",
+        "assignedHours": "Przypisane godziny",
+        "usedHours": "Łączne wykorzystane godziny",
+        "remainingHours": "Pozostałe godziny"
+      },
+      "semesterFormat": "Semestr {{number}} - {{period}}"
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz obciążenie",
+        "edit": "Edytuj obciążenie"
+      },
+      "fields": {
+        "contract": "Kontrakt",
+        "direction": "Kierunek",
+        "assignedHours": "Przypisane godziny"
+      },
+      "placeholders": {
+        "contract": "Wybierz kontrakt",
+        "direction": "Wybierz kierunek i formę studiów",
+        "assignedHours": "Wprowadź przypisane godziny"
+      },
+      "validation": {
+        "contractRequired": "Kontrakt jest wymagany",
+        "directionRequired": "Kierunek jest wymagany",
+        "assignedHoursRequired": "Przypisane godziny są wymagane",
+        "assignedHoursMin": "Przypisane godziny muszą być większe lub równe 0"
+      },
+      "noData": {
+        "noContracts": "Nie znaleziono kontraktów",
+        "noStudyForms": "Nie znaleziono form studiów"
+      }
+    },
+    "messages": {
+      "createSuccess": "Obciążenie zostało utworzone pomyślnie",
+      "updateSuccess": "Obciążenie zostało zaktualizowane pomyślnie",
+      "createError": "Błąd podczas tworzenia obciążenia",
+      "updateError": "Błąd podczas aktualizacji obciążenia"
+    },
+    "editPage": {
+      "title": "Edytuj obciążenie",
+      "workloadInfo": "Informacje o obciążeniu",
+      "loading": "Ładowanie obciążenia...",
+      "error": "Błąd ładowania obciążenia"
+    },
+    "subjectAssignments": {
+      "title": "Zarządzaj przypisaniami przedmiotów",
+      "summary": "Łączne godziny: {{total}} | Przypisane: {{assigned}} | Pozostałe: {{remaining}}",
+      "addButton": "+ Przypisz przedmiot",
+      "searchPlaceholder": "Szukaj przypisań...",
+      "columns": {
+        "id": "ID",
+        "subject": "Przedmiot",
+        "hours": "Godziny",
+        "actions": "Akcje"
+      },
+      "form": {
+        "title": {
+          "create": "Przypisz przedmiot do obciążenia",
+          "edit": "Edytuj przypisanie przedmiotu"
+        },
+        "fields": {
+          "subject": "Przedmiot",
+          "hours": "Godziny"
+        },
+        "placeholders": {
+          "subject": "Wybierz przedmiot",
+          "hours": "Wprowadź godziny"
+        },
+        "validation": {
+          "subjectRequired": "Przedmiot jest wymagany",
+          "hoursRequired": "Godziny są wymagane",
+          "hoursMin": "Godziny muszą być co najmniej 1"
+        },
+        "noData": {
+          "noSubjects": "Nie znaleziono przedmiotów"
+        },
+        "buttons": {
+          "create": "Przypisz przedmiot",
+          "update": "Aktualizuj przypisanie"
+        }
+      },
+      "messages": {
+        "createSuccess": "Przedmiot został przypisany pomyślnie",
+        "updateSuccess": "Przypisanie przedmiotu zostało zaktualizowane pomyślnie",
+        "deleteSuccess": "Przypisanie przedmiotu zostało usunięte pomyślnie",
+        "createError": "Nie udało się zapisać przypisania",
+        "updateError": "Nie udało się zapisać przypisania",
+        "deleteError": "Nie udało się usunąć przypisania"
+      }
+    }
+  },
+  "schedules": {
+    "title": "Plany zajęć",
+    "searchPlaceholder": "Szukaj planów zajęć...",
+    "addButton": "+ Utwórz plan zajęć",
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Nazwa",
+        "faculty": "Wydział",
+        "direction": "Kierunek",
+        "academicYear": "Rok akademicki",
+        "semester": "Semestr",
+        "semesterFormat": "Semestr {{number}} - {{period}}"
+      }
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz nowy plan zajęć",
+        "edit": "Edytuj plan zajęć"
+      },
+      "description": {
+        "create": "Wypełnij szczegóły, aby utworzyć nowy plan zajęć."
+      },
+      "fields": {
+        "name": {
+          "label": "Nazwa planu zajęć",
+          "placeholder": "Wprowadź nazwę planu zajęć"
+        },
+        "academicYear": {
+          "label": "Rok akademicki",
+          "placeholder": "Wybierz rok akademicki"
+        },
+        "semester": {
+          "label": "Semestr",
+          "placeholder": "Wybierz semestr",
+          "placeholderDisabled": "Najpierw wybierz rok akademicki"
+        },
+        "direction": {
+          "label": "Kierunek",
+          "placeholder": "Wybierz kierunek"
+        }
+      },
+      "validation": {
+        "nameRequired": "Nazwa planu zajęć jest wymagana",
+        "academicYearRequired": "Rok akademicki jest wymagany",
+        "semesterRequired": "Semestr jest wymagany",
+        "directionRequired": "Kierunek jest wymagany"
+      },
+      "noData": {
+        "noAcademicYears": "Nie znaleziono lat akademickich",
+        "noSemesters": "Brak semestrów dla wybranego roku",
+        "noDirections": "Nie znaleziono kierunków"
+      },
+      "buttons": {
+        "create": "Utwórz plan zajęć",
+        "update": "Aktualizuj plan zajęć",
+        "saving": "Zapisywanie..."
+      }
+    },
+    "messages": {
+      "createSuccess": "Plan zajęć został utworzony pomyślnie",
+      "updateSuccess": "Plan zajęć został zaktualizowany",
+      "createError": "Błąd podczas tworzenia planu zajęć",
+      "updateError": "Błąd podczas aktualizacji planu zajęć"
+    },
+    "editPage": {
+      "title": "Edytuj plan zajęć",
+      "scheduleInfo": "Informacje o planie zajęć",
+      "loading": "Ładowanie planu zajęć...",
+      "error": "Błąd ładowania planu zajęć"
+    }
+  },
+  "lessons": {
+    "title": "Zajęcia",
+    "addButton": "Dodaj zajęcia",
+    "exportButton": "Eksportuj plan zajęć",
+    "calendar": {
+      "title": "Widok planu",
+      "groupBy": "Grupuj według:",
+      "groupOptions": {
+        "none": "Bez grupowania",
+        "group": "Według grupy",
+        "professor": "Według profesora",
+        "room": "Według sali/Online"
+      },
+      "lessonsScheduled": "Zaplanowano {{count}} zajęć",
+      "resourcesCount": "{{count}} {{type}}",
+      "navigation": {
+        "allDay": "Cały dzień",
+        "previous": "<",
+        "next": ">",
+        "today": "Dzisiaj",
+        "week": "Tydzień",
+        "day": "Dzień",
+        "date": "Data",
+        "time": "Czas",
+        "event": "Zajęcia",
+        "noEventsInRange": "Brak zaplanowanych zajęć w tym okresie.",
+        "showMore": "+{{total}} więcej"
+      },
+      "loading": "Ładowanie zajęć..."
+    },
+    "form": {
+      "title": {
+        "create": "Utwórz zajęcia",
+        "edit": "Edytuj zajęcia"
+      },
+      "fields": {
+        "group": {
+          "label": "Grupa",
+          "placeholder": "Wybierz grupę"
+        },
+        "workload": {
+          "label": "Profesor i obciążenie",
+          "placeholder": "Wybierz obciążenie profesora"
+        },
+        "subjectAssignment": {
+          "label": "Przypisanie przedmiotu",
+          "placeholder": "Wybierz przypisanie przedmiotu"
+        },
+        "lessonType": {
+          "label": "Typ zajęć",
+          "placeholder": "Wybierz typ zajęć",
+          "options": {
+            "lecture": "Wykład",
+            "practice": "Ćwiczenia",
+            "lab": "Laboratorium",
+            "seminar": "Seminarium"
+          }
+        },
+        "date": {
+          "label": "Data",
+          "placeholder": "Wybierz datę"
+        },
+        "startTime": {
+          "label": "Godzina rozpoczęcia",
+          "placeholder": "Wybierz godzinę rozpoczęcia"
+        },
+        "endTime": {
+          "label": "Godzina zakończenia",
+          "placeholder": "Wybierz godzinę zakończenia"
+        },
+        "isOnline": {
+          "label": "Zajęcia online"
+        },
+        "room": {
+          "label": "Sala",
+          "placeholder": "Wybierz salę"
+        },
+        "notes": {
+          "label": "Uwagi",
+          "placeholder": "Dodatkowe uwagi (opcjonalne)"
+        }
+      },
+      "noData": {
+        "noGroups": "Nie znaleziono grup dla tego planu",
+        "noWorkloads": "Brak dostępnych obciążeń",
+        "noAssignments": "Brak dostępnych przypisań przedmiotów",
+        "noRooms": "Brak dostępnych sal"
+      },
+      "buttons": {
+        "create": "Utwórz zajęcia",
+        "update": "Aktualizuj zajęcia",
+        "delete": "Usuń zajęcia",
+        "cancel": "Anuluj",
+        "saving": "Zapisywanie..."
+      },
+      "deleteConfirm": {
+        "title": "Usuń zajęcia",
+        "message": "Czy na pewno chcesz usunąć te zajęcia? Tej operacji nie można cofnąć.",
+        "confirm": "Tak, usuń",
+        "cancel": "Anuluj"
+      }
+    },
+    "messages": {
+      "createSuccess": "Zajęcia utworzone",
+      "updateSuccess": "Zajęcia zaktualizowane",
+      "deleteSuccess": "Zajęcia usunięte",
+      "createError": "Nie udało się zapisać zajęć",
+      "updateError": "Nie udało się zapisać zajęć",
+      "deleteError": "Nie udało się usunąć zajęć"
+    },
+    "conflicts": {
+      "title": "Konflikty",
+      "loading": "Ładowanie...",
+      "noConflicts": "Brak konfliktów",
+      "foundConflicts": "Znaleziono {{count}} konflikt{{s}}",
+      "clickToNavigate": "Kliknij na dowolny konflikt, aby przejść do problematycznych zajęć",
+      "noConflictsMessage": "Nie wykryto konfliktów w planowaniu dla tego planu",
+      "types": {
+        "internal": "Konflikty wewnętrzne ({{count}})",
+        "crossSchedule": "Konflikty między planami ({{count}})",
+        "internalDescription": "Konflikty w ramach tego planu",
+        "crossScheduleDescription": "Konflikty z innymi planami"
+      },
+      "otherScheduleBadge": "Inny plan"
+    },
+    "workloadWarnings": {
+      "title": "Ostrzeżenia obciążenia",
+      "loading": "Ładowanie...",
+      "hoursOk": "Godziny OK",
+      "hoursIssues": "Problemy z godzinami",
+      "assignmentExceeded": "Przekroczono przypisanie",
+      "scheduled": "Zaplanowane:",
+      "allowed": "Dozwolone:",
+      "excess": "Nadmiar:",
+      "lessonsAffected": "Dotyczy {{count}} zajęć",
+      "showingWarnings": "Pokazuje {{shown}} z {{total}} ostrzeżeń"
+    },
+    "export": {
+      "title": "Eksportuj plan zajęć",
+      "description": "Eksportuj \"{{name}}\" z opcjami dostosowania",
+      "issues": {
+        "title": "Ten plan ma problemy, które mogą wpłynąć na eksport:",
+        "conflicts": "{{count}} konflikt(y) w planowaniu",
+        "workload": "{{count}} problem(y) z obciążeniem profesorów",
+        "continueAnyway": "Kontynuuj mimo to",
+        "confirmed": "Eksport potwierdzony pomimo problemów"
+      },
+      "filename": {
+        "label": "Nazwa pliku",
+        "placeholder": "Wprowadź nazwę pliku bez rozszerzenia",
+        "help": "Pozostaw puste, aby użyć automatycznie wygenerowanej nazwy"
+      },
+      "groups": {
+        "label": "Grupy do uwzględnienia",
+        "noGroups": "Nie znaleziono grup dla tego planu",
+        "selectAll": "Zaznacz wszystkie",
+        "clearAll": "Wyczyść wszystkie",
+        "selected": "Wybrane: {{selected}} z {{total}} grup"
+      },
+      "format": {
+        "label": "Format eksportu",
+        "excel": "Excel (.xlsx)",
+        "excelDescription": "Zalecane dla szczegółowych planów",
+        "pdf": "PDF (.pdf)",
+        "pdfDescription": "Wkrótce dostępne"
+      },
+      "buttons": {
+        "cancel": "Anuluj",
+        "export": "Eksportuj {{format}}",
+        "exporting": "Eksportowanie...",
+        "confirmExport": "Potwierdź i eksportuj"
+      }
+    },
+    "form": {
+      "title": {
+        "add": "Dodaj zajęcia",
+        "edit": "Edytuj zajęcia"
+      },
+      "sections": {
+        "groupSelection": "Wybór grupy",
+        "professorSubject": "Profesor i przedmiot",
+        "lessonType": "Typ zajęć",
+        "dateTime": "Data i czas",
+        "location": "Lokalizacja"
+      },
+      "fields": {
+        "group": "Grupa",
+        "professor": "Profesor (Obciążenie)",
+        "subject": "Przedmiot",
+        "date": "Data",
+        "startTime": "Czas rozpoczęcia",
+        "endTime": "Czas zakończenia",
+        "room": "Sala",
+        "onlineLesson": "Zajęcia online"
+      },
+      "placeholders": {
+        "selectGroup": "Wybierz grupę",
+        "selectProfessor": "Wybierz profesora",
+        "selectGroupFirst": "Najpierw wybierz grupę",
+        "selectSubject": "Wybierz przedmiot",
+        "selectProfessorFirst": "Najpierw wybierz profesora",
+        "selectDate": "Wybierz datę",
+        "setDateTimeFirst": "Najpierw ustaw datę i czas",
+        "selectRoom": "Wybierz dostępną salę"
+      },
+      "messages": {
+        "noGroups": "Nie znaleziono grup dla tego planu",
+        "selectGroupFirst": "Najpierw wybierz grupę",
+        "noProfessors": "Nie znaleziono profesorów dla wybranej grupy",
+        "selectProfessorFirst": "Najpierw wybierz profesora",
+        "noSubjects": "Nie znaleziono przedmiotów dla wybranego profesora",
+        "setDateTimeForRooms": "Ustaw datę i czas, aby zobaczyć dostępne sale",
+        "noRooms": "Brak dostępnych sal w tym czasie",
+        "onlineLesson": "Zajęcia będą prowadzone online"
+      },
+      "validation": {
+        "startTimeRequired": "Określ czas rozpoczęcia",
+        "endTimeRequired": "Określ czas zakończenia"
+      },
+      "buttons": {
+        "delete": "Usuń",
+        "cancel": "Anuluj",
+        "create": "Utwórz",
+        "update": "Aktualizuj",
+        "saving": "Zapisywanie..."
+      },
+      "confirmDelete": "Czy na pewno chcesz usunąć te zajęcia?",
+      "lessonType": {
+        "lecture": "Wykład",
+        "practice": "Ćwiczenia",
+        "lab": "Laboratorium",
+        "seminar": "Seminarium"
+      }
+    }
+  }
+}

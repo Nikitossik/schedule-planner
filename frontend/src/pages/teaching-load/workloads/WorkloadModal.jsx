@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -17,6 +18,7 @@ export default function WorkloadModal({
   onClose,
   onSuccess,
 }) {
+  const { t } = useTranslation();
   const isEdit = !!workload;
   const createWorkload = useEntityMutation("professor_workload", "create");
   const updateWorkload = useEntityMutation("professor_workload", "patch");
@@ -26,10 +28,10 @@ export default function WorkloadModal({
     try {
       if (isEdit) {
         await updateWorkload.mutateAsync({ id: workload.id, data: values });
-        toast.success("Workload updated successfully");
+        toast.success(t("workloads.messages.updateSuccess"));
       } else {
         await createWorkload.mutateAsync(values);
-        toast.success("Workload created successfully");
+        toast.success(t("workloads.messages.createSuccess"));
       }
 
       // Сначала инвалидируем кеш
@@ -46,9 +48,12 @@ export default function WorkloadModal({
       }
     } catch (error) {
       toast.error(
-        isEdit
-          ? error.message || "Error updating workload"
-          : error.message || "Error creating workload"
+        error.message ||
+          t(
+            isEdit
+              ? "workloads.messages.updateError"
+              : "workloads.messages.createError"
+          )
       );
     }
   };
@@ -71,7 +76,11 @@ export default function WorkloadModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Edit Workload" : "Create Workload"}
+            {t(
+              isEdit
+                ? "workloads.form.title.edit"
+                : "workloads.form.title.create"
+            )}
           </DialogTitle>
         </DialogHeader>
         <div className="max-w-2xl">
@@ -85,7 +94,7 @@ export default function WorkloadModal({
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <Button type="button" variant="outline" onClick={onClose}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             type="submit"
@@ -93,10 +102,10 @@ export default function WorkloadModal({
             form="workload-form"
           >
             {createWorkload.isPending || updateWorkload.isPending
-              ? "Saving..."
+              ? t("common.buttons.saving")
               : isEdit
-              ? "Update"
-              : "Create"}
+              ? t("common.buttons.update")
+              : t("common.buttons.create")}
           </Button>
         </div>
       </DialogContent>

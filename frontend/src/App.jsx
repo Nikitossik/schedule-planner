@@ -9,11 +9,12 @@ import {
 import { ReactQueryProvider } from "@/lib/ReactQuery";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import LanguageSwitch from "@/components/LanguageSwitch";
 
-// Academic Structure
-import { AcademicPage } from "./pages/academic-structure/academic";
-import { StructurePage } from "./pages/academic-structure/structure";
-import { SubjectsPage } from "./pages/academic-structure/subjects";
+// Academic Management
+import { AcademicYearsSemestersPage } from "./pages/academic-management/academic-years-semesters";
+import { FacultiesDirectionsPage } from "./pages/academic-management/faculties-directions";
+import { SubjectsPage } from "./pages/academic-management/subjects";
 
 // People Management
 import { UsersPage } from "@/pages/people-management/users";
@@ -62,13 +63,18 @@ function AppLayout() {
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator
-                orientation="vertical"
-                className="mr-2 data-[orientation=vertical]:h-4"
-              />
-              <Breadcrumbs />
+            <div className="flex items-center justify-between w-full px-4">
+              <div className="flex items-center gap-2">
+                <SidebarTrigger className="-ml-1" />
+                <Separator
+                  orientation="vertical"
+                  className="mr-2 data-[orientation=vertical]:h-4"
+                />
+                <Breadcrumbs />
+              </div>
+              <div className="flex items-center">
+                <LanguageSwitch />
+              </div>
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
@@ -94,8 +100,14 @@ const router = createBrowserRouter(
           </ProtectedRoute>
         }
       >
-        <Route path="/academic-management" element={<AcademicPage />} />
-        <Route path="/academic-structure" element={<StructurePage />} />
+        <Route
+          path="/academic-years-semesters"
+          element={<AcademicYearsSemestersPage />}
+        />
+        <Route
+          path="/faculties-directions"
+          element={<FacultiesDirectionsPage />}
+        />
         <Route path="/subjects" element={<SubjectsPage />} />
 
         <Route index element={<Navigate to="/users" replace />} />

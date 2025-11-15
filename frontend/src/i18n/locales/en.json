@@ -1,0 +1,1114 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "noData": "No data available",
+    "selectLanguage": "Select Language",
+    "actions": "Actions",
+    "confirm": "Confirm",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "buttons": {
+      "cancel": "Cancel",
+      "create": "Create",
+      "update": "Update",
+      "saving": "Saving..."
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "schedule": "Schedule",
+    "users": "Users",
+    "classrooms": "Classrooms",
+    "subjects": "Subjects",
+    "groups": "Groups",
+    "faculties": "Faculties",
+    "settings": "Settings"
+  },
+  "navUser": {
+    "logOut": "Log out",
+    "userMenu": "User menu",
+    "defaultUserName": "User"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "academicManagement": "Academic management",
+    "academicStructure": "Academic structure",
+    "facultiesDirections": "Faculties & directions",
+    "academicYearsSemesters": "Academic years & semesters",
+    "contracts": "Contracts",
+    "workloads": "Workloads",
+    "directions": "Directions"
+  },
+  "filters": {
+    "filterBy": "Filter by {{field}}",
+    "noOptionsAvailable": "No options available",
+    "selectedCount": "{{count}} selected",
+    "clearFilters": "Clear filters",
+    "applyFilters": "Apply filters"
+  },
+  "datatable": {
+    "sortAsc": "Sort ascending",
+    "sortDesc": "Sort descending",
+    "hideColumn": "Hide column",
+    "showColumns": "Show columns",
+    "rowsPerPage": "Rows per page",
+    "page": "Page",
+    "of": "of",
+    "selected": "selected",
+    "loading": "Loading...",
+    "error": "Error loading table data",
+    "noResults": "No results.",
+    "selectedRows": "{{selected}} of {{total}} row(s) selected.",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteSelected": "Delete selected",
+    "confirmDelete": "Are you sure you want to delete this {{item}}?",
+    "confirmDeleteSelected": "Are you sure you want to delete selected {{items}}?",
+    "deleteSuccess": "{{item}} deleted",
+    "deleteManySuccess": "Deleted {{count}} {{items}}(s)",
+    "deleteFailed": "Failed to delete",
+    "sorting": "Sorting",
+    "filtering": "Filtering",
+    "reset": "Reset",
+    "goToFirstPage": "Go to first page",
+    "goToPreviousPage": "Go to previous page",
+    "goToNextPage": "Go to next page",
+    "goToLastPage": "Go to last page",
+    "sortBy": "Sort by",
+    "order": "Order",
+    "asc": "Asc",
+    "desc": "Desc",
+    "noOptionsAvailable": "No options available"
+  },
+  "schedule": {
+    "title": "Schedule",
+    "createLesson": "Create Lesson",
+    "editLesson": "Edit Lesson",
+    "deleteLesson": "Delete Lesson",
+    "lesson": "Lesson",
+    "time": "Time",
+    "room": "Room",
+    "group": "Group",
+    "teacher": "Teacher"
+  },
+  "forms": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordsNotMatch": "Passwords do not match"
+  },
+  "pages": {
+    "academicManagement": {
+      "title": "Academic management"
+    },
+    "facultiesDirections": {
+      "title": "Faculties & directions",
+      "tabs": {
+        "faculties": "Faculties",
+        "directions": "Directions"
+      }
+    },
+    "academicYearsSemesters": {
+      "title": "Academic years & semesters",
+      "tabs": {
+        "academicYears": "Academic years",
+        "semesters": "Semesters"
+      }
+    }
+  },
+  "academicYears": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "semesters": "Semesters",
+        "current": "Current"
+      },
+      "searchPlaceholder": "Search academic years...",
+      "addButton": "+ Create academic year",
+      "semestersCount": "{{count}} semesters"
+    },
+    "form": {
+      "title": {
+        "create": "Create Academic Year",
+        "edit": "Edit Academic Year"
+      },
+      "fields": {
+        "name": {
+          "label": "Name",
+          "placeholder": "e.g., 2024/2025"
+        },
+        "startDate": {
+          "label": "Start Date"
+        },
+        "endDate": {
+          "label": "End Date"
+        },
+        "isCurrent": {
+          "label": "Set as current academic year",
+          "description": "Mark this academic year as the current one. Only one academic year can be current at a time."
+        }
+      },
+      "validation": {
+        "nameRequired": "Academic year name is required",
+        "startDateRequired": "Start date is required",
+        "endDateRequired": "End date is required",
+        "endDateAfterStart": "End date must be after or equal to start date"
+      },
+      "buttons": {
+        "create": "Create",
+        "update": "Update",
+        "cancel": "Cancel",
+        "saving": "Saving..."
+      }
+    },
+    "messages": {
+      "createSuccess": "Academic year created successfully",
+      "updateSuccess": "Academic year updated successfully",
+      "createError": "Failed to create academic year",
+      "updateError": "Failed to update academic year"
+    }
+  },
+  "semesters": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "academicYear": "Academic Year",
+        "number": "Number",
+        "period": "Period",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "current": "Current",
+        "semesterNumber": "Semester {{number}}"
+      },
+      "searchPlaceholder": "Search semesters...",
+      "addButton": "+ Create semester"
+    },
+    "form": {
+      "title": {
+        "create": "Create Semester",
+        "edit": "Edit Semester"
+      },
+      "fields": {
+        "name": {
+          "label": "Name",
+          "placeholder": "e.g., Semester 3 winter 2024-2025"
+        },
+        "number": {
+          "label": "Number"
+        },
+        "period": {
+          "label": "Period",
+          "placeholder": "Select period",
+          "winter": "Winter",
+          "summer": "Summer"
+        },
+        "academicYear": {
+          "label": "Academic Year",
+          "placeholder": "Select academic year",
+          "current": "(Current)"
+        },
+        "startDate": {
+          "label": "Start date"
+        },
+        "endDate": {
+          "label": "End date"
+        }
+      },
+      "validation": {
+        "nameRequired": "Semester name is required",
+        "numberRequired": "Number is required",
+        "periodRequired": "Period is required",
+        "academicYearRequired": "Academic year is required",
+        "startDateRequired": "Start date is required",
+        "endDateRequired": "End date is required",
+        "endDateAfterStart": "End date must be after or equal to start date"
+      },
+      "buttons": {
+        "create": "Create",
+        "update": "Update",
+        "cancel": "Cancel",
+        "saving": "Saving..."
+      },
+      "loading": "Loading...",
+      "noAcademicYears": "No academic years found"
+    },
+    "messages": {
+      "createSuccess": "Semester created successfully",
+      "updateSuccess": "Semester updated successfully",
+      "createError": "Failed to create semester",
+      "updateError": "Failed to update semester"
+    }
+  },
+  "faculties": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "directionsCount": "Directions count",
+        "directionsText": "{{count}} directions"
+      },
+      "searchPlaceholder": "Search faculties...",
+      "addButton": "+ Create faculty"
+    },
+    "form": {
+      "title": {
+        "create": "Create Faculty",
+        "edit": "Edit Faculty"
+      },
+      "fields": {
+        "name": {
+          "label": "Name",
+          "placeholder": "Enter faculty name"
+        }
+      },
+      "validation": {
+        "nameRequired": "Faculty name is required"
+      },
+      "buttons": {
+        "create": "Create",
+        "update": "Update",
+        "cancel": "Cancel",
+        "saving": "Saving..."
+      }
+    },
+    "messages": {
+      "createSuccess": "Faculty created successfully",
+      "updateSuccess": "Faculty updated successfully",
+      "createError": "Failed to create faculty",
+      "updateError": "Failed to update faculty"
+    }
+  },
+  "directions": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "code": "Code",
+        "faculty": "Faculty",
+        "studyForms": "Study Forms"
+      },
+      "searchPlaceholder": "Search directions...",
+      "addButton": "+ Create direction"
+    },
+    "form": {
+      "title": {
+        "create": "Create Direction",
+        "edit": "Edit Direction"
+      },
+      "fields": {
+        "name": {
+          "label": "Name",
+          "placeholder": "Enter direction name"
+        },
+        "code": {
+          "label": "Code",
+          "placeholder": "Enter direction code"
+        },
+        "faculty": {
+          "label": "Faculty",
+          "placeholder": "Select faculty",
+          "loading": "Loading...",
+          "noFaculties": "No faculties"
+        },
+        "studyForms": {
+          "title": "Study Forms",
+          "fullTime": {
+            "label": "Full-time",
+            "description": "Full-time study form (day classes)"
+          },
+          "partTime": {
+            "label": "Part-time",
+            "description": "Part-time study form (evening/distance classes)"
+          }
+        }
+      },
+      "editNote": "Note: Faculty and Study Forms cannot be changed when editing a direction. Only Name and Code can be modified.",
+      "validation": {
+        "nameRequired": "Direction name is required",
+        "codeRequired": "Code is required",
+        "facultyRequired": "Faculty is required",
+        "studyFormRequired": "At least one study form must be selected"
+      },
+      "buttons": {
+        "create": "Create",
+        "update": "Update",
+        "cancel": "Cancel",
+        "saving": "Saving..."
+      }
+    },
+    "messages": {
+      "createSuccess": "Direction created successfully",
+      "updateSuccess": "Direction updated successfully",
+      "createError": "Error creating direction",
+      "updateError": "Error updating direction"
+    },
+    "studyForms": {
+      "fullTime": "Full-time",
+      "partTime": "Part-time"
+    }
+  },
+  "subjects": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "code": "Code",
+        "faculty": "Faculty",
+        "direction": "Direction",
+        "academicYear": "Academic Year",
+        "semester": "Semester",
+        "color": "Color"
+      },
+      "searchPlaceholder": "Search subjects...",
+      "addButton": "+ Create Subject",
+      "semesterFormat": "Semester {{number}} - {{period}}"
+    },
+    "form": {
+      "title": {
+        "create": "Create Subject",
+        "edit": "Edit Subject"
+      },
+      "fields": {
+        "name": "Name",
+        "code": "Code",
+        "direction": "Direction",
+        "academicYear": "Academic Year",
+        "semester": "Semester",
+        "color": "Color"
+      },
+      "placeholders": {
+        "name": "Enter subject name",
+        "code": "Enter subject code",
+        "direction": "Select direction",
+        "academicYear": "Select academic year",
+        "semester": "Select semester"
+      },
+      "validation": {
+        "nameRequired": "Subject name is required",
+        "codeRequired": "Subject code is required",
+        "directionRequired": "Direction is required",
+        "academicYearRequired": "Academic year is required",
+        "semesterRequired": "Semester is required",
+        "colorInvalid": "Color must be a valid hex color"
+      },
+      "editNote": "Note: Direction, Academic Year and Semester cannot be changed when editing a subject. Only Name, Code and Color can be modified.",
+      "noDirections": "No directions",
+      "noAcademicYears": "No academic years",
+      "noSemesters": "No semesters"
+    },
+    "messages": {
+      "createSuccess": "Subject created successfully",
+      "updateSuccess": "Subject updated successfully",
+      "createError": "Error creating subject",
+      "updateError": "Error updating subject"
+    }
+  },
+  "sidebar": {
+    "academicManagement": "Academic management",
+    "academicYearsSemesters": "Academic years & semesters",
+    "facultiesDirections": "Faculties & directions",
+    "subjects": "Subjects",
+    "peopleManagement": "People management",
+    "users": "Users",
+    "groups": "Groups",
+    "teachingLoad": "Teaching load",
+    "contracts": "Contracts",
+    "workloads": "Workloads",
+    "scheduleResources": "Schedule & resources",
+    "schedules": "Schedules",
+    "classrooms": "Classrooms"
+  },
+  "rooms": {
+    "title": "Classrooms",
+    "table": {
+      "columns": {
+        "id": "ID",
+        "number": "Number",
+        "capacity": "Capacity"
+      },
+      "searchPlaceholder": "Search classrooms...",
+      "addButton": "+ Create classroom"
+    },
+    "form": {
+      "title": {
+        "create": "Create New Room",
+        "edit": "Edit Room"
+      },
+      "description": {
+        "create": "Fill in the details to create a new room.",
+        "edit": "Update the room information below."
+      },
+      "fields": {
+        "number": "Room Number",
+        "capacity": "Capacity"
+      },
+      "placeholders": {
+        "number": "Enter room number",
+        "capacity": "Enter room capacity"
+      },
+      "validation": {
+        "numberRequired": "Room number is required",
+        "capacityMin": "Capacity must be at least 1"
+      }
+    },
+    "messages": {
+      "createSuccess": "Room created successfully",
+      "updateSuccess": "Room updated successfully",
+      "createError": "Error creating room",
+      "updateError": "Error updating room"
+    }
+  },
+  "filterLabels": {
+    "academicYear": "Academic Year",
+    "direction": "Direction",
+    "faculty": "Faculty",
+    "period": "Period",
+    "semester": "Semester",
+    "studyForm": "Study Form",
+    "userRole": "Role",
+    "userType": "User Type",
+    "periods": {
+      "winter": "Winter",
+      "summer": "Summer"
+    },
+    "studyForms": {
+      "fullTime": "Full-time",
+      "partTime": "Part-time"
+    },
+    "userRoles": {
+      "admin": "Admin",
+      "coordinator": "Coordinator",
+      "user": "User"
+    },
+    "userTypes": {
+      "student": "Student",
+      "professor": "Professor"
+    }
+  },
+  "errorPages": {
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "The page you are looking for doesn't exist or has been moved.",
+      "goBack": "Go Back",
+      "goHome": "Go Home"
+    },
+    "forbidden": {
+      "title": "Access Forbidden",
+      "description": "You don't have permission to access this resource.",
+      "goBackHome": "Go Back Home"
+    }
+  },
+  "users": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "surname": "Surname",
+        "email": "Email",
+        "role": "Role",
+        "userType": "Type"
+      },
+      "searchPlaceholder": "Search users...",
+      "addButton": "+ Create User"
+    },
+    "form": {
+      "sections": {
+        "basicInfo": "Basic Information",
+        "roleAndType": "User Role and Type",
+        "studentProfile": "Student Profile"
+      },
+      "title": {
+        "create": "Create User",
+        "edit": "Edit User"
+      },
+      "fields": {
+        "name": "Name",
+        "surname": "Surname",
+        "email": "Email",
+        "password": "Password",
+        "role": "Role",
+        "userType": "User Type",
+        "academicYear": "Academic Year",
+        "semester": "Semester",
+        "group": "Group",
+        "academicYear": "Academic Year",
+        "semester": "Semester",
+        "group": "Group"
+      },
+      "placeholders": {
+        "name": "Enter first name",
+        "surname": "Enter last name",
+        "email": "Enter email address",
+        "password": "Enter password",
+        "role": "Select role",
+        "userType": "Select type",
+        "academicYear": "Select academic year",
+        "semester": "Select semester",
+        "group": "Select group",
+        "selectAcademicYearFirst": "Select academic year first",
+        "selectSemesterFirst": "Select semester first"
+      },
+      "validation": {
+        "passwordLength": "Password must be at least 6 characters"
+      },
+      "roles": {
+        "admin": "Administrator",
+        "coordinator": "Coordinator",
+        "user": "User"
+      },
+      "userTypes": {
+        "student": "Student",
+        "professor": "Professor"
+      },
+      "sections": {
+        "basicInfo": "Basic Information",
+        "roleAndType": "User Role and Type",
+        "studentProfile": "Student Profile"
+      },
+      "noData": {
+        "noAcademicYears": "No academic years found",
+        "noSemesters": "No semesters for selected year",
+        "noGroups": "No groups for selected semester"
+      },
+      "semesterFormat": "Semester {{number}} {{period}}"
+    },
+    "messages": {
+      "createSuccess": "User created successfully",
+      "updateSuccess": "User updated successfully",
+      "createError": "Failed to create user",
+      "updateError": "Failed to update user"
+    }
+  },
+  "groups": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "studentsCount": "Students count",
+        "directionAndStudyForm": "Direction and study form",
+        "academicYear": "Academic year",
+        "semester": "Semester"
+      },
+      "searchPlaceholder": "Search groups...",
+      "addButton": "+ Create group",
+      "studentsText": "{{count}} students",
+      "semesterFormat": "Semester {{number}} - {{period}}"
+    },
+    "form": {
+      "title": {
+        "create": "Create new group",
+        "edit": "Edit group"
+      },
+      "fields": {
+        "name": "Name",
+        "studyForm": "Study form",
+        "academicYear": "Academic year",
+        "semester": "Semester"
+      },
+      "placeholders": {
+        "name": "Enter group name",
+        "studyForm": "Select study form",
+        "academicYear": "Select academic year",
+        "semester": "Select semester",
+        "selectAcademicYearFirst": "Select academic year first"
+      },
+      "validation": {
+        "nameRequired": "Group name is required",
+        "studyFormRequired": "Study form is required",
+        "academicYearRequired": "Academic year is required",
+        "semesterRequired": "Semester is required"
+      },
+      "noData": {
+        "noStudyForms": "No study forms",
+        "noAcademicYears": "No academic years found",
+        "noSemesters": "No semesters for selected year"
+      },
+      "sections": {
+        "basicInfo": "Basic information",
+        "academicDetails": "Academic details"
+      }
+    },
+    "messages": {
+      "createSuccess": "Group created successfully",
+      "updateSuccess": "Group updated successfully",
+      "createError": "Error creating group",
+      "updateError": "Error updating group"
+    }
+  },
+  "contracts": {
+    "table": {
+      "columns": {
+        "id": "ID",
+        "professor": "Professor",
+        "academicYear": "Academic year",
+        "semester": "Semester",
+        "totalHours": "Total contract hours",
+        "usedHours": "Total used hours",
+        "remainingHours": "Remaining hours"
+      },
+      "searchPlaceholder": "Search contracts...",
+      "addButton": "+ Create contract",
+      "semesterFormat": "Semester {{number}} - {{period}}"
+    },
+    "form": {
+      "title": {
+        "create": "Create contract",
+        "edit": "Edit contract"
+      },
+      "fields": {
+        "professor": "Professor",
+        "academicYear": "Academic year",
+        "semester": "Semester",
+        "hours": "Hours"
+      },
+      "placeholders": {
+        "professor": "Select professor",
+        "academicYear": "Select academic year",
+        "semester": "Select semester",
+        "selectAcademicYearFirst": "Select academic year first",
+        "hours": "Enter total hours"
+      },
+      "validation": {
+        "professorRequired": "Professor is required",
+        "academicYearRequired": "Academic year is required",
+        "semesterRequired": "Semester is required",
+        "hoursRequired": "Hours is required",
+        "hoursMin": "Hours must be greater than or equal to 0"
+      },
+      "noData": {
+        "noProfessors": "No professors found",
+        "noAcademicYears": "No academic years found",
+        "noSemesters": "No semesters for selected year"
+      },
+      "editNote": "Note: Professor, Academic year and Semester cannot be changed when editing a contract. Only Hours can be modified."
+    },
+    "messages": {
+      "createSuccess": "Contract created successfully",
+      "updateSuccess": "Contract updated successfully",
+      "createError": "Error creating contract",
+      "updateError": "Error updating contract"
+    }
+  },
+  "workloads": {
+    "title": "Workloads",
+    "searchPlaceholder": "Search workloads...",
+    "addButton": "+ Create workload",
+    "table": {
+      "columns": {
+        "id": "ID",
+        "professor": "Professor",
+        "faculty": "Faculty",
+        "directionAndStudyForm": "Direction and study form",
+        "academicYear": "Academic year",
+        "semester": "Semester",
+        "assignedHours": "Assigned hours",
+        "usedHours": "Total used hours",
+        "remainingHours": "Remaining hours"
+      },
+      "semesterFormat": "Semester {{number}} - {{period}}"
+    },
+    "form": {
+      "title": {
+        "create": "Create workload",
+        "edit": "Edit workload"
+      },
+      "fields": {
+        "contract": "Contract",
+        "direction": "Direction",
+        "assignedHours": "Assigned hours"
+      },
+      "placeholders": {
+        "contract": "Select contract",
+        "direction": "Select direction and study form",
+        "assignedHours": "Enter assigned hours"
+      },
+      "validation": {
+        "contractRequired": "Contract is required",
+        "directionRequired": "Direction is required",
+        "assignedHoursRequired": "Assigned hours is required",
+        "assignedHoursMin": "Assigned hours must be greater than or equal to 0"
+      },
+      "noData": {
+        "noContracts": "No contracts found",
+        "noStudyForms": "No study forms found"
+      }
+    },
+    "messages": {
+      "createSuccess": "Workload created successfully",
+      "updateSuccess": "Workload updated successfully",
+      "createError": "Error creating workload",
+      "updateError": "Error updating workload"
+    },
+    "editPage": {
+      "title": "Edit workload",
+      "workloadInfo": "Workload information",
+      "loading": "Loading workload...",
+      "error": "Error loading workload"
+    },
+    "subjectAssignments": {
+      "title": "Manage subject assignments",
+      "summary": "Total hours: {{total}} | Assigned: {{assigned}} | Remaining: {{remaining}}",
+      "addButton": "+ Assign subject",
+      "searchPlaceholder": "Search assignments...",
+      "columns": {
+        "id": "ID",
+        "subject": "Subject",
+        "hours": "Hours",
+        "actions": "Actions"
+      },
+      "form": {
+        "title": {
+          "create": "Assign subject to workload",
+          "edit": "Edit subject assignment"
+        },
+        "fields": {
+          "subject": "Subject",
+          "hours": "Hours"
+        },
+        "placeholders": {
+          "subject": "Select subject",
+          "hours": "Enter hours"
+        },
+        "validation": {
+          "subjectRequired": "Subject is required",
+          "hoursRequired": "Hours is required",
+          "hoursMin": "Hours must be at least 1"
+        },
+        "noData": {
+          "noSubjects": "No subjects found"
+        },
+        "buttons": {
+          "create": "Assign subject",
+          "update": "Update assignment"
+        }
+      },
+      "messages": {
+        "createSuccess": "Subject assigned successfully",
+        "updateSuccess": "Subject assignment updated successfully",
+        "deleteSuccess": "Subject assignment deleted successfully",
+        "createError": "Failed to save assignment",
+        "updateError": "Failed to save assignment",
+        "deleteError": "Failed to delete assignment"
+      }
+    }
+  },
+  "schedules": {
+    "title": "Schedules",
+    "searchPlaceholder": "Search schedules...",
+    "addButton": "+ Create schedule",
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "faculty": "Faculty",
+        "direction": "Direction",
+        "academicYear": "Academic Year",
+        "semester": "Semester",
+        "semesterFormat": "Semester {{number}} - {{period}}"
+      }
+    },
+    "form": {
+      "title": {
+        "create": "Create New Schedule",
+        "edit": "Edit Schedule"
+      },
+      "description": {
+        "create": "Fill in the details to create a new schedule."
+      },
+      "fields": {
+        "name": {
+          "label": "Schedule Name",
+          "placeholder": "Enter schedule name"
+        },
+        "academicYear": {
+          "label": "Academic Year",
+          "placeholder": "Select academic year"
+        },
+        "semester": {
+          "label": "Semester",
+          "placeholder": "Select semester",
+          "placeholderDisabled": "Select academic year first"
+        },
+        "direction": {
+          "label": "Direction",
+          "placeholder": "Select direction"
+        }
+      },
+      "validation": {
+        "nameRequired": "Schedule name is required",
+        "academicYearRequired": "Academic year is required",
+        "semesterRequired": "Semester is required",
+        "directionRequired": "Direction is required"
+      },
+      "noData": {
+        "noAcademicYears": "No academic years found",
+        "noSemesters": "No semesters for selected year",
+        "noDirections": "No directions found"
+      },
+      "buttons": {
+        "create": "Create Schedule",
+        "update": "Update Schedule",
+        "saving": "Saving..."
+      }
+    },
+    "messages": {
+      "createSuccess": "Schedule created successfully",
+      "updateSuccess": "Schedule updated",
+      "createError": "Error creating schedule",
+      "updateError": "Error updating schedule"
+    },
+    "editPage": {
+      "title": "Edit Schedule",
+      "scheduleInfo": "Schedule Information",
+      "loading": "Loading schedule...",
+      "error": "Error loading schedule"
+    }
+  },
+  "lessons": {
+    "title": "Lessons",
+    "addButton": "Add Lesson",
+    "exportButton": "Export Schedule",
+    "calendar": {
+      "title": "Schedule View",
+      "groupBy": "Group by:",
+      "groupOptions": {
+        "none": "No Grouping",
+        "group": "By Group",
+        "professor": "By Professor",
+        "room": "By Room/Online"
+      },
+      "lessonsScheduled": "{{count}} lessons scheduled",
+      "resourcesCount": "{{count}} {{type}}s",
+      "navigation": {
+        "allDay": "All Day",
+        "previous": "<",
+        "next": ">",
+        "today": "Today",
+        "week": "Week",
+        "day": "Day",
+        "date": "Date",
+        "time": "Time",
+        "event": "Lesson",
+        "noEventsInRange": "No lessons scheduled for this period.",
+        "showMore": "+{{total}} more"
+      },
+      "loading": "Loading lessons..."
+    },
+    "form": {
+      "title": {
+        "create": "Create Lesson",
+        "edit": "Edit Lesson"
+      },
+      "fields": {
+        "group": {
+          "label": "Group",
+          "placeholder": "Select group"
+        },
+        "workload": {
+          "label": "Professor & Workload",
+          "placeholder": "Select professor workload"
+        },
+        "subjectAssignment": {
+          "label": "Subject Assignment",
+          "placeholder": "Select subject assignment"
+        },
+        "lessonType": {
+          "label": "Lesson Type",
+          "placeholder": "Select lesson type",
+          "options": {
+            "lecture": "Lecture",
+            "practice": "Practice",
+            "lab": "Laboratory",
+            "seminar": "Seminar"
+          }
+        },
+        "date": {
+          "label": "Date",
+          "placeholder": "Select date"
+        },
+        "startTime": {
+          "label": "Start Time",
+          "placeholder": "Select start time"
+        },
+        "endTime": {
+          "label": "End Time",
+          "placeholder": "Select end time"
+        },
+        "isOnline": {
+          "label": "Online lesson"
+        },
+        "room": {
+          "label": "Room",
+          "placeholder": "Select room"
+        },
+        "notes": {
+          "label": "Notes",
+          "placeholder": "Additional notes (optional)"
+        }
+      },
+      "noData": {
+        "noGroups": "No groups found for this schedule",
+        "noWorkloads": "No workloads available",
+        "noAssignments": "No subject assignments available",
+        "noRooms": "No available rooms"
+      },
+      "buttons": {
+        "create": "Create Lesson",
+        "update": "Update Lesson",
+        "delete": "Delete Lesson",
+        "cancel": "Cancel",
+        "saving": "Saving..."
+      },
+      "deleteConfirm": {
+        "title": "Delete Lesson",
+        "message": "Are you sure you want to delete this lesson? This action cannot be undone.",
+        "confirm": "Yes, Delete",
+        "cancel": "Cancel"
+      }
+    },
+    "messages": {
+      "createSuccess": "Lesson created",
+      "updateSuccess": "Lesson updated",
+      "deleteSuccess": "Lesson deleted",
+      "createError": "Failed to save lesson",
+      "updateError": "Failed to save lesson",
+      "deleteError": "Failed to delete lesson"
+    },
+    "conflicts": {
+      "title": "Conflicts",
+      "loading": "Loading...",
+      "noConflicts": "No Conflicts",
+      "foundConflicts": "{{count}} Conflict{{s}} Found",
+      "clickToNavigate": "Click on any conflict to navigate to the problematic lessons",
+      "noConflictsMessage": "No scheduling conflicts detected for this schedule",
+      "types": {
+        "internal": "Internal Conflicts ({{count}})",
+        "crossSchedule": "Cross-Schedule Conflicts ({{count}})",
+        "internalDescription": "Conflicts within this schedule",
+        "crossScheduleDescription": "Conflicts with other schedules"
+      },
+      "otherScheduleBadge": "Other Schedule"
+    },
+    "workloadWarnings": {
+      "title": "Workload Warnings",
+      "loading": "Loading...",
+      "hoursOk": "Hours OK",
+      "hoursIssues": "Hours Issues",
+      "assignmentExceeded": "Assignment Exceeded",
+      "scheduled": "Scheduled:",
+      "allowed": "Allowed:",
+      "excess": "Excess:",
+      "lessonsAffected": "{{count}} lesson{{s}} affected",
+      "showingWarnings": "Showing {{shown}} of {{total}} warnings"
+    },
+    "export": {
+      "title": "Export Schedule",
+      "description": "Export \"{{name}}\" with customizable options",
+      "issues": {
+        "title": "This schedule has issues that may affect the export:",
+        "conflicts": "{{count}} scheduling conflict(s)",
+        "workload": "{{count}} professor workload issue(s)",
+        "continueAnyway": "Continue anyway",
+        "confirmed": "Export confirmed despite issues"
+      },
+      "filename": {
+        "label": "Filename",
+        "placeholder": "Enter filename without extension",
+        "help": "Leave empty to use auto-generated name"
+      },
+      "groups": {
+        "label": "Groups to include",
+        "noGroups": "No groups found for this schedule",
+        "selectAll": "Select All",
+        "clearAll": "Clear All",
+        "selected": "Selected: {{selected}} of {{total}} group(s)"
+      },
+      "format": {
+        "label": "Export format",
+        "excel": "Excel (.xlsx)",
+        "excelDescription": "Recommended for detailed schedules",
+        "pdf": "PDF (.pdf)",
+        "pdfDescription": "Coming soon"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "export": "Export {{format}}",
+        "exporting": "Exporting...",
+        "confirmExport": "Confirm & Export"
+      }
+    },
+    "form": {
+      "title": {
+        "add": "Add lesson",
+        "edit": "Edit lesson"
+      },
+      "sections": {
+        "groupSelection": "Group Selection",
+        "professorSubject": "Professor & Subject",
+        "lessonType": "Lesson Type",
+        "dateTime": "Date & Time",
+        "location": "Location"
+      },
+      "fields": {
+        "group": "Group",
+        "professor": "Professor (Workload)",
+        "subject": "Subject",
+        "date": "Date",
+        "startTime": "Start time",
+        "endTime": "End time",
+        "room": "Room",
+        "onlineLesson": "Online lesson"
+      },
+      "placeholders": {
+        "selectGroup": "Select group",
+        "selectProfessor": "Select professor",
+        "selectGroupFirst": "Select group first",
+        "selectSubject": "Select subject",
+        "selectProfessorFirst": "Select professor first",
+        "selectDate": "Select date",
+        "setDateTimeFirst": "Set date and time first",
+        "selectRoom": "Select available room"
+      },
+      "messages": {
+        "noGroups": "No groups found for this schedule",
+        "selectGroupFirst": "Select group first",
+        "noProfessors": "No professors found for selected group",
+        "selectProfessorFirst": "Select professor first",
+        "noSubjects": "No subjects found for selected professor",
+        "setDateTimeForRooms": "Set date and time to see available rooms",
+        "noRooms": "No rooms available at this time",
+        "onlineLesson": "Lesson will be conducted online"
+      },
+      "validation": {
+        "startTimeRequired": "Specify start time",
+        "endTimeRequired": "Specify end time"
+      },
+      "buttons": {
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "create": "Create",
+        "update": "Update",
+        "saving": "Saving..."
+      },
+      "confirmDelete": "Are you sure you want to delete this lesson?",
+      "lessonType": {
+        "lecture": "Lecture",
+        "practice": "Practice",
+        "lab": "Laboratory",
+        "seminar": "Seminar"
+      }
+    }
+  }
+}

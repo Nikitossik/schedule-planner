@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
@@ -55,6 +56,7 @@ export function LessonsCalendar({
   onCreateLesson,
   refreshTrigger,
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   // Функции для инвалидации кеша
@@ -139,7 +141,9 @@ export function LessonsCalendar({
   if (isLoading) {
     return (
       <div className="h-[700px] bg-background border rounded-lg p-4 flex items-center justify-center">
-        <div className="text-muted-foreground">Loading lessons...</div>
+        <div className="text-muted-foreground">
+          {t("lessons.calendar.loading")}
+        </div>
       </div>
     );
   }
@@ -148,9 +152,13 @@ export function LessonsCalendar({
     <>
       <div className="bg-background flex justify-between gap-4 flex-wrap border rounded-lg p-4">
         <div className="flex items-center space-x-4">
-          <h3 className="text-lg font-semibold">Schedule View</h3>
+          <h3 className="text-lg font-semibold">
+            {t("lessons.calendar.title")}
+          </h3>
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">Group by:</span>
+            <span className="text-sm text-muted-foreground">
+              {t("lessons.calendar.groupBy")}
+            </span>
             <Select value={groupBy} onValueChange={setGroupBy}>
               <SelectTrigger className="w-48">
                 <SelectValue />
@@ -158,25 +166,25 @@ export function LessonsCalendar({
               <SelectContent>
                 <SelectItem value="none">
                   <span className="flex items-center gap-2">
-                    📋 No Grouping
+                    📋 {t("lessons.calendar.groupOptions.none")}
                   </span>
                 </SelectItem>
                 <SelectItem value="group">
                   <span className="flex items-center gap-2">
                     <Users className="h-4 w-4" />
-                    By Group
+                    {t("lessons.calendar.groupOptions.group")}
                   </span>
                 </SelectItem>
                 <SelectItem value="professor">
                   <span className="flex items-center gap-2">
                     <User className="h-4 w-4" />
-                    By Professor
+                    {t("lessons.calendar.groupOptions.professor")}
                   </span>
                 </SelectItem>
                 <SelectItem value="room">
                   <span className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
-                    By Room/Online
+                    {t("lessons.calendar.groupOptions.room")}
                   </span>
                 </SelectItem>
               </SelectContent>
@@ -186,8 +194,12 @@ export function LessonsCalendar({
 
         <div className="flex items-center gap-4">
           <div className="text-sm text-muted-foreground">
-            {lessons.length} lessons scheduled
-            {resources && ` • ${resources.length} ${groupBy}s`}
+            {t("lessons.calendar.lessonsScheduled", { count: lessons.length })}
+            {resources &&
+              ` • ${t("lessons.calendar.resourcesCount", {
+                count: resources.length,
+                type: groupBy,
+              })}`}
           </div>
 
           <div className="flex gap-2">
@@ -254,17 +266,18 @@ export function LessonsCalendar({
             };
           }}
           messages={{
-            allDay: "All Day",
-            previous: "<",
-            next: ">",
-            today: "Today",
-            week: "Week",
-            day: "Day",
-            date: "Date",
-            time: "Time",
-            event: "Lesson",
-            noEventsInRange: "No lessons scheduled for this period.",
-            showMore: (total) => `+${total} more`,
+            allDay: t("lessons.calendar.navigation.allDay"),
+            previous: t("lessons.calendar.navigation.previous"),
+            next: t("lessons.calendar.navigation.next"),
+            today: t("lessons.calendar.navigation.today"),
+            week: t("lessons.calendar.navigation.week"),
+            day: t("lessons.calendar.navigation.day"),
+            date: t("lessons.calendar.navigation.date"),
+            time: t("lessons.calendar.navigation.time"),
+            event: t("lessons.calendar.navigation.event"),
+            noEventsInRange: t("lessons.calendar.navigation.noEventsInRange"),
+            showMore: (total) =>
+              t("lessons.calendar.navigation.showMore", { total }),
           }}
         />
       </div>

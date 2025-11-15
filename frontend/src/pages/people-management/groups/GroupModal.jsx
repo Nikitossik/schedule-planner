@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,7 @@ export default function GroupModal({
   group = null,
   onSuccess,
 }) {
+  const { t } = useTranslation();
   const isEdit = Boolean(group);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,16 +29,21 @@ export default function GroupModal({
     try {
       if (isEdit) {
         await updateGroup.mutateAsync({ id: group.id, data: values });
-        toast.success("Group updated successfully");
+        toast.success(t("groups.messages.updateSuccess"));
       } else {
         await createGroup.mutateAsync(values);
-        toast.success("Group created successfully");
+        toast.success(t("groups.messages.createSuccess"));
       }
       onSuccess?.();
       onClose();
     } catch (error) {
       toast.error(
-        error.message || `Error ${isEdit ? "updating" : "creating"} group`
+        error.message ||
+          t(
+            isEdit
+              ? "groups.messages.updateError"
+              : "groups.messages.createError"
+          )
       );
     } finally {
       setIsLoading(false);
@@ -48,12 +55,18 @@ export default function GroupModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Edit Group" : "Create New Group"}
+            {t(isEdit ? "groups.form.title.edit" : "groups.form.title.create")}
           </DialogTitle>
           <DialogDescription>
             {isEdit
-              ? "Update the group information below."
-              : "Fill in the details to create a new group."}
+              ? t(
+                  "groups.form.description.edit",
+                  "Update the group information below."
+                )
+              : t(
+                  "groups.form.description.create",
+                  "Fill in the details to create a new group."
+                )}
           </DialogDescription>
         </DialogHeader>
         <GroupForm

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import {
   BookOpen,
   DoorOpen,
@@ -30,81 +31,83 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 
-const data = {
-  navMain: [
-    {
-      title: "Academic Structure",
-      icon: GraduationCap,
-      items: [
-        {
-          title: "Academic",
-          url: "/academic-management/",
-          icon: Calendar,
-        },
-        {
-          title: "Structure",
-          url: "/academic-structure/",
-          icon: School,
-        },
-        {
-          title: "Subjects",
-          url: "/subjects/",
-          icon: BookOpen,
-        },
-      ],
-    },
-    {
-      title: "People Management",
-      icon: Users,
-      items: [
-        {
-          title: "Users",
-          url: "/users/",
-          icon: User,
-        },
-        {
-          title: "Groups",
-          url: "/groups/",
-          icon: UserCheck,
-        },
-      ],
-    },
-    {
-      title: "Teaching Load",
-      icon: Scale,
-      items: [
-        {
-          title: "Contracts",
-          url: "/contracts/",
-          icon: FileText,
-        },
-        {
-          title: "Workloads",
-          url: "/workloads/",
-          icon: Scale,
-        },
-      ],
-    },
-    {
-      title: "Schedule & Resources",
-      icon: CalendarDays,
-      items: [
-        {
-          title: "Schedules",
-          url: "/schedules/",
-          icon: Calendar,
-        },
-        {
-          title: "Classrooms",
-          url: "/classrooms/",
-          icon: Building2,
-        },
-      ],
-    },
-  ],
-};
-
 export function AppSidebar({ ...props }) {
+  const { t } = useTranslation();
+
+  const data = {
+    navMain: [
+      {
+        title: t("sidebar.academicManagement"),
+        icon: GraduationCap,
+        items: [
+          {
+            title: t("sidebar.academicYearsSemesters"),
+            url: "/academic-years-semesters/",
+            icon: Calendar,
+          },
+          {
+            title: t("sidebar.facultiesDirections"),
+            url: "/faculties-directions/",
+            icon: School,
+          },
+          {
+            title: t("sidebar.subjects"),
+            url: "/subjects/",
+            icon: BookOpen,
+          },
+        ],
+      },
+      {
+        title: t("sidebar.peopleManagement"),
+        icon: Users,
+        items: [
+          {
+            title: t("sidebar.users"),
+            url: "/users/",
+            icon: User,
+          },
+          {
+            title: t("sidebar.groups"),
+            url: "/groups/",
+            icon: UserCheck,
+          },
+        ],
+      },
+      {
+        title: t("sidebar.teachingLoad"),
+        icon: Scale,
+        items: [
+          {
+            title: t("sidebar.contracts"),
+            url: "/contracts/",
+            icon: FileText,
+          },
+          {
+            title: t("sidebar.workloads"),
+            url: "/workloads/",
+            icon: Scale,
+          },
+        ],
+      },
+      {
+        title: t("sidebar.scheduleResources"),
+        icon: CalendarDays,
+        items: [
+          {
+            title: t("sidebar.schedules"),
+            url: "/schedules/",
+            icon: Calendar,
+          },
+          {
+            title: t("sidebar.classrooms"),
+            url: "/classrooms/",
+            icon: Building2,
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

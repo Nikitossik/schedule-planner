@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useEntityQuery } from "@/hooks/useEntityQuery";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { toast } from "sonner";
@@ -8,6 +9,7 @@ import ScheduleForm from "./ScheduleForm";
 import { LessonsList } from "./lessons";
 
 export default function EditSchedulePage() {
+  const { t } = useTranslation();
   const { scheduleId } = useParams();
   const navigate = useNavigate();
 
@@ -29,28 +31,33 @@ export default function EditSchedulePage() {
       { id: scheduleId, data: updateData },
       {
         onSuccess: () => {
-          toast.success("Schedule updated");
+          toast.success(t("schedules.messages.updateSuccess"));
           navigate("/schedules");
         },
         onError: (err) => {
-          toast.error(err.message || "Error updating schedule");
+          toast.error(err.message || t("schedules.messages.updateError"));
         },
       }
     );
   };
 
-  if (isLoading) return <div className="p-4">Loading schedule...</div>;
+  if (isLoading)
+    return <div className="p-4">{t("schedules.editPage.loading")}</div>;
   if (isError)
-    return <div className="p-4 text-red-500">Error loading schedule</div>;
+    return (
+      <div className="p-4 text-red-500">{t("schedules.editPage.error")}</div>
+    );
 
   return (
     <div className="container mx-auto py-3 space-y-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Schedule</h1>
+      <h1 className="text-2xl font-bold mb-6">
+        {t("schedules.editPage.title")}
+      </h1>
 
       {/* Main schedule form */}
       <Card>
         <CardHeader>
-          <CardTitle>Schedule Information</CardTitle>
+          <CardTitle>{t("schedules.editPage.scheduleInfo")}</CardTitle>
         </CardHeader>
         <CardContent>
           <ScheduleForm

@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -12,10 +13,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-const schema = z.object({
-  number: z.string().min(1, "Room number is required"),
-  capacity: z.coerce.number().min(1, "Capacity must be at least 1"),
-});
+const createSchema = (t) =>
+  z.object({
+    number: z.string().min(1, t("rooms.form.validation.numberRequired")),
+    capacity: z.coerce.number().min(1, t("rooms.form.validation.capacityMin")),
+  });
 
 export default function RoomForm({
   id,
@@ -25,8 +27,9 @@ export default function RoomForm({
   showButtons = true,
   isLoading = false,
 }) {
+  const { t } = useTranslation();
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createSchema(t)),
     defaultValues,
   });
 
@@ -42,9 +45,12 @@ export default function RoomForm({
           name="number"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Room Number</FormLabel>
+              <FormLabel>{t("rooms.form.fields.number")}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Enter room number" />
+                <Input
+                  {...field}
+                  placeholder={t("rooms.form.placeholders.number")}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -56,12 +62,12 @@ export default function RoomForm({
           name="capacity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Capacity</FormLabel>
+              <FormLabel>{t("rooms.form.fields.capacity")}</FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   {...field}
-                  placeholder="Enter room capacity"
+                  placeholder={t("rooms.form.placeholders.capacity")}
                 />
               </FormControl>
               <FormMessage />
@@ -71,7 +77,11 @@ export default function RoomForm({
 
         {showButtons && (
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : isEdit ? "Update" : "Create"}
+            {isLoading
+              ? t("common.buttons.saving")
+              : isEdit
+              ? t("common.buttons.update")
+              : t("common.buttons.create")}
           </Button>
         )}
       </form>

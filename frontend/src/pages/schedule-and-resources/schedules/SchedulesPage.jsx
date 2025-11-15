@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { columns } from "./columns";
+import { useTranslation } from "react-i18next";
+import { useScheduleColumns } from "@/hooks/useScheduleColumns";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
 import ScheduleModal from "./ScheduleModal";
 
 export default function SchedulesPage() {
+  const { t } = useTranslation();
+  const columns = useScheduleColumns();
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -23,19 +26,19 @@ export default function SchedulesPage() {
     <div className="container mx-auto py-3">
       <DataTableWrapper
         entity="schedule"
-        pageLabel="Schedules"
+        pageLabel={t("schedules.title")}
         columns={columns}
         defaultFilters={{ q: "" }}
         defaultSorting={[{ id: "id", desc: false }]}
         localStorageKey="schedulesTableState"
-        searchPlaceholder={"Search schedules..."}
+        searchPlaceholder={t("schedules.searchPlaceholder")}
         addButton={{
-          label: "+ Create schedule",
+          label: t("schedules.addButton"),
           onClick: handleCreateSchedule,
         }}
         sortFields={[
-          { label: "ID", value: "id" },
-          { label: "Name", value: "name" },
+          { label: t("schedules.table.columns.id"), value: "id" },
+          { label: t("schedules.table.columns.name"), value: "name" },
         ]}
         filterSchema={[]}
         refetchTrigger={refetchTrigger}

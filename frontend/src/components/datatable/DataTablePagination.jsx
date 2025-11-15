@@ -4,6 +4,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,15 +16,19 @@ import {
 } from "@/components/ui/select";
 
 export default function DataTablePagination({ table }) {
+  const { t } = useTranslation();
+
   return (
-    <div className="flex items-center justify-between px-2">
-      <div className="text-muted-foreground flex-1 text-sm">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
-      </div>
+    <div className="flex items-center justify-center px-2">
+      {/* <div className="text-muted-foreground flex-1 text-sm">
+        {t("datatable.selectedRows", {
+          selected: table.getFilteredSelectedRowModel().rows.length,
+          total: table.getFilteredRowModel().rows.length,
+        })}
+      </div> */}
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">{t("datatable.rowsPerPage")}</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
@@ -43,8 +48,8 @@ export default function DataTablePagination({ table }) {
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
+          {t("datatable.page")} {table.getState().pagination.pageIndex + 1}{" "}
+          {t("datatable.of")} {table.getPageCount()}
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -54,7 +59,7 @@ export default function DataTablePagination({ table }) {
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">Go to first page</span>
+            <span className="sr-only">{t("datatable.goToFirstPage")}</span>
             <ChevronsLeft />
           </Button>
           <Button
@@ -64,7 +69,7 @@ export default function DataTablePagination({ table }) {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">Go to previous page</span>
+            <span className="sr-only">{t("datatable.goToPreviousPage")}</span>
             <ChevronLeft />
           </Button>
           <Button
@@ -74,7 +79,7 @@ export default function DataTablePagination({ table }) {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">Go to next page</span>
+            <span className="sr-only">{t("datatable.goToNextPage")}</span>
             <ChevronRight />
           </Button>
           <Button
@@ -84,7 +89,7 @@ export default function DataTablePagination({ table }) {
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">Go to last page</span>
+            <span className="sr-only">{t("datatable.goToLastPage")}</span>
             <ChevronsRight />
           </Button>
         </div>

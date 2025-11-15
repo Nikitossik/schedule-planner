@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +12,7 @@ import { useEntityMutation } from "@/hooks/useEntityMutation";
 import RoomForm from "./RoomForm";
 
 export default function RoomModal({ isOpen, onClose, room = null, onSuccess }) {
+  const { t } = useTranslation();
   const isEdit = Boolean(room);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -22,16 +24,19 @@ export default function RoomModal({ isOpen, onClose, room = null, onSuccess }) {
     try {
       if (isEdit) {
         await updateRoom.mutateAsync({ id: room.id, data: values });
-        toast.success("Room updated successfully");
+        toast.success(t("rooms.messages.updateSuccess"));
       } else {
         await createRoom.mutateAsync(values);
-        toast.success("Room created successfully");
+        toast.success(t("rooms.messages.createSuccess"));
       }
       onSuccess?.();
       onClose();
     } catch (error) {
       toast.error(
-        error.message || `Error ${isEdit ? "updating" : "creating"} room`
+        error.message ||
+          t(
+            isEdit ? "rooms.messages.updateError" : "rooms.messages.createError"
+          )
       );
     } finally {
       setIsLoading(false);
@@ -42,11 +47,13 @@ export default function RoomModal({ isOpen, onClose, room = null, onSuccess }) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Room" : "Create New Room"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? t("rooms.form.title.edit") : t("rooms.form.title.create")}
+          </DialogTitle>
           <DialogDescription>
             {isEdit
-              ? "Update the room information below."
-              : "Fill in the details to create a new room."}
+              ? t("rooms.form.description.edit")
+              : t("rooms.form.description.create")}
           </DialogDescription>
         </DialogHeader>
         <RoomForm

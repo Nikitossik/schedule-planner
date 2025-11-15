@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,11 +22,11 @@ import {
 import { useEntityList } from "@/hooks/useEntityList";
 import { useEffect } from "react";
 
-const createSchema = (isEdit) => {
+const createSchema = (t, isEdit) => {
   if (isEdit) {
     // При редактировании только name обязательно
     return z.object({
-      name: z.string().min(1, "Schedule name is required"),
+      name: z.string().min(1, t("schedules.form.validation.nameRequired")),
       academic_year_id: z.string().optional(),
       semester_id: z.string().optional(),
       direction_id: z.string().optional(),
@@ -34,10 +35,16 @@ const createSchema = (isEdit) => {
 
   // При создании все поля обязательны
   return z.object({
-    name: z.string().min(1, "Schedule name is required"),
-    academic_year_id: z.string().min(1, "Academic year is required"),
-    semester_id: z.string().min(1, "Semester is required"),
-    direction_id: z.string().min(1, "Direction is required"),
+    name: z.string().min(1, t("schedules.form.validation.nameRequired")),
+    academic_year_id: z
+      .string()
+      .min(1, t("schedules.form.validation.academicYearRequired")),
+    semester_id: z
+      .string()
+      .min(1, t("schedules.form.validation.semesterRequired")),
+    direction_id: z
+      .string()
+      .min(1, t("schedules.form.validation.directionRequired")),
   });
 };
 
@@ -49,6 +56,8 @@ export default function ScheduleForm({
   onSubmit,
   showButtons = true,
 }) {
+  const { t } = useTranslation();
+
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
     academic_year_id: String(defaultValues?.semester?.academic_year?.id ?? ""),
@@ -57,7 +66,7 @@ export default function ScheduleForm({
   };
 
   const form = useForm({
-    resolver: zodResolver(createSchema(isEdit)),
+    resolver: zodResolver(createSchema(t, isEdit)),
     defaultValues: transformedDefaultValues,
   });
 
@@ -115,9 +124,12 @@ export default function ScheduleForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Schedule Name</FormLabel>
+              <FormLabel>{t("schedules.form.fields.name.label")}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Enter schedule name" />
+                <Input
+                  {...field}
+                  placeholder={t("schedules.form.fields.name.placeholder")}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -129,7 +141,9 @@ export default function ScheduleForm({
           name="academic_year_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Academic Year</FormLabel>
+              <FormLabel>
+                {t("schedules.form.fields.academicYear.label")}
+              </FormLabel>
               {isEdit ? (
                 <FormControl>
                   <Input
@@ -142,14 +156,18 @@ export default function ScheduleForm({
               ) : (
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select academic year" />
+                    <SelectValue
+                      placeholder={t(
+                        "schedules.form.fields.academicYear.placeholder"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {isAcademicYearsLoading ? (
-                      <div className="p-2 text-sm">Loading...</div>
+                      <div className="p-2 text-sm">{t("common.loading")}</div>
                     ) : academicYears.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground">
-                        No academic years found
+                        {t("schedules.form.noData.noAcademicYears")}
                       </div>
                     ) : (
                       academicYears.map((year) => (
@@ -171,13 +189,16 @@ export default function ScheduleForm({
           name="semester_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Semester</FormLabel>
+              <FormLabel>{t("schedules.form.fields.semester.label")}</FormLabel>
               {isEdit ? (
                 <FormControl>
                   <Input
                     value={
                       defaultValues?.semester
-                        ? `Semester ${defaultValues.semester.number} ${defaultValues.semester.period}`
+                        ? t("schedules.table.columns.semesterFormat", {
+                            number: defaultValues.semester.number,
+                            period: defaultValues.semester.period,
+                          })
                         : ""
                     }
                     disabled={true}
@@ -195,19 +216,23 @@ export default function ScheduleForm({
                     <SelectValue
                       placeholder={
                         watchedAcademicYearId
-                          ? "Select semester"
-                          : "Select academic year first"
+                          ? t("schedules.form.fields.semester.placeholder")
+                          : t(
+                              "schedules.form.fields.semester.placeholderDisabled"
+                            )
                       }
                     />
                   </SelectTrigger>
                   <SelectContent>
                     {isSemestersLoading ? (
-                      <div className="p-2 text-sm">Loading...</div>
+                      <div className="p-2 text-sm">{t("common.loading")}</div>
                     ) : semesters.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground">
                         {watchedAcademicYearId
-                          ? "No semesters for selected year"
-                          : "Select academic year first"}
+                          ? t("schedules.form.noData.noSemesters")
+                          : t(
+                              "schedules.form.fields.semester.placeholderDisabled"
+                            )}
                       </div>
                     ) : (
                       semesters.map((semester) => (
@@ -215,7 +240,10 @@ export default function ScheduleForm({
                           key={semester.id}
                           value={String(semester.id)}
                         >
-                          Semester {semester.number} {semester.period}
+                          {t("schedules.table.columns.semesterFormat", {
+                            number: semester.number,
+                            period: semester.period,
+                          })}
                         </SelectItem>
                       ))
                     )}
@@ -232,7 +260,9 @@ export default function ScheduleForm({
           name="direction_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Direction</FormLabel>
+              <FormLabel>
+                {t("schedules.form.fields.direction.label")}
+              </FormLabel>
               {isEdit ? (
                 <FormControl>
                   <Input
@@ -245,14 +275,18 @@ export default function ScheduleForm({
               ) : (
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select direction" />
+                    <SelectValue
+                      placeholder={t(
+                        "schedules.form.fields.direction.placeholder"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {isDirectionsLoading ? (
-                      <div className="p-2 text-sm">Loading...</div>
+                      <div className="p-2 text-sm">{t("common.loading")}</div>
                     ) : directions.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground">
-                        No directions found
+                        {t("schedules.form.noData.noDirections")}
                       </div>
                     ) : (
                       directions.map((direction) => (
@@ -274,7 +308,11 @@ export default function ScheduleForm({
 
         {showButtons && (
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : isEdit ? "Update" : "Create"} Schedule
+            {isLoading
+              ? t("schedules.form.buttons.saving")
+              : isEdit
+              ? t("schedules.form.buttons.update")
+              : t("schedules.form.buttons.create")}
           </Button>
         )}
       </form>

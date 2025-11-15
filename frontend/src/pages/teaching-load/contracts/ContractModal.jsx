@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -17,6 +18,7 @@ export default function ContractModal({
   onClose,
   onSuccess,
 }) {
+  const { t } = useTranslation();
   const isEdit = !!contract;
   const createContract = useEntityMutation("professor_contract", "create");
   const updateContract = useEntityMutation("professor_contract", "patch");
@@ -26,10 +28,10 @@ export default function ContractModal({
     try {
       if (isEdit) {
         await updateContract.mutateAsync({ id: contract.id, data: values });
-        toast.success("Contract updated successfully");
+        toast.success(t("contracts.messages.updateSuccess"));
       } else {
         await createContract.mutateAsync(values);
-        toast.success("Contract created successfully");
+        toast.success(t("contracts.messages.createSuccess"));
       }
 
       // Сначала инвалидируем кеш
@@ -46,9 +48,12 @@ export default function ContractModal({
       }
     } catch (error) {
       toast.error(
-        isEdit
-          ? error.message || "Error updating contract"
-          : error.message || "Error creating contract"
+        error.message ||
+          t(
+            isEdit
+              ? "contracts.messages.updateError"
+              : "contracts.messages.createError"
+          )
       );
     }
   };
@@ -58,7 +63,11 @@ export default function ContractModal({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Edit Contract" : "Create Contract"}
+            {t(
+              isEdit
+                ? "contracts.form.title.edit"
+                : "contracts.form.title.create"
+            )}
           </DialogTitle>
         </DialogHeader>
         <div>
@@ -72,7 +81,7 @@ export default function ContractModal({
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <Button type="button" variant="outline" onClick={onClose}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             type="submit"
@@ -80,10 +89,10 @@ export default function ContractModal({
             form="contract-form"
           >
             {createContract.isPending || updateContract.isPending
-              ? "Saving..."
+              ? t("common.buttons.saving")
               : isEdit
-              ? "Update"
-              : "Create"}
+              ? t("common.buttons.update")
+              : t("common.buttons.create")}
           </Button>
         </div>
       </DialogContent>

@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { columns } from "./columns";
+import { useTranslation } from "react-i18next";
+import { useRoomColumns } from "./useRoomColumns";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
 import RoomModal from "./RoomModal";
 
 export default function RoomsPage() {
+  const { t } = useTranslation();
+  const columns = useRoomColumns();
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
@@ -31,21 +34,21 @@ export default function RoomsPage() {
     <div className="container mx-auto py-3">
       <DataTableWrapper
         entity="room"
-        pageLabel="Classrooms"
+        pageLabel={t("rooms.title")}
         columns={columns}
         defaultFilters={{ q: "" }}
         defaultSorting={[{ id: "id", desc: false }]}
         localStorageKey="roomsTableState"
-        searchPlaceholder="Search classrooms..."
+        searchPlaceholder={t("rooms.table.searchPlaceholder")}
         addButton={{
-          label: "+ Create classroom",
+          label: t("rooms.table.addButton"),
           onClick: handleCreateRoom,
         }}
         onEdit={handleEditRoom}
         sortFields={[
-          { label: "ID", value: "id" },
-          { label: "Number", value: "number" },
-          { label: "Capacity", value: "capacity" },
+          { label: t("rooms.table.columns.id"), value: "id" },
+          { label: t("rooms.table.columns.number"), value: "number" },
+          { label: t("rooms.table.columns.capacity"), value: "capacity" },
         ]}
         filterSchema={[]}
         refetchTrigger={refetchTrigger}

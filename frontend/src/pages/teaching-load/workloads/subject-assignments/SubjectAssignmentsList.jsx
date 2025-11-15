@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
-import { createColumns } from "./columns";
+import { useSubjectAssignmentColumns } from "@/hooks/useSubjectAssignmentColumns";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +13,7 @@ import SubjectAssignmentForm from "./SubjectAssignmentForm";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 
 const SubjectAssignmentsList = ({ workload, onUpdate }) => {
+  const { t } = useTranslation();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState(null);
@@ -45,13 +47,13 @@ const SubjectAssignmentsList = ({ workload, onUpdate }) => {
           id: editingAssignment.id,
           data,
         });
-        toast.success("Subject assignment updated successfully");
+        toast.success(t("workloads.subjectAssignments.messages.updateSuccess"));
         setIsEditOpen(false);
         setEditingAssignment(null);
       } else {
         // Create new assignment
         await createAssignment.mutateAsync(data);
-        toast.success("Subject assigned successfully");
+        toast.success(t("workloads.subjectAssignments.messages.createSuccess"));
         setIsCreateOpen(false);
       }
 
@@ -60,21 +62,25 @@ const SubjectAssignmentsList = ({ workload, onUpdate }) => {
 
       if (onUpdate) onUpdate();
     } catch (error) {
-      toast.error(error.message || "Failed to save assignment");
+      toast.error(
+        error.message || t("workloads.subjectAssignments.messages.createError")
+      );
     }
   };
 
   const handleDelete = async (assignmentId) => {
     try {
       await deleteAssignment.mutateAsync({ id: assignmentId });
-      toast.success("Subject assignment deleted successfully");
+      toast.success(t("workloads.subjectAssignments.messages.deleteSuccess"));
 
       // Триггерим обновление таблицы
       setRefetchTrigger((prev) => prev + 1);
 
       if (onUpdate) onUpdate();
     } catch (error) {
-      toast.error(error.message || "Failed to delete assignment");
+      toast.error(
+        error.message || t("workloads.subjectAssignments.messages.deleteError")
+      );
     }
   };
 
@@ -91,41 +97,51 @@ const SubjectAssignmentsList = ({ workload, onUpdate }) => {
   };
 
   // Create columns with handlers
-  const columns = createColumns(handleEdit, handleDelete);
+  const columns = useSubjectAssignmentColumns(handleEdit, handleDelete);
 
   return (
     <div className="space-y-4">
       {/* Header with summary */}
       <div className="flex justify-between items-center">
         <div className="space-y-1">
-          <h3 className="text-lg font-medium">Manage Subject Assignments</h3>
+          <h3 className="text-lg font-medium">
+            {t("workloads.subjectAssignments.title")}
+          </h3>
           <p className="text-sm text-muted-foreground">
-            Total hours: {workload.assigned_hours} | Assigned:{" "}
-            {totalAssignedHours} | Remaining: {remainingHours}
+            {t("workloads.subjectAssignments.summary", {
+              total: workload.assigned_hours,
+              assigned: totalAssignedHours,
+              remaining: remainingHours,
+            })}
           </p>
         </div>
       </div>
 
       <DataTableWrapper
         entity="subject_assignment"
-        pageLabel="Subject Assignments"
         columns={columns}
         defaultFilters={{
           workload_id: workload.id,
         }}
         defaultSorting={[{ id: "id", desc: false }]}
         localStorageKey={`subjectAssignmentsTableState_${workload.id}`}
-        searchPlaceholder="Search assignments..."
+        searchPlaceholder={t("workloads.subjectAssignments.searchPlaceholder")}
         showSearch={false}
         addButton={{
-          label: "+ Assign Subject",
+          label: t("workloads.subjectAssignments.addButton"),
           onClick: handleCreate,
           disabled: createAssignment.isPending,
         }}
         sortFields={[
-          { label: "ID", value: "id" },
-          { label: "Subject", value: "subject_id" },
-          { label: "Hours", value: "hours_per_subject" },
+          { label: t("workloads.subjectAssignments.columns.id"), value: "id" },
+          {
+            label: t("workloads.subjectAssignments.columns.subject"),
+            value: "subject_id",
+          },
+          {
+            label: t("workloads.subjectAssignments.columns.hours"),
+            value: "hours_per_subject",
+          },
         ]}
         filterSchema={[]}
         customActions={true}
@@ -136,7 +152,9 @@ const SubjectAssignmentsList = ({ workload, onUpdate }) => {
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Assign Subject to Workload</DialogTitle>
+            <DialogTitle>
+              {t("workloads.subjectAssignments.form.title.create")}
+            </DialogTitle>
           </DialogHeader>
           <SubjectAssignmentForm
             workload={workload}
@@ -150,7 +168,9 @@ const SubjectAssignmentsList = ({ workload, onUpdate }) => {
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Subject Assignment</DialogTitle>
+            <DialogTitle>
+              {t("workloads.subjectAssignments.form.title.edit")}
+            </DialogTitle>
           </DialogHeader>
           <SubjectAssignmentForm
             workload={workload}

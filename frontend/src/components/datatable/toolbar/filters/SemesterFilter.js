@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useDependentFilter } from "./useDependentFilter";
 
 /**
@@ -5,10 +6,12 @@ import { useDependentFilter } from "./useDependentFilter";
  * Показывает только семестры выбранных академических годов и периодов
  */
 export const useSemesterFilter = () => {
+  const { t } = useTranslation();
+
   return useDependentFilter({
     entity: "semester",
     key: "semester_ids",
-    label: "Semester",
+    label: t("filterLabels.semester"),
     valueField: "id",
     labelField: "name",
     dependsOn: ["academic_year_ids", "periods"],
@@ -35,7 +38,8 @@ export const useSemesterFilter = () => {
       return true;
     },
     customLabelFormatter: (semester) => {
-      return `${semester.name} (${semester.period})`;
+      const periodLabel = t(`filterLabels.periods.${semester.period}`);
+      return `${semester.name} (${periodLabel})`;
     },
   });
 };

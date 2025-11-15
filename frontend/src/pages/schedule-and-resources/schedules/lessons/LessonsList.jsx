@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Download } from "lucide-react";
 import { LessonForm } from "./LessonForm";
 import { LessonsCalendar } from "./LessonsCalendar";
-import { ExportDialog } from "@/components/ExportDialog";
+import { ExportDialog } from "./components/ExportDialog";
 import { SchedulePageProvider } from "@/contexts/SchedulePageContext";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,6 +21,7 @@ export function LessonsList({ schedule, onUpdate }) {
 }
 
 function LessonsListContent({ schedule, onUpdate }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
@@ -52,13 +54,13 @@ function LessonsListContent({ schedule, onUpdate }) {
           id: editingLesson.id,
           data: lessonData,
         });
-        toast.success("Lesson updated");
+        toast.success(t("lessons.messages.updateSuccess"));
       } else {
         await createLesson.mutateAsync({
           ...lessonData,
           schedule_id: schedule.id,
         });
-        toast.success("Lesson created");
+        toast.success(t("lessons.messages.createSuccess"));
       }
 
       setRefreshTrigger((prev) => prev + 1); // Тригgerим обновление календаря
@@ -73,14 +75,14 @@ function LessonsListContent({ schedule, onUpdate }) {
       setIsEditing(false);
       if (onUpdate) onUpdate();
     } catch (error) {
-      toast.error(error.message || "Failed to save lesson");
+      toast.error(error.message || t("lessons.messages.createError"));
     }
   };
 
   const handleDeleteLesson = async (lessonId) => {
     try {
       await deleteLesson.mutateAsync({ id: lessonId });
-      toast.success("Lesson deleted");
+      toast.success(t("lessons.messages.deleteSuccess"));
       setRefreshTrigger((prev) => prev + 1); // Тригgerим обновление календаря
 
       // Инвалидируем кеши
@@ -93,7 +95,7 @@ function LessonsListContent({ schedule, onUpdate }) {
       setIsEditing(false);
       if (onUpdate) onUpdate();
     } catch (error) {
-      toast.error(error.message || "Failed to delete lesson");
+      toast.error(error.message || t("lessons.messages.deleteError"));
     }
   };
 
@@ -104,13 +106,13 @@ function LessonsListContent({ schedule, onUpdate }) {
         <ExportDialog>
           <Button variant="outline">
             <Download className="h-4 w-4 mr-2" />
-            Export Schedule
+            {t("lessons.exportButton")}
           </Button>
         </ExportDialog>
 
         <Button onClick={() => handleCreate()}>
           <Plus className="h-4 w-4 mr-2" />
-          Add Lesson
+          {t("lessons.addButton")}
         </Button>
       </div>
 

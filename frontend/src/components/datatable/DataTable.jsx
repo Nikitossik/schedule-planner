@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import {
   useReactTable,
   getCoreRowModel,
@@ -32,6 +33,7 @@ export function DataTable({
   onFilterChange,
   onSelectedIdsChange,
 }) {
+  const { t } = useTranslation();
   const table = useReactTable({
     data,
     columns,
@@ -58,12 +60,12 @@ export function DataTable({
   if (isLoading)
     return (
       <div className="w-full py-20 flex justify-center items-center ">
-        <Spinner size={"medium"}>Loading...</Spinner>
+        <Spinner size={"medium"}>{t("datatable.loading")}</Spinner>
       </div>
     );
   if (error)
     return (
-      <div className="text-red-500 text-center">Error loading table data</div>
+      <div className="text-red-500 text-center">{t("datatable.error")}</div>
     );
 
   return (
@@ -110,7 +112,7 @@ export function DataTable({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t("datatable.noResults")}
                 </TableCell>
               </TableRow>
             )}

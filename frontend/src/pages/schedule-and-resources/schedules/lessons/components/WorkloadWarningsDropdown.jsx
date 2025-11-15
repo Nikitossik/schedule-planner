@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Clock, AlertTriangle } from "lucide-react";
 import {
   DropdownMenu,
@@ -13,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSchedulePageData } from "@/contexts/SchedulePageContext";
 
 export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
+  const { t } = useTranslation();
   const {
     workloadWarnings,
     totalWarnings,
@@ -24,7 +26,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
     return (
       <Button variant="outline" disabled>
         <Clock className="h-4 w-4 mr-2" />
-        Loading...
+        {t("lessons.workloadWarnings.loading")}
       </Button>
     );
   }
@@ -33,7 +35,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
     return (
       <Button variant="outline" className="text-green-600">
         <Clock className="h-4 w-4 mr-2" />
-        Hours OK
+        {t("lessons.workloadWarnings.hoursOk")}
       </Button>
     );
   }
@@ -43,7 +45,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="text-amber-600">
           <AlertTriangle className="h-4 w-4 mr-2" />
-          Hours Issues
+          {t("lessons.workloadWarnings.hoursIssues")}
           <Badge variant="destructive" className="ml-2">
             {totalWarnings}
           </Badge>
@@ -53,7 +55,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
       <DropdownMenuContent className="w-80">
         <DropdownMenuLabel className="flex items-center gap-2">
           <Clock className="h-4 w-4" />
-          Workload Warnings
+          {t("lessons.workloadWarnings.title")}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
@@ -67,7 +69,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
           >
             <div className="space-y-1 w-full">
               <div className="font-medium text-amber-600 flex items-center justify-between">
-                <span>Assignment Exceeded</span>
+                <span>{t("lessons.workloadWarnings.assignmentExceeded")}</span>
                 <Badge variant="outline" className="text-xs">
                   +{warning.excess_hours.toFixed(1)}h
                 </Badge>
@@ -84,17 +86,17 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
 
               <div className="text-xs text-muted-foreground space-y-1">
                 <div className="flex justify-between">
-                  <span>Scheduled:</span>
+                  <span>{t("lessons.workloadWarnings.scheduled")}</span>
                   <span className="font-medium">
                     {warning.scheduled_hours}h
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Allowed:</span>
+                  <span>{t("lessons.workloadWarnings.allowed")}</span>
                   <span className="font-medium">{warning.allowed_hours}h</span>
                 </div>
                 <div className="flex justify-between text-red-600">
-                  <span>Excess:</span>
+                  <span>{t("lessons.workloadWarnings.excess")}</span>
                   <span className="font-medium">
                     +{warning.excess_hours.toFixed(1)}h
                   </span>
@@ -103,8 +105,10 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
 
               {warning.lessons && (
                 <div className="text-xs text-muted-foreground">
-                  {warning.lessons.length} lesson
-                  {warning.lessons.length !== 1 ? "s" : ""} affected
+                  {t("lessons.workloadWarnings.lessonsAffected", {
+                    count: warning.lessons.length,
+                    s: warning.lessons.length !== 1 ? "s" : "",
+                  })}
                 </div>
               )}
             </div>
@@ -115,7 +119,10 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
           <>
             <DropdownMenuSeparator />
             <div className="p-2 text-xs text-center text-muted-foreground">
-              Showing {Math.min(3, totalWarnings)} of {totalWarnings} warnings
+              {t("lessons.workloadWarnings.showingWarnings", {
+                shown: Math.min(3, totalWarnings),
+                total: totalWarnings,
+              })}
             </div>
           </>
         )}

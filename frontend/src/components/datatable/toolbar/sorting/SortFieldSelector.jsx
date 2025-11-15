@@ -5,12 +5,14 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 export default function SortFieldSelector({
   sorting = [],
   setSorting,
   options,
 }) {
+  const { t } = useTranslation();
   const currentField = sorting[0]?.id || "";
 
   return (
@@ -22,7 +24,7 @@ export default function SortFieldSelector({
       }}
     >
       <SelectTrigger className="w-36 flex items-center justify-between font-medium">
-        <SelectValue placeholder="Sort by" />
+        <SelectValue placeholder={t("datatable.sortBy")} />
       </SelectTrigger>
       <SelectContent>
         {options.map((field) => (

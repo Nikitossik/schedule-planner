@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Filter, XIcon, Trash } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -28,6 +29,7 @@ export default function ToolbarControls({
   setRowSelection,
   addButton,
 }) {
+  const { t } = useTranslation();
   const [openConfirm, setOpenConfirm] = useState(false);
   const deleteMany = useEntityMutation(entity, "delete_many");
   const queryClient = useQueryClient();
@@ -37,7 +39,12 @@ export default function ToolbarControls({
       { ids: selectedIds },
       {
         onSuccess: () => {
-          toast.success(`Deleted ${selectedIds.length} ${entity}(s)`);
+          toast.success(
+            t("datatable.deleteManySuccess", {
+              count: selectedIds.length,
+              items: entity,
+            })
+          );
           queryClient.invalidateQueries(["entityList", entity]);
           setSelectedIds?.([]);
           setRowSelection?.({});
@@ -45,7 +52,7 @@ export default function ToolbarControls({
         },
         onError: (err) => {
           setOpenConfirm(false);
-          toast.error(err.message || "Failed to delete");
+          toast.error(err.message || t("datatable.deleteFailed"));
         },
       }
     );
@@ -56,7 +63,9 @@ export default function ToolbarControls({
       {/* Сортировка */}
       {sortFields && sortFields.length > 0 && (
         <div className="flex flex-col gap-2">
-          <h4 className="text-sm font-medium text-muted-foreground">Sorting</h4>
+          <h4 className="text-sm font-medium text-muted-foreground">
+            {t("datatable.sorting")}
+          </h4>
           <div className="flex flex-wrap gap-4 items-center">
             <SortFieldSelector
               sorting={sorting}
@@ -76,7 +85,7 @@ export default function ToolbarControls({
       {filterSchema && filterSchema.length > 0 && (
         <div className="flex flex-col gap-2">
           <h4 className="text-sm font-medium text-muted-foreground">
-            Filtering
+            {t("datatable.filtering")}
           </h4>
           <div className="flex flex-wrap gap-4 items-center">
             <EntityFilter
@@ -90,7 +99,7 @@ export default function ToolbarControls({
               onClick={onResetFilters}
             >
               <XIcon className="w-4 h-4 mr-2" />
-              Reset
+              {t("datatable.reset")}
             </Button>
           </div>
         </div>
@@ -101,7 +110,7 @@ export default function ToolbarControls({
         {selectedIds.length > 0 && (
           <Button variant="destructive" onClick={() => setOpenConfirm(true)}>
             <Trash className="w-4 h-4 mr-2" />
-            Delete selected
+            {t("datatable.deleteSelected")}
           </Button>
         )}
 
@@ -119,7 +128,7 @@ export default function ToolbarControls({
         open={openConfirm}
         onCancel={() => setOpenConfirm(false)}
         onConfirm={handleDelete}
-        message={`Are you sure you want to delete selected ${entity}s?`}
+        message={t("datatable.confirmDeleteSelected", { items: entity })}
       />
     </div>
   );

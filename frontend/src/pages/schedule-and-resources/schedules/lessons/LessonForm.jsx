@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ export function LessonForm({
   onDelete,
   isEdit = false,
 }) {
+  const { t } = useTranslation();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Трансформируем данные урока для формы
@@ -272,10 +274,26 @@ export function LessonForm({
   };
 
   const lessonTypes = [
-    { value: "lecture", label: "Lecture", icon: Presentation },
-    { value: "practice", label: "Practice", icon: Laptop },
-    { value: "lab", label: "Laboratory", icon: FlaskConical },
-    { value: "seminar", label: "Seminar", icon: MessageSquare },
+    {
+      value: "lecture",
+      label: t("lessons.form.lessonType.lecture"),
+      icon: Presentation,
+    },
+    {
+      value: "practice",
+      label: t("lessons.form.lessonType.practice"),
+      icon: Laptop,
+    },
+    {
+      value: "lab",
+      label: t("lessons.form.lessonType.lab"),
+      icon: FlaskConical,
+    },
+    {
+      value: "seminar",
+      label: t("lessons.form.lessonType.seminar"),
+      icon: MessageSquare,
+    },
   ];
 
   return (
@@ -283,7 +301,7 @@ export function LessonForm({
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
           <BookOpen className="h-5 w-5" />
-          {isEdit ? "Edit lesson" : "Add lesson"}
+          {isEdit ? t("lessons.form.title.edit") : t("lessons.form.title.add")}
         </DialogTitle>
       </DialogHeader>
 
@@ -293,25 +311,27 @@ export function LessonForm({
           <CardContent className="pt-3 space-y-4">
             <h3 className="text-lg font-medium flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Group Selection
+              {t("lessons.form.sections.groupSelection")}
             </h3>
 
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                Group
+                {t("lessons.form.fields.group")}
               </label>
               <Select
                 value={watch("group_id")}
                 onValueChange={(value) => setValue("group_id", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select group" />
+                  <SelectValue
+                    placeholder={t("lessons.form.placeholders.selectGroup")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {groups.length === 0 ? (
                     <div className="p-2 text-sm text-muted-foreground text-center">
-                      No groups found for this schedule
+                      {t("lessons.form.messages.noGroups")}
                     </div>
                   ) : (
                     groups.map((group) => (
@@ -341,14 +361,14 @@ export function LessonForm({
           <CardContent className="pt-3 space-y-4">
             <h3 className="text-lg font-medium flex items-center gap-2">
               <User className="h-4 w-4" />
-              Professor & Subject
+              {t("lessons.form.sections.professorSubject")}
             </h3>
 
             {/* Workload selection */}
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-2">
                 <User className="h-4 w-4" />
-                Professor (Workload)
+                {t("lessons.form.fields.professor")}
               </label>
               <Select
                 value={watch("workload_id")}
@@ -358,7 +378,9 @@ export function LessonForm({
                 <SelectTrigger>
                   <SelectValue
                     placeholder={
-                      watchedGroupId ? "Select professor" : "Select group first"
+                      watchedGroupId
+                        ? t("lessons.form.placeholders.selectProfessor")
+                        : t("lessons.form.placeholders.selectGroupFirst")
                     }
                   />
                 </SelectTrigger>
@@ -366,8 +388,8 @@ export function LessonForm({
                   {workloads.length === 0 ? (
                     <div className="p-2 text-sm text-muted-foreground text-center">
                       {!watchedGroupId
-                        ? "Select group first"
-                        : "No professors found for selected group"}
+                        ? t("lessons.form.messages.selectGroupFirst")
+                        : t("lessons.form.messages.noProfessors")}
                     </div>
                   ) : (
                     workloads.map((workload) => (
@@ -395,7 +417,7 @@ export function LessonForm({
             <div className="space-y-2">
               <label className="text-sm font-medium flex items-center gap-2">
                 <BookOpen className="h-4 w-4" />
-                Subject
+                {t("lessons.form.fields.subject")}
               </label>
               <Select
                 value={watch("subject_assignment_id")}
@@ -408,8 +430,8 @@ export function LessonForm({
                   <SelectValue
                     placeholder={
                       watchedWorkloadId
-                        ? "Select subject"
-                        : "Select professor first"
+                        ? t("lessons.form.placeholders.selectSubject")
+                        : t("lessons.form.placeholders.selectProfessorFirst")
                     }
                   />
                 </SelectTrigger>
@@ -417,8 +439,8 @@ export function LessonForm({
                   {assignments.length === 0 ? (
                     <div className="p-2 text-sm text-muted-foreground text-center">
                       {!watchedWorkloadId
-                        ? "Select professor first"
-                        : "No subjects found for selected professor"}
+                        ? t("lessons.form.messages.selectProfessorFirst")
+                        : t("lessons.form.messages.noSubjects")}
                     </div>
                   ) : (
                     assignments.map((assignment) => (
@@ -451,7 +473,9 @@ export function LessonForm({
         {/* Lesson Type */}
         <Card>
           <CardContent className="pt-6 space-y-4">
-            <h3 className="text-lg font-medium">Lesson Type</h3>
+            <h3 className="text-lg font-medium">
+              {t("lessons.form.sections.lessonType")}
+            </h3>
             <div className="grid grid-cols-2 gap-2">
               {lessonTypes.map((type) => {
                 const IconComponent = type.icon;
@@ -482,7 +506,7 @@ export function LessonForm({
           <CardContent className="pt-6 space-y-4">
             <h3 className="text-lg font-medium flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              Date & Time
+              {t("lessons.form.sections.dateTime")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -490,13 +514,13 @@ export function LessonForm({
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  Date
+                  {t("lessons.form.fields.date")}
                 </label>
                 <DatePicker
                   value={watch("date")}
                   onChange={(value) => setValue("date", value)}
                   modal={true}
-                  placeholder="Select date"
+                  placeholder={t("lessons.form.placeholders.selectDate")}
                 />
                 {errors.date && (
                   <p className="text-sm text-red-500">{errors.date.message}</p>
@@ -505,12 +529,14 @@ export function LessonForm({
 
               {/* Start time */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Start time</label>
+                <label className="text-sm font-medium">
+                  {t("lessons.form.fields.startTime")}
+                </label>
                 <Input
                   type="time"
                   step="1"
                   {...register("start_time", {
-                    required: "Specify start time",
+                    required: t("lessons.form.validation.startTimeRequired"),
                   })}
                   className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                 />
@@ -523,12 +549,14 @@ export function LessonForm({
 
               {/* End time */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">End time</label>
+                <label className="text-sm font-medium">
+                  {t("lessons.form.fields.endTime")}
+                </label>
                 <Input
                   type="time"
                   step="1"
                   {...register("end_time", {
-                    required: "Specify end time",
+                    required: t("lessons.form.validation.endTimeRequired"),
                   })}
                   className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                 />
@@ -547,7 +575,7 @@ export function LessonForm({
           <CardContent className="pt-6 space-y-4">
             <h3 className="text-lg font-medium flex items-center gap-2">
               <MapPin className="h-4 w-4" />
-              Location
+              {t("lessons.form.sections.location")}
             </h3>
 
             {/* Online toggle */}
@@ -558,7 +586,7 @@ export function LessonForm({
                 onCheckedChange={(checked) => setValue("is_online", checked)}
               />
               <label htmlFor="is_online" className="text-sm font-medium">
-                Online lesson
+                {t("lessons.form.fields.onlineLesson")}
               </label>
             </div>
 
@@ -567,7 +595,7 @@ export function LessonForm({
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  Room
+                  {t("lessons.form.fields.room")}
                 </label>
                 <Select
                   value={watch("room_id")}
@@ -580,8 +608,8 @@ export function LessonForm({
                     <SelectValue
                       placeholder={
                         !watchedDate || !watchedStartTime || !watchedEndTime
-                          ? "Set date and time first"
-                          : "Select available room"
+                          ? t("lessons.form.placeholders.setDateTimeFirst")
+                          : t("lessons.form.placeholders.selectRoom")
                       }
                     />
                   </SelectTrigger>
@@ -589,8 +617,8 @@ export function LessonForm({
                     {rooms.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground text-center">
                         {!watchedDate || !watchedStartTime || !watchedEndTime
-                          ? "Set date and time to see available rooms"
-                          : "No rooms available at this time"}
+                          ? t("lessons.form.messages.setDateTimeForRooms")
+                          : t("lessons.form.messages.noRooms")}
                       </div>
                     ) : (
                       rooms.map((room) => (
@@ -619,7 +647,7 @@ export function LessonForm({
               <div className="p-3 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-700 flex items-center gap-2">
                   <Laptop className="h-4 w-4" />
-                  Lesson will be conducted online
+                  {t("lessons.form.messages.onlineLesson")}
                 </p>
               </div>
             )}
@@ -635,7 +663,7 @@ export function LessonForm({
                 onClick={handleDeleteClick}
                 disabled={isSubmitting}
               >
-                Delete
+                {t("lessons.form.buttons.delete")}
               </Button>
             )}
           </div>
@@ -647,14 +675,18 @@ export function LessonForm({
                 onClick={onCancel}
                 disabled={isSubmitting}
               >
-                Cancel
+                {t("lessons.form.buttons.cancel")}
               </Button>
             )}
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
-                <>Saving...</>
+                <>{t("lessons.form.buttons.saving")}</>
               ) : (
-                <>{lesson && isEdit ? "Update" : "Create"}</>
+                <>
+                  {lesson && isEdit
+                    ? t("lessons.form.buttons.update")
+                    : t("lessons.form.buttons.create")}
+                </>
               )}
             </Button>
           </div>
@@ -665,7 +697,7 @@ export function LessonForm({
         open={showDeleteConfirm}
         onConfirm={handleConfirmDelete}
         onCancel={() => setShowDeleteConfirm(false)}
-        message="Are you sure you want to delete this lesson?"
+        message={t("lessons.form.confirmDelete")}
       />
     </DialogContent>
   );

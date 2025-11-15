@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +12,7 @@ import { useEntityMutation } from "@/hooks/useEntityMutation";
 import ScheduleForm from "./ScheduleForm";
 
 export default function ScheduleModal({ isOpen, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
   const createSchedule = useEntityMutation("schedule", "create");
@@ -19,11 +21,11 @@ export default function ScheduleModal({ isOpen, onClose, onSuccess }) {
     setIsLoading(true);
     try {
       await createSchedule.mutateAsync(values);
-      toast.success("Schedule created successfully");
+      toast.success(t("schedules.messages.createSuccess"));
       onSuccess?.();
       onClose();
     } catch (error) {
-      toast.error(error.message || "Error creating schedule");
+      toast.error(error.message || t("schedules.messages.createError"));
     } finally {
       setIsLoading(false);
     }
@@ -33,9 +35,9 @@ export default function ScheduleModal({ isOpen, onClose, onSuccess }) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Schedule</DialogTitle>
+          <DialogTitle>{t("schedules.form.title.create")}</DialogTitle>
           <DialogDescription>
-            Fill in the details to create a new schedule.
+            {t("schedules.form.description.create")}
           </DialogDescription>
         </DialogHeader>
         <ScheduleForm

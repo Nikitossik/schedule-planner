@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { AlertTriangle, Download, FileText, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { AlertTriangle, Download, FileText, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,14 +19,14 @@ import { useSchedulePageData } from "@/contexts/SchedulePageContext";
 import { useScheduleExport } from "@/hooks/useScheduleExport";
 
 export function ExportDialog({ children }) {
+  const { t } = useTranslation();
   const {
     schedule,
-    hasIssues,
     hasConflicts,
-    hasWorkloadIssues,
     totalConflicts,
+    hasWorkloadIssues,
     totalWarnings,
-    scheduleGroups,
+    groupsInvolved,
     isLoading,
   } = useSchedulePageData();
 
@@ -37,20 +38,19 @@ export function ExportDialog({ children }) {
 
   const { exportSchedule, isExporting } = useScheduleExport();
 
-  // Инициализация при открытии диалога
+  // Инициализация выбранных групп и имени файла
   useEffect(() => {
-    if (open && schedule) {
-      // Сброс состояния подтверждения
-      setConfirmExport(false);
-
-      // Генерируем имя файла по умолчанию
-      const defaultName = `schedule_${schedule.direction?.name}_${schedule.semester?.number}`;
-      setFilename(defaultName.replace(/\\s+/g, "_"));
-
-      // По умолчанию выбираем все группы
-      setSelectedGroups(scheduleGroups.map((g) => g.id));
+    if (groupsInvolved.length > 0 && selectedGroups.length === 0) {
+      setSelectedGroups(groupsInvolved.map((g) => g.id));
     }
-  }, [open, schedule, scheduleGroups]);
+  }, [groupsInvolved]);
+
+  useEffect(() => {
+    if (schedule && !filename) {
+      const defaultName = `schedule_${schedule.direction?.name}_${schedule.semester?.number}`;
+      setFilename(defaultName.replace(/[^a-zA-Z0-9_-]/g, "_"));
+    }
+  }, [schedule]);
 
   const handleGroupToggle = (groupId) => {
     setSelectedGroups((prev) =>
@@ -61,15 +61,17 @@ export function ExportDialog({ children }) {
   };
 
   const handleSelectAll = () => {
-    setSelectedGroups(scheduleGroups.map((g) => g.id));
+    setSelectedGroups(groupsInvolved.map((g) => g.id));
   };
 
   const handleClearAll = () => {
     setSelectedGroups([]);
   };
 
+  const hasIssues = hasConflicts || hasWorkloadIssues;
+  const totalIssues = totalConflicts + totalWarnings;
+
   const handleExport = async () => {
-    // Если есть проблемы и пользователь еще не подтвердил
     if (hasIssues && !confirmExport) {
       setConfirmExport(true);
       return;
@@ -79,24 +81,28 @@ export function ExportDialog({ children }) {
       await exportSchedule({
         scheduleId: schedule.id,
         format: exportFormat,
-        groupIds: selectedGroups.length > 0 ? selectedGroups : null,
-        filename: filename.trim() || null,
+        groupIds:
+          selectedGroups.length === groupsInvolved.length
+            ? null
+            : selectedGroups,
+        filename: filename.trim() || undefined,
       });
       setOpen(false);
+      setConfirmExport(false);
     } catch (error) {
       console.error("Export failed:", error);
     }
   };
 
-  const selectedGroupsData = scheduleGroups.filter((g) =>
+  const selectedGroupsData = groupsInvolved.filter((g) =>
     selectedGroups.includes(g.id)
   );
 
   if (isLoading) {
     return (
-      <Button disabled>
-        <Download className="mr-2 h-4 w-4" />
-        Loading...
+      <Button disabled className="gap-2">
+        <Download className="h-4 w-4" />
+        {t("common.loading")}
       </Button>
     );
   }
@@ -106,76 +112,92 @@ export function ExportDialog({ children }) {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Export Schedule</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Download className="h-5 w-5" />
+            {t("lessons.export.title")}
+          </DialogTitle>
           <DialogDescription>
-            Export "{schedule?.name}" with customizable options
+            {t("lessons.export.description", { name: schedule?.name })}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Предупреждение о проблемах */}
-          {hasIssues && (
+          {hasIssues && !confirmExport && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 <div className="space-y-2">
-                  <div className="font-medium">
-                    This schedule has issues that may affect the export:
-                  </div>
+                  <p className="font-medium">
+                    {t("lessons.export.issues.title")}
+                  </p>
                   <ul className="text-sm space-y-1">
                     {hasConflicts && (
-                      <li>• {totalConflicts} scheduling conflict(s)</li>
+                      <li>
+                        •{" "}
+                        {t("lessons.export.issues.conflicts", {
+                          count: totalConflicts,
+                        })}
+                      </li>
                     )}
                     {hasWorkloadIssues && (
-                      <li>• {totalWarnings} professor workload issue(s)</li>
+                      <li>
+                        •{" "}
+                        {t("lessons.export.issues.workload", {
+                          count: totalWarnings,
+                        })}
+                      </li>
                     )}
                   </ul>
-                  {!confirmExport && (
-                    <div className="mt-3">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setConfirmExport(true)}
-                      >
-                        Continue anyway
-                      </Button>
-                    </div>
-                  )}
-                  {confirmExport && (
-                    <div className="mt-2 text-sm text-green-600 font-medium">
-                      ✓ Export confirmed despite issues
-                    </div>
-                  )}
+                  <p className="text-sm">
+                    {t("lessons.export.issues.continueAnyway")}?
+                  </p>
                 </div>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {hasIssues && confirmExport && (
+            <Alert>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription className="flex items-center justify-between">
+                <span>{t("lessons.export.issues.confirmed")}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setConfirmExport(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </AlertDescription>
             </Alert>
           )}
 
           {/* Имя файла */}
           <div className="space-y-2">
-            <Label htmlFor="filename">Filename</Label>
+            <Label htmlFor="filename">
+              {t("lessons.export.filename.label")}
+            </Label>
             <Input
               id="filename"
               value={filename}
               onChange={(e) => setFilename(e.target.value)}
-              placeholder="Enter filename without extension"
+              placeholder={t("lessons.export.filename.placeholder")}
             />
-            <p className="text-xs text-muted-foreground">
-              Leave empty to use auto-generated name
-            </p>
           </div>
 
           {/* Выбор групп */}
           <div className="space-y-3">
-            <Label>Groups to include</Label>
-            {scheduleGroups.length === 0 ? (
-              <div className="p-4 text-center text-muted-foreground border rounded-lg">
-                No groups found for this schedule
+            <Label>{t("lessons.export.groups.label")}</Label>
+
+            {groupsInvolved.length === 0 ? (
+              <div className="text-sm text-muted-foreground p-3 border rounded-md">
+                {t("lessons.export.groups.noGroups")}
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto border rounded-lg p-3">
-                  {scheduleGroups.map((group) => (
+                <div className="grid grid-cols-2 gap-3 max-h-32 overflow-y-auto border rounded-md p-3">
+                  {groupsInvolved.map((group) => (
                     <div key={group.id} className="flex items-center space-x-2">
                       <Checkbox
                         id={`group-${group.id}`}
@@ -203,9 +225,9 @@ export function ExportDialog({ children }) {
                     variant="outline"
                     size="sm"
                     onClick={handleSelectAll}
-                    disabled={selectedGroups.length === scheduleGroups.length}
+                    disabled={selectedGroups.length === groupsInvolved.length}
                   >
-                    Select All
+                    {t("lessons.export.groups.selectAll")}
                   </Button>
                   <Button
                     variant="outline"
@@ -213,76 +235,80 @@ export function ExportDialog({ children }) {
                     onClick={handleClearAll}
                     disabled={selectedGroups.length === 0}
                   >
-                    Clear All
+                    {t("lessons.export.groups.clearAll")}
                   </Button>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Users className="h-4 w-4" />
-                  <span>
-                    Selected: {selectedGroupsData.length} of{" "}
-                    {scheduleGroups.length} group(s)
-                  </span>
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  {t("lessons.export.groups.selected", {
+                    selected: selectedGroupsData.length,
+                    total: groupsInvolved.length,
+                  })}
+                </p>
               </>
             )}
           </div>
 
           {/* Формат экспорта */}
           <div className="space-y-3">
-            <Label>Export format</Label>
+            <Label>{t("lessons.export.format.label")}</Label>
             <RadioGroup value={exportFormat} onValueChange={setExportFormat}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="excel" id="excel" />
                 <Label htmlFor="excel" className="cursor-pointer">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-green-600" />
-                    <span>Excel (.xlsx)</span>
-                    <span className="text-xs text-muted-foreground">
-                      - Recommended for detailed schedules
-                    </span>
-                  </div>
+                  <FileText className="inline mr-2 h-4 w-4" />
+                  {t("lessons.export.format.excel")}
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="pdf" id="pdf" disabled />
-                <Label htmlFor="pdf" className="cursor-pointer opacity-50">
-                  <div className="flex items-center gap-2">
-                    <Download className="h-4 w-4 text-red-600" />
-                    <span>PDF (.pdf)</span>
-                    <span className="text-xs text-muted-foreground">
-                      - Coming soon
-                    </span>
-                  </div>
+                <RadioGroupItem value="pdf" id="pdf" />
+                <Label htmlFor="pdf" className="cursor-pointer">
+                  <Download className="inline mr-2 h-4 w-4" />
+                  {t("lessons.export.format.pdf")}
                 </Label>
               </div>
             </RadioGroup>
           </div>
 
           {/* Кнопки */}
-          <div className="flex justify-between gap-2 pt-4 border-t">
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
+          <div className="flex justify-between gap-2">
             <Button
-              onClick={handleExport}
-              disabled={
-                isExporting ||
-                selectedGroups.length === 0 ||
-                (hasIssues && !confirmExport)
-              }
+              variant="outline"
+              onClick={() => {
+                setOpen(false);
+                setConfirmExport(false);
+              }}
             >
-              {isExporting ? (
-                "Exporting..."
-              ) : (
-                <>
-                  <Download className="mr-2 h-4 w-4" />
-                  {hasIssues && !confirmExport
-                    ? "Confirm & Export"
-                    : `Export ${exportFormat.toUpperCase()}`}
-                </>
-              )}
+              {t("lessons.export.buttons.cancel")}
             </Button>
+
+            {hasIssues && !confirmExport ? (
+              <Button
+                onClick={() => setConfirmExport(true)}
+                variant="destructive"
+              >
+                <AlertTriangle className="mr-2 h-4 w-4" />
+                {t("lessons.export.issues.continueAnyway")}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleExport}
+                disabled={
+                  isExporting || selectedGroups.length === 0 || !filename.trim()
+                }
+              >
+                {isExporting ? (
+                  t("lessons.export.buttons.exporting")
+                ) : (
+                  <>
+                    <Download className="mr-2 h-4 w-4" />
+                    {t("lessons.export.buttons.export", {
+                      format: exportFormat.toUpperCase(),
+                    })}
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>

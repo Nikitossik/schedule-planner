@@ -21,10 +21,12 @@ import {
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useEntityQuery } from "@/hooks/useEntityQuery";
+import { useTranslation } from "react-i18next";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user: authUser, logout } = useAuth();
+  const { t } = useTranslation();
 
   // Загружаем полные данные пользователя из API
   const {
@@ -52,7 +54,7 @@ export function NavUser() {
   const displayName =
     user.name && user.surname
       ? `${user.name} ${user.surname}`
-      : user.name || user.email || "User";
+      : user.name || user.email || t("navUser.defaultUserName");
 
   const initials =
     user.name && user.surname
@@ -107,7 +109,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={logout}>
               <LogOut />
-              Log out
+              {t("navUser.logOut")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

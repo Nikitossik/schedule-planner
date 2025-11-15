@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,22 +12,25 @@ import {
 
 export function Breadcrumbs() {
   const location = useLocation();
+  const { t } = useTranslation();
 
   const pathMap = {
-    dashboard: "Dashboard",
-    users: "Users",
-    new: "New",
-    edit: "Edit",
-    groups: "Groups",
-    faculties: "Faculties",
-    subjects: "Subjects",
-    rooms: "Rooms",
-    schedule: "Schedule",
-    schedules: "Schedules",
-    directions: "Directions",
-    contracts: "Contracts",
-    workloads: "Workloads",
-    "academic-management": "Academic Management",
+    dashboard: t("navigation.dashboard"),
+    users: t("navigation.users"),
+    new: t("common.add"),
+    edit: t("common.edit"),
+    groups: t("navigation.groups"),
+    faculties: t("navigation.faculties"),
+    subjects: t("navigation.subjects"),
+    classrooms: t("navigation.classrooms"),
+    schedule: t("navigation.schedule"),
+    schedules: t("navigation.schedule"),
+    directions: t("breadcrumbs.directions"),
+    contracts: t("breadcrumbs.contracts"),
+    workloads: t("breadcrumbs.workloads"),
+    "academic-management": t("breadcrumbs.academicManagement"),
+    "academic-years-semesters": t("breadcrumbs.academicYearsSemesters"),
+    "faculties-directions": t("breadcrumbs.facultiesDirections"),
   };
 
   const segments = location.pathname
@@ -61,7 +65,7 @@ export function Breadcrumbs() {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to="/">Dashboard</Link>
+            <Link to="/">{t("breadcrumbs.home")}</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         {breadcrumbItems}

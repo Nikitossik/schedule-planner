@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle, ChevronDown } from "lucide-react";
 import { useSchedulePageData } from "@/contexts/SchedulePageContext";
 import {
@@ -11,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 export function ConflictsDropdown({ onNavigateToConflict }) {
+  const { t } = useTranslation();
   const { conflicts, hasConflicts, totalConflicts, conflictsLoading } =
     useSchedulePageData();
 
@@ -63,7 +65,7 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
     return (
       <Button variant="outline" disabled className="gap-2">
         <AlertTriangle className="h-4 w-4" />
-        Loading...
+        {t("lessons.conflicts.loading")}
       </Button>
     );
   }
@@ -76,7 +78,7 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
           className="gap-2"
         >
           <AlertTriangle className="h-4 w-4" />
-          Conflicts
+          {t("lessons.conflicts.title")}
           {hasConflicts && (
             <Badge variant="secondary" className="ml-1 bg-white text-red-600">
               {totalConflicts}
@@ -92,14 +94,15 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
         <div className="p-3 border-b bg-gray-50">
           <h4 className="font-semibold text-sm">
             {hasConflicts
-              ? `${totalConflicts} Conflict${
-                  totalConflicts > 1 ? "s" : ""
-                } Found`
-              : "No Conflicts"}
+              ? t("lessons.conflicts.foundConflicts", {
+                  count: totalConflicts,
+                  s: totalConflicts > 1 ? "s" : "",
+                })
+              : t("lessons.conflicts.noConflicts")}
           </h4>
           {hasConflicts && (
             <p className="text-xs text-muted-foreground mt-1">
-              Click on any conflict to navigate to the problematic lessons
+              {t("lessons.conflicts.clickToNavigate")}
             </p>
           )}
         </div>
@@ -108,7 +111,7 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
           <div className="p-4 text-center">
             <div className="text-green-600 mb-2">✅</div>
             <p className="text-sm text-muted-foreground">
-              No scheduling conflicts detected for this schedule
+              {t("lessons.conflicts.noConflictsMessage")}
             </p>
           </div>
         ) : (
@@ -118,10 +121,13 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
               <div>
                 <div className="px-3 py-2 bg-gray-100 border-b">
                   <h5 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                    📋 Internal Conflicts ({total_single})
+                    📋{" "}
+                    {t("lessons.conflicts.types.internal", {
+                      count: total_single,
+                    })}
                   </h5>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Conflicts within this schedule
+                    {t("lessons.conflicts.types.internalDescription")}
                   </p>
                 </div>
                 {single.map((group, groupIndex) => (
@@ -152,10 +158,13 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
               <div>
                 <div className="px-3 py-2 bg-blue-100 border-b">
                   <h5 className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
-                    🔄 Cross-Schedule Conflicts ({total_shared})
+                    🔄{" "}
+                    {t("lessons.conflicts.types.crossSchedule", {
+                      count: total_shared,
+                    })}
                   </h5>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Conflicts with other schedules
+                    {t("lessons.conflicts.types.crossScheduleDescription")}
                   </p>
                 </div>
                 {shared.map((group, groupIndex) => (
@@ -195,6 +204,7 @@ function ConflictItem({
   getConflictIcon,
   getConflictBadgeColor,
 }) {
+  const { t } = useTranslation();
   const { schedule } = useSchedulePageData();
 
   const handleClick = () => {
@@ -254,7 +264,7 @@ function ConflictItem({
                       variant="outline"
                       className="text-xs bg-blue-50 text-blue-700 border-blue-200"
                     >
-                      Other Schedule
+                      {t("lessons.conflicts.otherScheduleBadge")}
                     </Badge>
                   )}
                 </div>

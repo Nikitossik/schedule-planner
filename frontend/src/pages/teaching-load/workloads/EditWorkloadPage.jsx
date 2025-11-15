@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useEntityQuery } from "@/hooks/useEntityQuery";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { toast } from "sonner";
@@ -8,6 +9,7 @@ import WorkloadForm from "./WorkloadForm";
 import { SubjectAssignmentsList } from "./subject-assignments";
 
 export default function EditWorkloadPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -24,28 +26,33 @@ export default function EditWorkloadPage() {
       { id, data: values },
       {
         onSuccess: () => {
-          toast.success("Workload updated");
+          toast.success(t("workloads.messages.updateSuccess"));
           navigate("/workloads");
         },
         onError: (err) => {
-          toast.error(err.message || "Error updating workload");
+          toast.error(err.message || t("workloads.messages.updateError"));
         },
       }
     );
   };
 
-  if (isLoading) return <div className="p-4">Loading workload...</div>;
+  if (isLoading)
+    return <div className="p-4">{t("workloads.editPage.loading")}</div>;
   if (isError)
-    return <div className="p-4 text-red-500">Error loading workload</div>;
+    return (
+      <div className="p-4 text-red-500">{t("workloads.editPage.error")}</div>
+    );
 
   return (
     <div className="container mx-auto py-3 space-y-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Workload</h1>
+      <h1 className="text-2xl font-bold mb-6">
+        {t("workloads.editPage.title")}
+      </h1>
 
       {/* Main workload form */}
       <Card>
         <CardHeader>
-          <CardTitle>Workload Information</CardTitle>
+          <CardTitle>{t("workloads.editPage.workloadInfo")}</CardTitle>
         </CardHeader>
         <CardContent>
           <WorkloadForm

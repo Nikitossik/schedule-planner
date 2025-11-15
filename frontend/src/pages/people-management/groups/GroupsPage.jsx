@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { columns } from "./columns";
+import { useGroupColumns } from "./columns";
+import { useTranslation } from "react-i18next";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
 import { useFilterComposer } from "@/components/datatable/toolbar/filters/useFilterComposer";
 import {
@@ -13,6 +14,8 @@ import {
 import GroupModal from "./GroupModal";
 
 export default function GroupsPage() {
+  const { t } = useTranslation();
+  const columns = useGroupColumns();
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState(null);
@@ -49,20 +52,20 @@ export default function GroupsPage() {
     <div className="container mx-auto py-3">
       <DataTableWrapper
         entity="group"
-        pageLabel="Groups"
+        pageLabel={t("navigation.groups")}
         columns={columns}
         defaultFilters={{ q: "" }}
         defaultSorting={[{ id: "id", desc: false }]}
         localStorageKey="groupsTableState"
-        searchPlaceholder="Search groups..."
+        searchPlaceholder={t("groups.table.searchPlaceholder")}
         addButton={{
-          label: "+ Create group",
+          label: t("groups.table.addButton"),
           onClick: handleCreateGroup,
         }}
         onEdit={handleEditGroup}
         sortFields={[
-          { label: "ID", value: "id" },
-          { label: "Name", value: "name" },
+          { label: t("groups.table.columns.id"), value: "id" },
+          { label: t("groups.table.columns.name"), value: "name" },
         ]}
         filterSchema={filterSchema}
         refetchTrigger={refetchTrigger}

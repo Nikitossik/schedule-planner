@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { UserForm } from "./UserForm";
 
 export default function UserModal({ isOpen, user, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const isEdit = !!user;
   const createUser = useEntityMutation("user", "create");
   const updateUser = useEntityMutation("user", "patch");
@@ -32,10 +34,10 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
 
       if (isEdit) {
         await updateUser.mutateAsync({ id: user.id, data: payload });
-        toast.success("User updated successfully");
+        toast.success(t("users.messages.updateSuccess"));
       } else {
         await createUser.mutateAsync(payload);
-        toast.success("User created successfully");
+        toast.success(t("users.messages.createSuccess"));
       }
 
       // Сначала инвалидируем кеш
@@ -53,8 +55,8 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
     } catch (error) {
       toast.error(
         isEdit
-          ? error.message || "Failed to update user"
-          : error.message || "Failed to create user"
+          ? error.message || t("users.messages.updateError")
+          : error.message || t("users.messages.createError")
       );
     }
   };
@@ -75,7 +77,9 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit User" : "Create User"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? t("users.form.title.edit") : t("users.form.title.create")}
+          </DialogTitle>
         </DialogHeader>
         <div>
           <UserForm
@@ -88,7 +92,7 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
         </div>
         <div className="flex justify-end gap-3 mt-6">
           <Button type="button" variant="outline" onClick={onClose}>
-            Cancel
+            {t("common.buttons.cancel")}
           </Button>
           <Button
             type="submit"
@@ -96,10 +100,10 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
             disabled={createUser.isPending || updateUser.isPending}
           >
             {createUser.isPending || updateUser.isPending
-              ? "Saving..."
+              ? t("common.buttons.saving")
               : isEdit
-              ? "Update"
-              : "Create"}
+              ? t("common.buttons.update")
+              : t("common.buttons.create")}
           </Button>
         </div>
       </DialogContent>

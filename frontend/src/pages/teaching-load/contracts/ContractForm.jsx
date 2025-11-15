@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,12 +23,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { useEntityList } from "@/hooks/useEntityList";
 
-const schema = z.object({
-  professor_profile_id: z.coerce.number().min(1),
-  academic_year_id: z.coerce.number().min(1),
-  semester_id: z.coerce.number().min(1),
-  total_hours: z.coerce.number().min(0),
-});
+const createSchema = (t) =>
+  z.object({
+    professor_profile_id: z.coerce
+      .number()
+      .min(1, t("contracts.form.validation.professorRequired")),
+    academic_year_id: z.coerce
+      .number()
+      .min(1, t("contracts.form.validation.academicYearRequired")),
+    semester_id: z.coerce
+      .number()
+      .min(1, t("contracts.form.validation.semesterRequired")),
+    total_hours: z.coerce
+      .number()
+      .min(0, t("contracts.form.validation.hoursMin")),
+  });
 
 const ContractForm = ({
   defaultValues = {},
@@ -36,6 +46,7 @@ const ContractForm = ({
   showButtons = true,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Преобразуем данные из API формата в формат формы
@@ -47,7 +58,7 @@ const ContractForm = ({
   };
 
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createSchema(t)),
     defaultValues: transformedDefaultValues,
   });
 
@@ -124,8 +135,7 @@ const ContractForm = ({
         {isEdit && (
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
             <p className="text-sm text-blue-700">
-              Note: Professor, Academic Year and Semester cannot be changed when
-              editing a contract. Only Hours can be modified.
+              {t("contracts.form.editNote")}
             </p>
           </div>
         )}
@@ -134,7 +144,7 @@ const ContractForm = ({
           name="professor_profile_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Professor</FormLabel>
+              <FormLabel>{t("contracts.form.fields.professor")}</FormLabel>
               {isEdit ? (
                 <FormControl>
                   <Input
@@ -155,14 +165,16 @@ const ContractForm = ({
                   required
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select professor" />
+                    <SelectValue
+                      placeholder={t("contracts.form.placeholders.professor")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {loadingProfessors ? (
-                      <div className="p-2 text-sm">Loading...</div>
+                      <div className="p-2 text-sm">{t("common.loading")}</div>
                     ) : professors.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground">
-                        No professors found
+                        {t("contracts.form.noData.noProfessors")}
                       </div>
                     ) : (
                       professors.map((p) => (
@@ -184,7 +196,7 @@ const ContractForm = ({
           name="academic_year_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Academic Year</FormLabel>
+              <FormLabel>{t("contracts.form.fields.academicYear")}</FormLabel>
               {isEdit ? (
                 <FormControl>
                   <Input
@@ -201,14 +213,18 @@ const ContractForm = ({
                   required
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select academic year" />
+                    <SelectValue
+                      placeholder={t(
+                        "contracts.form.placeholders.academicYear"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {loadingAcademicYears ? (
-                      <div className="p-2 text-sm">Loading...</div>
+                      <div className="p-2 text-sm">{t("common.loading")}</div>
                     ) : academicYears.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground">
-                        No academic years found
+                        {t("contracts.form.noData.noAcademicYears")}
                       </div>
                     ) : (
                       academicYears.map((year) => (
@@ -229,13 +245,18 @@ const ContractForm = ({
           name="semester_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Semester</FormLabel>
+              <FormLabel>{t("contracts.form.fields.semester")}</FormLabel>
               {isEdit ? (
                 <FormControl>
                   <Input
                     value={
                       defaultValues?.semester
-                        ? `Semester ${defaultValues.semester.number} ${defaultValues.semester.period}`
+                        ? t("contracts.table.semesterFormat", {
+                            number: defaultValues.semester.number,
+                            period: t(
+                              `filterLabels.periods.${defaultValues.semester.period}`
+                            ),
+                          })
                         : ""
                     }
                     disabled={true}
@@ -254,24 +275,31 @@ const ContractForm = ({
                     <SelectValue
                       placeholder={
                         watchedAcademicYearId
-                          ? "Select semester"
-                          : "Select academic year first"
+                          ? t("contracts.form.placeholders.semester")
+                          : t(
+                              "contracts.form.placeholders.selectAcademicYearFirst"
+                            )
                       }
                     />
                   </SelectTrigger>
                   <SelectContent>
                     {loadingSemesters ? (
-                      <div className="p-2 text-sm">Loading...</div>
+                      <div className="p-2 text-sm">{t("common.loading")}</div>
                     ) : semesters.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground">
                         {watchedAcademicYearId
-                          ? "No semesters for selected year"
-                          : "Select academic year first"}
+                          ? t("contracts.form.noData.noSemesters")
+                          : t(
+                              "contracts.form.placeholders.selectAcademicYearFirst"
+                            )}
                       </div>
                     ) : (
                       semesters.map((s) => (
                         <SelectItem key={s.id} value={String(s.id)}>
-                          Semester {s.number} {s.period}
+                          {t("contracts.table.semesterFormat", {
+                            number: s.number,
+                            period: t(`filterLabels.periods.${s.period}`),
+                          })}
                         </SelectItem>
                       ))
                     )}
@@ -287,11 +315,11 @@ const ContractForm = ({
           name="total_hours"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Hours</FormLabel>
+              <FormLabel>{t("contracts.form.fields.hours")}</FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Enter total hours"
+                  placeholder={t("contracts.form.placeholders.hours")}
                   min={0}
                   {...field}
                 />
@@ -302,7 +330,11 @@ const ContractForm = ({
         />
         {showButtons && (
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : isEdit ? "Save" : "Add"}
+            {isLoading
+              ? t("common.buttons.saving")
+              : isEdit
+              ? t("common.save")
+              : t("common.add")}
           </Button>
         )}
       </form>

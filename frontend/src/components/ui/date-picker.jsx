@@ -18,6 +18,7 @@ export function DatePicker({
   modal = false,
   minDate,
   maxDate,
+  locale,
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -43,6 +44,7 @@ export function DatePicker({
       <PopoverContent className="w-auto overflow-hidden p-0" align="start">
         <Calendar
           mode="single"
+          locale={locale}
           selected={isValid ? selectedDate : undefined}
           defaultMonth={defaultMonth}
           captionLayout="dropdown"

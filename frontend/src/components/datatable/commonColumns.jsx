@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -53,6 +54,7 @@ function ActionsCell({
   useModal,
   displayName,
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const itemId = row.original.id;
@@ -105,7 +107,9 @@ function ActionsCell({
             console.log(
               "✅ actionsColumn: Delete success, calling invalidateQueries and onRefresh"
             );
-            toast.success(`${entity} deleted`);
+            toast.success(
+              t("datatable.deleteSuccess", { item: entityDisplayName })
+            );
             setOpen(false);
             queryClient.invalidateQueries(["entity", entity]);
             if (onRefresh) {
@@ -114,7 +118,7 @@ function ActionsCell({
           },
           onError: (err) => {
             console.error("❌ actionsColumn: Delete failed", err);
-            toast.error(err.message);
+            toast.error(err.message || t("datatable.deleteFailed"));
           },
         }
       );
@@ -130,7 +134,7 @@ function ActionsCell({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("datatable.actions")}</DropdownMenuLabel>
           {canEdit && (
             <>
               <DropdownMenuItem
@@ -138,7 +142,7 @@ function ActionsCell({
                 className={"cursor-pointer"}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("datatable.edit")}
               </DropdownMenuItem>
               {canDelete && <DropdownMenuSeparator />}
             </>
@@ -150,7 +154,7 @@ function ActionsCell({
               onClick={() => setOpen(true)}
             >
               <Trash2 className="h-4 w-4" />
-              Delete
+              {t("datatable.delete")}
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
@@ -161,7 +165,7 @@ function ActionsCell({
           open={open}
           onConfirm={handleDelete}
           onCancel={() => setOpen(false)}
-          message={`Are you sure you want to delete this ${entityDisplayName}?`}
+          message={t("datatable.confirmDelete", { item: entityDisplayName })}
         />
       )}
     </>

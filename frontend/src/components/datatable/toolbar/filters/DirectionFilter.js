@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useDependentFilter } from "./useDependentFilter";
 
 /**
@@ -5,10 +6,12 @@ import { useDependentFilter } from "./useDependentFilter";
  * Показывает только направления выбранных факультетов
  */
 export const useDirectionFilter = () => {
+  const { t } = useTranslation();
+
   return useDependentFilter({
     entity: "direction",
     key: "direction_ids",
-    label: "Direction",
+    label: t("filterLabels.direction"),
     valueField: "id",
     labelField: "name",
     dependsOn: ["faculty_ids"],

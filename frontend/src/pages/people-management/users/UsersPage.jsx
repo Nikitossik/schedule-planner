@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { columns } from "./columns";
+import { useTranslation } from "react-i18next";
+import { useUserColumns } from "./columns";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
 import { useFilterComposer } from "@/components/datatable/toolbar/filters/useFilterComposer";
 import { useUserRoleFilter } from "@/components/datatable/toolbar/filters/UserRoleFilter";
@@ -9,6 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { AdminOnly } from "@/components/RoleGuard";
 
 export default function UsersPage() {
+  const { t } = useTranslation();
+  const columns = useUserColumns();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
@@ -50,7 +53,7 @@ export default function UsersPage() {
       <div className="container mx-auto py-3">
         <DataTableWrapper
           entity="user"
-          pageLabel="Users"
+          pageLabel={t("sidebar.users")}
           columns={columns}
           defaultFilters={{
             q: "",
@@ -59,20 +62,20 @@ export default function UsersPage() {
           }}
           defaultSorting={[{ id: "id", desc: false }]}
           localStorageKey="usersTableState"
-          searchPlaceholder={"Search users..."}
+          searchPlaceholder={t("users.table.searchPlaceholder")}
           addButton={
             canManageUsers()
               ? {
-                  label: "+ Create user",
+                  label: t("users.table.addButton"),
                   onClick: handleCreate,
                 }
               : undefined
           }
           sortFields={[
-            { label: "ID", value: "id" },
-            { label: "Name", value: "name" },
-            { label: "Surname", value: "surname" },
-            { label: "Email", value: "email" },
+            { label: t("users.table.columns.id"), value: "id" },
+            { label: t("users.table.columns.name"), value: "name" },
+            { label: t("users.table.columns.surname"), value: "surname" },
+            { label: t("users.table.columns.email"), value: "email" },
           ]}
           filterSchema={filterSchema}
           onEdit={handleEdit}

@@ -7,10 +7,12 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown } from "lucide-react";
 
 export default function EntityFilter({ filters, setFilters, filterSchema }) {
+  const { t } = useTranslation();
   // Получаем актуальную схему фильтров (если это функция)
   const currentFilterSchema =
     typeof filterSchema === "function"
@@ -62,7 +64,7 @@ export default function EntityFilter({ filters, setFilters, filterSchema }) {
                 ))
               ) : (
                 <div className="px-2 py-1 text-sm text-muted-foreground">
-                  No options available
+                  {t("datatable.noOptionsAvailable")}
                 </div>
               )}
             </DropdownMenuContent>

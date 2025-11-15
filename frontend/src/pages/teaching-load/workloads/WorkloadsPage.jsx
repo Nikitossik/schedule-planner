@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { columns } from "./columns";
+import { useTranslation } from "react-i18next";
+import { useWorkloadColumns } from "@/hooks/useWorkloadColumns";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
 import WorkloadModal from "./WorkloadModal";
 import { useFilterComposer } from "@/components/datatable/toolbar/filters/useFilterComposer";
@@ -13,6 +14,8 @@ import {
 } from "@/components/datatable/toolbar/filters";
 
 export default function WorkloadsPage() {
+  const { t } = useTranslation();
+  const columns = useWorkloadColumns();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWorkload, setEditingWorkload] = useState(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
@@ -60,19 +63,22 @@ export default function WorkloadsPage() {
     <div className="container mx-auto py-3">
       <DataTableWrapper
         entity="professor_workload"
-        pageLabel="Workloads"
+        pageLabel={t("workloads.title")}
         columns={columns}
         defaultFilters={{ q: "" }}
         defaultSorting={[{ id: "id", desc: false }]}
         localStorageKey="workloadsTableState"
-        searchPlaceholder={"Search workloads..."}
+        searchPlaceholder={t("workloads.searchPlaceholder")}
         addButton={{
-          label: "+ Create workload",
+          label: t("workloads.addButton"),
           onClick: handleCreate,
         }}
         sortFields={[
-          { label: "ID", value: "id" },
-          { label: "Assigned Hours", value: "assigned_hours" },
+          { label: t("workloads.table.columns.id"), value: "id" },
+          {
+            label: t("workloads.table.columns.assignedHours"),
+            value: "assigned_hours",
+          },
         ]}
         filterSchema={filterSchema}
         onRefresh={handleRefresh}

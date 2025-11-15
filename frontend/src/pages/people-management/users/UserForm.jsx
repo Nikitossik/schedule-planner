@@ -2,6 +2,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,26 +23,27 @@ import {
 
 import { useEntityList } from "@/hooks/useEntityList";
 
-const schema = z
-  .object({
-    name: z.string().min(1),
-    surname: z.string().min(1),
-    email: z.string().email(),
-    password: z.string().optional(),
-    role: z.enum(["admin", "coordinator", "user"]),
-    user_type: z.union([
-      z.literal(""),
-      z.literal("student"),
-      z.literal("professor"),
-    ]),
-    academic_year_id: z.string().optional(),
-    semester_id: z.string().optional(),
-    group_id: z.string().optional(),
-  })
-  .refine((data) => !data.password || data.password.length >= 6, {
-    path: ["password"],
-    message: "Password must be at least 6 characters",
-  });
+const createSchema = (t) =>
+  z
+    .object({
+      name: z.string().min(1),
+      surname: z.string().min(1),
+      email: z.string().email(),
+      password: z.string().optional(),
+      role: z.enum(["admin", "coordinator", "user"]),
+      user_type: z.union([
+        z.literal(""),
+        z.literal("student"),
+        z.literal("professor"),
+      ]),
+      academic_year_id: z.string().optional(),
+      semester_id: z.string().optional(),
+      group_id: z.string().optional(),
+    })
+    .refine((data) => !data.password || data.password.length >= 6, {
+      path: ["password"],
+      message: t("users.form.validation.passwordLength"),
+    });
 
 export function UserForm({
   defaultValues,
@@ -50,6 +52,8 @@ export function UserForm({
   showButtons = true,
   isLoading = false,
 }) {
+  const { t } = useTranslation();
+
   // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
@@ -66,7 +70,7 @@ export function UserForm({
   };
 
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createSchema(t)),
     defaultValues: transformedDefaultValues,
   });
 
@@ -116,7 +120,9 @@ export function UserForm({
         className={`space-y-6 ${showButtons ? "max-w-xl" : ""}`}
       >
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">Basic Information</h3>
+          <h3 className="text-lg font-medium">
+            {t("users.form.sections.basicInfo")}
+          </h3>
           {["name", "surname", "email", "password"].map((field) => (
             <FormField
               key={field}
@@ -124,23 +130,11 @@ export function UserForm({
               name={field}
               render={({ field: f }) => (
                 <FormItem>
-                  <FormLabel>
-                    {field[0].toUpperCase() + field.slice(1)}
-                  </FormLabel>
+                  <FormLabel>{t(`users.form.fields.${field}`)}</FormLabel>
                   <FormControl>
                     <Input
                       type={field === "password" ? "password" : "text"}
-                      placeholder={
-                        field === "name"
-                          ? "Enter first name"
-                          : field === "surname"
-                          ? "Enter last name"
-                          : field === "email"
-                          ? "Enter email address"
-                          : field === "password"
-                          ? "Enter password"
-                          : ""
-                      }
+                      placeholder={t(`users.form.placeholders.${field}`)}
                       {...f}
                     />
                   </FormControl>
@@ -151,26 +145,30 @@ export function UserForm({
           ))}
         </div>
         <div className="space-y-4">
-          <h3 className="text-lg font-medium">User Role and Type</h3>
+          <h3 className="text-lg font-medium">
+            {t("users.form.sections.roleAndType")}
+          </h3>
 
           <FormField
             control={form.control}
             name="role"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Role</FormLabel>
+                <FormLabel>{t("users.form.fields.role")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   value={field.value}
                   disabled={isEdit}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select role" />
+                    <SelectValue
+                      placeholder={t("users.form.placeholders.role")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {["admin", "coordinator", "user"].map((role) => (
                       <SelectItem key={role} value={role}>
-                        {role}
+                        {t(`users.form.roles.${role}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -186,18 +184,24 @@ export function UserForm({
               name="user_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>User Type</FormLabel>
+                  <FormLabel>{t("users.form.fields.userType")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value}
                     disabled={isEdit}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue
+                        placeholder={t("users.form.placeholders.userType")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="student">Student</SelectItem>
-                      <SelectItem value="professor">Professor</SelectItem>
+                      <SelectItem value="student">
+                        {t("users.form.userTypes.student")}
+                      </SelectItem>
+                      <SelectItem value="professor">
+                        {t("users.form.userTypes.professor")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -209,27 +213,31 @@ export function UserForm({
 
         {role === "user" && userType === "student" && (
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Student Profile</h3>
+            <h3 className="text-lg font-medium">
+              {t("users.form.sections.studentProfile")}
+            </h3>
 
             <FormField
               control={form.control}
               name="academic_year_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Academic Year</FormLabel>
+                  <FormLabel>{t("users.form.fields.academicYear")}</FormLabel>
                   <Select
                     onValueChange={handleAcademicYearChange}
                     value={field.value || ""}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select academic year" />
+                      <SelectValue
+                        placeholder={t("users.form.placeholders.academicYear")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {academicYearsLoading ? (
-                        <div className="p-2 text-sm">Loading...</div>
+                        <div className="p-2 text-sm">{t("common.loading")}</div>
                       ) : academicYears.length === 0 ? (
                         <div className="p-2 text-sm text-muted-foreground">
-                          No academic years found
+                          {t("users.form.noData.noAcademicYears")}
                         </div>
                       ) : (
                         academicYears.map((year) => (
@@ -250,7 +258,7 @@ export function UserForm({
               name="semester_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Semester</FormLabel>
+                  <FormLabel>{t("users.form.fields.semester")}</FormLabel>
                   <Select
                     onValueChange={handleSemesterChange}
                     value={field.value || ""}
@@ -260,19 +268,23 @@ export function UserForm({
                       <SelectValue
                         placeholder={
                           watchedAcademicYearId
-                            ? "Select semester"
-                            : "Select academic year first"
+                            ? t("users.form.placeholders.semester")
+                            : t(
+                                "users.form.placeholders.selectAcademicYearFirst"
+                              )
                         }
                       />
                     </SelectTrigger>
                     <SelectContent>
                       {semestersLoading ? (
-                        <div className="p-2 text-sm">Loading...</div>
+                        <div className="p-2 text-sm">{t("common.loading")}</div>
                       ) : semesters.length === 0 ? (
                         <div className="p-2 text-sm text-muted-foreground">
                           {watchedAcademicYearId
-                            ? "No semesters for selected year"
-                            : "Select academic year first"}
+                            ? t("users.form.noData.noSemesters")
+                            : t(
+                                "users.form.placeholders.selectAcademicYearFirst"
+                              )}
                         </div>
                       ) : (
                         semesters.map((semester) => (
@@ -280,7 +292,12 @@ export function UserForm({
                             key={semester.id}
                             value={String(semester.id)}
                           >
-                            Semester {semester.number} {semester.period}
+                            {t("users.form.semesterFormat", {
+                              number: semester.number,
+                              period: t(
+                                `filterLabels.periods.${semester.period}`
+                              ),
+                            })}
                           </SelectItem>
                         ))
                       )}
@@ -296,7 +313,7 @@ export function UserForm({
               name="group_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Group</FormLabel>
+                  <FormLabel>{t("users.form.fields.group")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     value={field.value || ""}
@@ -306,19 +323,19 @@ export function UserForm({
                       <SelectValue
                         placeholder={
                           watchedSemesterId
-                            ? "Select group"
-                            : "Select semester first"
+                            ? t("users.form.placeholders.group")
+                            : t("users.form.placeholders.selectSemesterFirst")
                         }
                       />
                     </SelectTrigger>
                     <SelectContent>
                       {groupsLoading ? (
-                        <div className="p-2 text-sm">Loading...</div>
+                        <div className="p-2 text-sm">{t("common.loading")}</div>
                       ) : groups.length === 0 ? (
                         <div className="p-2 text-sm text-muted-foreground">
                           {watchedSemesterId
-                            ? "No groups for selected semester"
-                            : "Select semester first"}
+                            ? t("users.form.noData.noGroups")
+                            : t("users.form.placeholders.selectSemesterFirst")}
                         </div>
                       ) : (
                         groups.map((g) => (
@@ -338,7 +355,11 @@ export function UserForm({
 
         {showButtons && (
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : isEdit ? "Update" : "Create"}
+            {isLoading
+              ? t("common.buttons.saving")
+              : isEdit
+              ? t("common.buttons.update")
+              : t("common.buttons.create")}
           </Button>
         )}
       </form>

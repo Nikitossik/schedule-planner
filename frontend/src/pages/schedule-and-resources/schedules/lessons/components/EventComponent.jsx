@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Users, User, MapPin, Clock } from "lucide-react";
 
 // Функция для определения классов Tailwind для урока в зависимости от типа
@@ -118,6 +119,7 @@ export const getResourceGroupColor = (resourceIndex) => {
 };
 
 export function EventComponent({ event, groupBy }) {
+  const { t } = useTranslation();
   const { resource } = event;
   const isGroupedByGroup = groupBy === "group";
   const isGroupedByProfessor = groupBy === "professor";
@@ -150,7 +152,7 @@ export function EventComponent({ event, groupBy }) {
       <div className="rbc-event-title font-medium">
         {resource.subject}
         <span className="lesson-type-badge ml-1 px-1.5 py-0.5 text-xs rounded bg-opacity-20 font-normal">
-          {resource.type}
+          {t(`lessons.form.lessonType.${resource.type}`)}
         </span>
       </div>
       <div className="rbc-event-details text-xs space-y-0.5 mt-1">

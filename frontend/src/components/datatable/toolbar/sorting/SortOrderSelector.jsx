@@ -5,12 +5,14 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 export default function SortOrderSelector({
   sorting = [],
   setSorting,
   defaultField = "id", // новый пропс с дефолтным полем
 }) {
+  const { t } = useTranslation();
   const currentField = sorting[0]?.id || defaultField;
 
   return (
@@ -21,11 +23,11 @@ export default function SortOrderSelector({
       }}
     >
       <SelectTrigger className="w-28 flex items-center justify-between font-medium">
-        <SelectValue placeholder="Order" />
+        <SelectValue placeholder={t("datatable.order")} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="asc">Asc</SelectItem>
-        <SelectItem value="desc">Desc</SelectItem>
+        <SelectItem value="asc">{t("datatable.asc")}</SelectItem>
+        <SelectItem value="desc">{t("datatable.desc")}</SelectItem>
       </SelectContent>
     </Select>
   );

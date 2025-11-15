@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import {
   Form,
   FormControl,
@@ -80,21 +81,27 @@ const SubjectAssignmentForm = ({
           name="subject_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Subject</FormLabel>
+              <FormLabel>
+                {t("workloads.subjectAssignments.form.fields.subject")}
+              </FormLabel>
               <Select
                 onValueChange={(value) => field.onChange(Number(value))}
                 value={field.value ? String(field.value) : ""}
                 disabled={isEditing} // Не разрешаем менять предмет при редактировании
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select subject" />
+                  <SelectValue
+                    placeholder={t(
+                      "workloads.subjectAssignments.form.placeholders.subject"
+                    )}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {isLoading ? (
-                    <div className="p-2 text-sm">Loading...</div>
+                    <div className="p-2 text-sm">{t("common.loading")}</div>
                   ) : subjects.items?.length === 0 ? (
                     <div className="p-2 text-sm text-muted-foreground">
-                      No subjects found
+                      {t("workloads.subjectAssignments.form.noData.noSubjects")}
                     </div>
                   ) : (
                     subjects.items?.map((subject) => (
@@ -115,12 +122,16 @@ const SubjectAssignmentForm = ({
           name="hours_per_subject"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Hours</FormLabel>
+              <FormLabel>
+                {t("workloads.subjectAssignments.form.fields.hours")}
+              </FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   min={1}
-                  placeholder="Enter hours"
+                  placeholder={t(
+                    "workloads.subjectAssignments.form.placeholders.hours"
+                  )}
                   {...field}
                 />
               </FormControl>
@@ -131,10 +142,12 @@ const SubjectAssignmentForm = ({
 
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button type="submit">
-            {isEditing ? "Update Assignment" : "Assign Subject"}
+            {isEditing
+              ? t("workloads.subjectAssignments.form.buttons.update")
+              : t("workloads.subjectAssignments.form.buttons.create")}
           </Button>
         </div>
       </form>

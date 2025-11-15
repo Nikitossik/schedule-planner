@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,12 +21,19 @@ import {
 } from "@/components/ui/select";
 import { useEntityList } from "@/hooks/useEntityList";
 
-const schema = z.object({
-  name: z.string().min(1, "Group name is required"),
-  study_form_id: z.string().min(1, "Study form is required"),
-  academic_year_id: z.string().min(1, "Academic year is required"),
-  semester_id: z.string().min(1, "Semester is required"),
-});
+const createSchema = (t) =>
+  z.object({
+    name: z.string().min(1, t("groups.form.validation.nameRequired")),
+    study_form_id: z
+      .string()
+      .min(1, t("groups.form.validation.studyFormRequired")),
+    academic_year_id: z
+      .string()
+      .min(1, t("groups.form.validation.academicYearRequired")),
+    semester_id: z
+      .string()
+      .min(1, t("groups.form.validation.semesterRequired")),
+  });
 
 export default function GroupForm({
   id,
@@ -35,6 +43,8 @@ export default function GroupForm({
   showButtons = true,
   isLoading = false,
 }) {
+  const { t } = useTranslation();
+
   // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
@@ -44,7 +54,7 @@ export default function GroupForm({
   };
 
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createSchema(t)),
     defaultValues: transformedDefaultValues,
   });
 
@@ -99,9 +109,12 @@ export default function GroupForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t("groups.form.fields.name")}</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Enter group name" />
+                <Input
+                  {...field}
+                  placeholder={t("groups.form.placeholders.name")}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -113,17 +126,19 @@ export default function GroupForm({
           name="study_form_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Study Form</FormLabel>
+              <FormLabel>{t("groups.form.fields.studyForm")}</FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select study form" />
+                  <SelectValue
+                    placeholder={t("groups.form.placeholders.studyForm")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {studyFormsLoading ? (
-                    <div className="p-2 text-sm">Loading...</div>
+                    <div className="p-2 text-sm">{t("common.loading")}</div>
                   ) : studyForms.length === 0 ? (
                     <div className="p-2 text-sm text-muted-foreground">
-                      No study forms
+                      {t("groups.form.noData.noStudyForms")}
                     </div>
                   ) : (
                     studyForms.map((studyForm) => (
@@ -147,20 +162,22 @@ export default function GroupForm({
           name="academic_year_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Academic Year</FormLabel>
+              <FormLabel>{t("groups.form.fields.academicYear")}</FormLabel>
               <Select
                 onValueChange={handleAcademicYearChange}
                 value={field.value || ""}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select academic year" />
+                  <SelectValue
+                    placeholder={t("groups.form.placeholders.academicYear")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {academicYearsLoading ? (
-                    <div className="p-2 text-sm">Loading...</div>
+                    <div className="p-2 text-sm">{t("common.loading")}</div>
                   ) : academicYears.length === 0 ? (
                     <div className="p-2 text-sm text-muted-foreground">
-                      No academic years found
+                      {t("groups.form.noData.noAcademicYears")}
                     </div>
                   ) : (
                     academicYears.map((year) => (
@@ -181,7 +198,7 @@ export default function GroupForm({
           name="semester_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Semester</FormLabel>
+              <FormLabel>{t("groups.form.fields.semester")}</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value || ""}
@@ -191,24 +208,27 @@ export default function GroupForm({
                   <SelectValue
                     placeholder={
                       watchedAcademicYearId
-                        ? "Select semester"
-                        : "Select academic year first"
+                        ? t("groups.form.placeholders.semester")
+                        : t("groups.form.placeholders.selectAcademicYearFirst")
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
                   {semestersLoading ? (
-                    <div className="p-2 text-sm">Loading...</div>
+                    <div className="p-2 text-sm">{t("common.loading")}</div>
                   ) : semesters.length === 0 ? (
                     <div className="p-2 text-sm text-muted-foreground">
                       {watchedAcademicYearId
-                        ? "No semesters for selected year"
-                        : "Select academic year first"}
+                        ? t("groups.form.noData.noSemesters")
+                        : t("groups.form.placeholders.selectAcademicYearFirst")}
                     </div>
                   ) : (
                     semesters.map((semester) => (
                       <SelectItem key={semester.id} value={String(semester.id)}>
-                        Semester {semester.number} {semester.period}
+                        {t("groups.table.semesterFormat", {
+                          number: semester.number,
+                          period: t(`filterLabels.periods.${semester.period}`),
+                        })}
                       </SelectItem>
                     ))
                   )}
@@ -221,7 +241,11 @@ export default function GroupForm({
 
         {showButtons && (
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : isEdit ? "Update" : "Create"}
+            {isLoading
+              ? t("common.buttons.saving")
+              : isEdit
+              ? t("common.buttons.update")
+              : t("common.buttons.create")}
           </Button>
         )}
       </form>
