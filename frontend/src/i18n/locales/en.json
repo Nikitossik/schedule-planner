@@ -39,6 +39,14 @@
   "app": {
     "name": "Silesian Academy"
   },
+  "login": {
+    "title": "Sign In",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "loginButton": "Sign In",
+    "loginSuccess": "Login successful",
+    "loginFailed": "Login failed"
+  },
   "breadcrumbs": {
     "home": "Dashboard",
     "academicManagement": "Academic management",

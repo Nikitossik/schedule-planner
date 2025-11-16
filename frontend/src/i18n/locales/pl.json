@@ -39,6 +39,14 @@
   "app": {
     "name": "Akademia Śląska"
   },
+  "login": {
+    "title": "Zaloguj się",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Hasło",
+    "loginButton": "Zaloguj się",
+    "loginSuccess": "Logowanie pomyślne",
+    "loginFailed": "Logowanie nie powiodło się"
+  },
   "breadcrumbs": {
     "home": "Panel główny",
     "academicManagement": "Zarządzanie akademickie",
