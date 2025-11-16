@@ -1,5 +1,4 @@
-from passlib.context import CryptContext
-
+from pwdlib import PasswordHash
 import jwt
 from jwt.exceptions import InvalidTokenError
 
@@ -7,7 +6,7 @@ from datetime import timedelta, datetime, timezone
 from ..config import setting
 from ..utils import exceptions
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+password_hash = PasswordHash.recommended()
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -21,7 +20,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         bool: True if the plaintext matches the hash, otherwise False.
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    return password_hash.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
@@ -34,7 +33,7 @@ def get_password_hash(password: str) -> str:
     Returns:
         str: Secure password hash suitable for storage.
     """
-    return pwd_context.hash(password)
+    return password_hash.hash(password)
 
 
 def create_token(
