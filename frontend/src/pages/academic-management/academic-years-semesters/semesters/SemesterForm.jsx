@@ -209,7 +209,9 @@ export const SemesterForm = ({
                     modal={true}
                     value={field.value}
                     onChange={field.onChange}
-                    locale={i18n.language}
+                    placeholder={t(
+                      "semesters.form.fields.startDate.placeholder"
+                    )}
                   />
                 </FormControl>
                 <FormMessage />
@@ -231,7 +233,7 @@ export const SemesterForm = ({
                     value={field.value}
                     onChange={field.onChange}
                     minDate={form.watch("start_date")}
-                    locale={i18n.language}
+                    placeholder={t("semesters.form.fields.endDate.placeholder")}
                   />
                 </FormControl>
                 <FormMessage />

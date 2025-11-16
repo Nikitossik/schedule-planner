@@ -88,7 +88,9 @@ export const AcademicYearForm = ({
                     modal={true}
                     value={field.value}
                     onChange={field.onChange}
-                    locale={i18n.language}
+                    placeholder={t(
+                      "academicYears.form.fields.startDate.placeholder"
+                    )}
                   />
                 </FormControl>
                 <FormMessage />
@@ -110,7 +112,9 @@ export const AcademicYearForm = ({
                     value={field.value}
                     onChange={field.onChange}
                     minDate={form.watch("start_date")}
-                    locale={i18n.language}
+                    placeholder={t(
+                      "academicYears.form.fields.endDate.placeholder"
+                    )}
                   />
                 </FormControl>
                 <FormMessage />

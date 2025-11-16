@@ -36,8 +36,11 @@
     "userMenu": "User menu",
     "defaultUserName": "User"
   },
+  "app": {
+    "name": "Silesian Academy"
+  },
   "breadcrumbs": {
-    "home": "Home",
+    "home": "Dashboard",
     "academicManagement": "Academic management",
     "academicStructure": "Academic structure",
     "facultiesDirections": "Faculties & directions",
@@ -149,10 +152,12 @@
           "placeholder": "e.g., 2024/2025"
         },
         "startDate": {
-          "label": "Start Date"
+          "label": "Start Date",
+          "placeholder": "Select start date"
         },
         "endDate": {
-          "label": "End Date"
+          "label": "End Date",
+          "placeholder": "Select end date"
         },
         "isCurrent": {
           "label": "Set as current academic year",
@@ -220,10 +225,12 @@
           "current": "(Current)"
         },
         "startDate": {
-          "label": "Start date"
+          "label": "Start date",
+          "placeholder": "Select start date"
         },
         "endDate": {
-          "label": "End date"
+          "label": "End date",
+          "placeholder": "Select end date"
         }
       },
       "validation": {

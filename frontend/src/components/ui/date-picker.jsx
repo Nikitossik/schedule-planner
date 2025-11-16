@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { ChevronDownIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -10,6 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { enUS, pl } from "react-day-picker/locale";
 
 export function DatePicker({
   value,
@@ -18,9 +20,27 @@ export function DatePicker({
   modal = false,
   minDate,
   maxDate,
-  locale,
+  locale, // Опциональный проп для переопределения
 }) {
   const [open, setOpen] = React.useState(false);
+  const { i18n } = useTranslation();
+
+  // Автоматически определяем локаль на основе текущего языка i18n
+  const getCalendarLocale = () => {
+    if (locale) return locale; // Если передана явно, используем её
+
+    console.log("LANG:", i18n.language);
+
+    switch (i18n.language) {
+      case "pl":
+        return pl;
+      case "en":
+      default:
+        return enUS;
+    }
+  };
+
+  const calendarLocale = getCalendarLocale();
 
   // Преобразуем строковое значение в объект Date правильно (без проблем с часовыми поясами)
   const selectedDate =
@@ -37,14 +57,16 @@ export function DatePicker({
           variant="outline"
           className="w-full justify-between font-normal"
         >
-          {isValid ? selectedDate.toLocaleDateString() : placeholder}
+          {isValid
+            ? selectedDate.toLocaleDateString(i18n.language)
+            : placeholder}
           <ChevronDownIcon className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto overflow-hidden p-0" align="start">
         <Calendar
           mode="single"
-          locale={locale}
+          locale={calendarLocale}
           selected={isValid ? selectedDate : undefined}
           defaultMonth={defaultMonth}
           captionLayout="dropdown"

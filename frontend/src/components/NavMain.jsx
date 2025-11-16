@@ -19,9 +19,11 @@ import {
 } from "@/components/ui/sidebar";
 
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export function NavMain({ items }) {
   const location = useLocation();
+  const { t } = useTranslation();
 
   // Функция для проверки активности группы
   const isGroupActive = (group) => {
@@ -48,7 +50,7 @@ export function NavMain({ items }) {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("navigation.dashboard")}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
           // Если у элемента есть подэлементы, используем выпадающий список

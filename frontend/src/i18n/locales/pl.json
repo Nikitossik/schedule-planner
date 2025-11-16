@@ -36,8 +36,11 @@
     "userMenu": "Menu użytkownika",
     "defaultUserName": "Użytkownik"
   },
+  "app": {
+    "name": "Akademia Śląska"
+  },
   "breadcrumbs": {
-    "home": "Strona główna",
+    "home": "Panel główny",
     "academicManagement": "Zarządzanie akademickie",
     "academicStructure": "Struktura akademicka",
     "facultiesDirections": "Wydziały i kierunki",
@@ -149,10 +152,12 @@
           "placeholder": "np. 2024/2025"
         },
         "startDate": {
-          "label": "Data Rozpoczęcia"
+          "label": "Data Rozpoczęcia",
+          "placeholder": "Wybierz datę rozpoczęcia"
         },
         "endDate": {
-          "label": "Data Zakończenia"
+          "label": "Data Zakończenia",
+          "placeholder": "Wybierz datę zakończenia"
         },
         "isCurrent": {
           "label": "Ustaw jako bieżący rok akademicki",
@@ -223,7 +228,8 @@
           "label": "Data Rozpoczęcia"
         },
         "endDate": {
-          "label": "Data Zakończenia"
+          "label": "Data Zakończenia",
+          "placeholder": "Wybierz datę zakończenia"
         }
       },
       "validation": {
