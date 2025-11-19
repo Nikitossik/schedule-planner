@@ -1114,5 +1114,27 @@
         "seminar": "Seminarium"
       }
     }
+  },
+  "entities": {
+    "user": "użytkownika",
+    "group": "grupę",
+    "contract": "kontrakt",
+    "workload": "obciążenie",
+    "room": "salę",
+    "schedule": "plan",
+    "lesson": "zajęcia",
+    "semester": "semestr",
+    "academicYear": "rok akademicki",
+    "direction": "kierunek",
+    "faculty": "wydział",
+    "subject": "przedmiot",
+    "studyForm": "formę studiów",
+    "subjectAssignment": "przypisanie przedmiotu",
+    "professorContract": "kontrakt profesora",
+    "professorWorkload": "obciążenie profesora",
+    "professor": "profesora",
+    "student": "studenta",
+    "professorProfile": "profil profesora",
+    "studentProfile": "profil studenta"
   }
 }

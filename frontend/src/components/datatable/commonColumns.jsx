@@ -19,6 +19,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEntityTranslator } from "@/utils/entityTranslator";
 
 export const selectColumn = {
   id: "select",
@@ -55,12 +56,17 @@ function ActionsCell({
   displayName,
 }) {
   const { t } = useTranslation();
+  const { translateEntity } = useEntityTranslator();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const itemId = row.original.id;
   const { canManageUsers, isAdmin } = useAuth();
   const queryClient = useQueryClient();
-  const entityDisplayName = displayName || entity;
+
+  // Автоматически переводим название сущности
+  const entityDisplayName = displayName
+    ? translateEntity(displayName)
+    : translateEntity(entity);
 
   // ВСЕ HOOKS ДОЛЖНЫ БЫТЬ ВЫЗВАНЫ ДО ЛЮБЫХ УСЛОВНЫХ RETURN!
   const deleteMutation = useEntityMutation(entity, "delete");

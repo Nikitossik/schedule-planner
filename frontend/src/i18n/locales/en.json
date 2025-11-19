@@ -1118,5 +1118,27 @@
         "seminar": "Seminar"
       }
     }
+  },
+  "entities": {
+    "user": "user",
+    "group": "group",
+    "contract": "contract",
+    "workload": "workload",
+    "room": "room",
+    "schedule": "schedule",
+    "lesson": "lesson",
+    "semester": "semester",
+    "academicYear": "academic year",
+    "direction": "direction",
+    "faculty": "faculty",
+    "subject": "subject",
+    "studyForm": "study form",
+    "subjectAssignment": "subject assignment",
+    "professorContract": "professor contract",
+    "professorWorkload": "professor workload",
+    "professor": "professor",
+    "student": "student",
+    "professorProfile": "professor profile",
+    "studentProfile": "student profile"
   }
 }
