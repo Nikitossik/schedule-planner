@@ -28,11 +28,19 @@ const SubjectAssignmentForm = ({
   onCancel,
 }) => {
   const isEditing = !!assignment;
+  const { t } = useTranslation();
 
   // Создаем схему валидации с учетом максимальных часов
   const validationSchema = z.object({
-    subject_id: z.coerce.number().min(1, "Subject is required"),
-    hours_per_subject: z.coerce.number().min(1, "Hours must be at least 1"),
+    subject_id: z.coerce
+      .number()
+      .min(
+        1,
+        t("workloads.subjectAssignments.form.validation.subjectRequired")
+      ),
+    hours_per_subject: z.coerce
+      .number()
+      .min(1, t("workloads.subjectAssignments.form.validation.hoursMin")),
   });
 
   const form = useForm({

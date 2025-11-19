@@ -3,13 +3,13 @@ import { useTranslation } from "react-i18next";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
+import "moment/locale/pl";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import "./LessonsCalendar.css";
 
 import { Users, User, MapPin } from "lucide-react";
 
-// Настраиваем момент для начала недели с понедельника
 moment.updateLocale("en", {
   week: {
     dow: 1, // Monday is the first day of the week
@@ -49,6 +49,41 @@ import {
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
+// Локализованные сообщения для календаря
+const getCalendarMessages = (t, language) => {
+  const baseMessages = {
+    allDay: t("lessons.calendar.navigation.allDay"),
+    previous: t("lessons.calendar.navigation.previous"),
+    next: t("lessons.calendar.navigation.next"),
+    today: t("lessons.calendar.navigation.today"),
+    week: t("lessons.calendar.navigation.week"),
+    day: t("lessons.calendar.navigation.day"),
+    date: t("lessons.calendar.navigation.date"),
+    time: t("lessons.calendar.navigation.time"),
+    event: t("lessons.calendar.navigation.event"),
+    noEventsInRange: t("lessons.calendar.navigation.noEventsInRange"),
+    showMore: (total) => t("lessons.calendar.navigation.showMore", { total }),
+  };
+
+  // Дополнительные сообщения для польского языка
+  if (language === "pl") {
+    return {
+      ...baseMessages,
+      month: "Miesiąc",
+      agenda: "Agenda",
+      work_week: "Tydzień roboczy",
+    };
+  }
+
+  // Дополнительные сообщения для английского языка
+  return {
+    ...baseMessages,
+    month: "Month",
+    agenda: "Agenda",
+    work_week: "Work Week",
+  };
+};
+
 export function LessonsCalendar({
   schedule,
   onEditLesson,
@@ -56,8 +91,16 @@ export function LessonsCalendar({
   onCreateLesson,
   refreshTrigger,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
+
+  // Устанавливаем локаль для moment
+  useEffect(() => {
+    moment.locale(i18n.language === "pl" ? "pl" : "en");
+  }, [i18n.language]);
+
+  // Получаем локализованные сообщения
+  const calendarMessages = getCalendarMessages(t, i18n.language);
 
   // Функции для инвалидации кеша
   const invalidateConflictsCache = () => {
@@ -155,45 +198,51 @@ export function LessonsCalendar({
           <h3 className="text-lg font-semibold">
             {t("lessons.calendar.title")}
           </h3>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">
-              {t("lessons.calendar.groupBy")}
-            </span>
-            <Select value={groupBy} onValueChange={setGroupBy}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">
-                  <span className="flex items-center gap-2">
-                    📋 {t("lessons.calendar.groupOptions.none")}
-                  </span>
-                </SelectItem>
-                <SelectItem value="group">
-                  <span className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    {t("lessons.calendar.groupOptions.group")}
-                  </span>
-                </SelectItem>
-                <SelectItem value="professor">
-                  <span className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    {t("lessons.calendar.groupOptions.professor")}
-                  </span>
-                </SelectItem>
-                <SelectItem value="room">
-                  <span className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    {t("lessons.calendar.groupOptions.room")}
-                  </span>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={groupBy} onValueChange={setGroupBy}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">
+                <span className="flex items-center gap-2">
+                  {t("lessons.calendar.groupOptions.none")}
+                </span>
+              </SelectItem>
+              <SelectItem value="group">
+                <span className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  {t("lessons.calendar.groupOptions.group")}
+                </span>
+              </SelectItem>
+              <SelectItem value="professor">
+                <span className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  {t("lessons.calendar.groupOptions.professor")}
+                </span>
+              </SelectItem>
+              <SelectItem value="room">
+                <span className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  {t("lessons.calendar.groupOptions.room")}
+                </span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-4">
+          <WorkloadWarningsDropdown
+            onNavigateToLessons={handleNavigateToLessons}
+          />
+          <ConflictsDropdown onNavigateToConflict={handleNavigateToConflict} />
+        </div>
+      </div>
+
+      {/* Календарь */}
+      <div className="h-[700px] max-w-[1240px] relative bg-background border rounded-lg p-4">
+        {/* Статистическая панель */}
+        <div className="mb-2 pb-2 border-b border-border">
+          <div className="text-sm text-muted-foreground text-center">
             {t("lessons.calendar.lessonsScheduled", { count: lessons.length })}
             {resources &&
               ` • ${t("lessons.calendar.resourcesCount", {
@@ -201,85 +250,64 @@ export function LessonsCalendar({
                 type: groupBy,
               })}`}
           </div>
-
-          <div className="flex gap-2">
-            <WorkloadWarningsDropdown
-              onNavigateToLessons={handleNavigateToLessons}
-            />
-            <ConflictsDropdown
-              onNavigateToConflict={handleNavigateToConflict}
-            />
-          </div>
         </div>
-      </div>
 
-      {/* Календарь */}
-      <div className="h-[700px] max-w-[1200px] relative bg-background border rounded-lg p-4">
-        <DnDCalendar
-          localizer={localizer}
-          events={events}
-          resources={resources}
-          resourceIdAccessor="resourceId"
-          resourceTitleAccessor="resourceTitle"
-          startAccessor="start"
-          endAccessor="end"
-          titleAccessor="title"
-          views={["week", "day"]}
-          view={currentView}
-          date={currentDate}
-          onView={handleViewChange}
-          onNavigate={handleNavigate}
-          step={30}
-          timeslots={2}
-          onSelectEvent={handleSelectEvent}
-          onSelectSlot={handleSelectSlot}
-          selectable
-          popup
-          showMultiDayTimes
-          scrollToTime={new Date(1970, 1, 1, 8)}
-          min={new Date(1970, 1, 1, 8, 0, 0)} // 8:00 AM
-          max={new Date(1970, 1, 1, 22, 0, 0)} // 10:00 PM
-          // DnD пропсы
-          onEventDrop={handleEventDrop}
-          onEventResize={handleEventResize}
-          resizable
-          draggableAccessor={() => true}
-          // Важно: включаем группировку ресурсов для недельного вида
-          // resourceGroupingLayout={currentView === "week" && groupBy !== "none"}
-          components={{
-            event: (eventProps) => (
-              <EventComponent {...eventProps} groupBy={groupBy} />
-            ),
-          }}
-          eventPropGetter={(event) => {
-            // Всегда используем только цвет предмета
-            const subjectColor = event.resource.lesson.subject?.color || "#000"; // fallback на серый
-            const borderColor = darkenColor(subjectColor, 0.2);
+        <div className="h-[calc(100%-60px)]">
+          <DnDCalendar
+            culture={i18n.language}
+            localizer={localizer}
+            events={events}
+            resources={resources}
+            resourceIdAccessor="resourceId"
+            resourceTitleAccessor="resourceTitle"
+            startAccessor="start"
+            endAccessor="end"
+            titleAccessor="title"
+            views={["week", "day"]}
+            view={currentView}
+            date={currentDate}
+            onView={handleViewChange}
+            onNavigate={handleNavigate}
+            step={30}
+            timeslots={2}
+            onSelectEvent={handleSelectEvent}
+            onSelectSlot={handleSelectSlot}
+            selectable
+            popup
+            showMultiDayTimes
+            scrollToTime={new Date(1970, 1, 1, 8)}
+            min={new Date(1970, 1, 1, 8, 0, 0)} // 8:00 AM
+            max={new Date(1970, 1, 1, 22, 0, 0)} // 10:00 PM
+            // DnD пропсы
+            onEventDrop={handleEventDrop}
+            onEventResize={handleEventResize}
+            resizable
+            draggableAccessor={() => true}
+            // Важно: включаем группировку ресурсов для недельного вида
+            // resourceGroupingLayout={currentView === "week" && groupBy !== "none"}
+            components={{
+              event: (eventProps) => (
+                <EventComponent {...eventProps} groupBy={groupBy} />
+              ),
+            }}
+            eventPropGetter={(event) => {
+              // Всегда используем только цвет предмета
+              const subjectColor =
+                event.resource.lesson.subject?.color || "#000"; // fallback на серый
+              const borderColor = darkenColor(subjectColor, 0.2);
 
-            return {
-              style: {
-                backgroundColor: subjectColor,
-                borderColor: borderColor,
-                color: "white",
-                fontSize: "12px",
-              },
-            };
-          }}
-          messages={{
-            allDay: t("lessons.calendar.navigation.allDay"),
-            previous: t("lessons.calendar.navigation.previous"),
-            next: t("lessons.calendar.navigation.next"),
-            today: t("lessons.calendar.navigation.today"),
-            week: t("lessons.calendar.navigation.week"),
-            day: t("lessons.calendar.navigation.day"),
-            date: t("lessons.calendar.navigation.date"),
-            time: t("lessons.calendar.navigation.time"),
-            event: t("lessons.calendar.navigation.event"),
-            noEventsInRange: t("lessons.calendar.navigation.noEventsInRange"),
-            showMore: (total) =>
-              t("lessons.calendar.navigation.showMore", { total }),
-          }}
-        />
+              return {
+                style: {
+                  backgroundColor: subjectColor,
+                  borderColor: borderColor,
+                  color: "white",
+                  fontSize: "12px",
+                },
+              };
+            }}
+            messages={calendarMessages}
+          />
+        </div>
       </div>
     </>
   );

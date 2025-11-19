@@ -61,7 +61,6 @@ export default function RoomModal({ isOpen, onClose, room = null, onSuccess }) {
           defaultValues={room}
           isEdit={isEdit}
           onSubmit={handleSubmit}
-          showButtons={false}
           isLoading={isLoading}
         />
       </DialogContent>

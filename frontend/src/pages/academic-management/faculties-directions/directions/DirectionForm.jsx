@@ -162,7 +162,7 @@ export default function DirectionForm({
                       <div className="p-2 text-sm">{t("common.loading")}</div>
                     ) : faculties.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground">
-                        {t("directions.form.noFaculties")}
+                        {t("directions.form.noData.noFaculties")}
                       </div>
                     ) : (
                       faculties.map((faculty) => (
@@ -204,7 +204,9 @@ export default function DirectionForm({
                           {t("directions.studyForms.fullTime")}
                         </FormLabel>
                         <FormDescription className="text-xs">
-                          {t("directions.form.descriptions.fullTime")}
+                          {t(
+                            "directions.form.descriptions.studyForms.fullTime"
+                          )}
                         </FormDescription>
                       </div>
                     </FormItem>
@@ -228,7 +230,9 @@ export default function DirectionForm({
                           {t("directions.studyForms.partTime")}
                         </FormLabel>
                         <FormDescription className="text-xs">
-                          {t("directions.form.descriptions.partTime")}
+                          {t(
+                            "directions.form.descriptions.studyForms.partTime"
+                          )}
                         </FormDescription>
                       </div>
                     </FormItem>

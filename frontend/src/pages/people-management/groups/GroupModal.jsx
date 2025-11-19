@@ -57,24 +57,12 @@ export default function GroupModal({
           <DialogTitle>
             {t(isEdit ? "groups.form.title.edit" : "groups.form.title.create")}
           </DialogTitle>
-          <DialogDescription>
-            {isEdit
-              ? t(
-                  "groups.form.description.edit",
-                  "Update the group information below."
-                )
-              : t(
-                  "groups.form.description.create",
-                  "Fill in the details to create a new group."
-                )}
-          </DialogDescription>
         </DialogHeader>
         <GroupForm
           id="group-form"
           defaultValues={group}
           isEdit={isEdit}
           onSubmit={handleSubmit}
-          showButtons={false}
           isLoading={isLoading}
         />
       </DialogContent>

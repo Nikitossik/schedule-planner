@@ -50,7 +50,6 @@ export default function ScheduleModal({ isOpen, onClose, onSuccess }) {
           }}
           isEdit={false}
           onSubmit={handleSubmit}
-          showButtons={false}
           isLoading={isLoading}
         />
       </DialogContent>

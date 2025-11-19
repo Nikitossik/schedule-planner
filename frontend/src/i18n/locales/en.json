@@ -323,31 +323,24 @@
         "edit": "Edit Direction"
       },
       "fields": {
-        "name": {
-          "label": "Name",
-          "placeholder": "Enter direction name"
-        },
-        "code": {
-          "label": "Code",
-          "placeholder": "Enter direction code"
-        },
-        "faculty": {
-          "label": "Faculty",
-          "placeholder": "Select faculty",
-          "loading": "Loading...",
-          "noFaculties": "No faculties"
-        },
+        "name": "Name",
+        "code": "Code", 
+        "faculty": "Faculty",
+        "studyForms": "Study Forms"
+      },
+      "placeholders": {
+        "name": "Enter direction name",
+        "code": "Enter direction code",
+        "faculty": "Select faculty"
+      },
+      "descriptions": {
         "studyForms": {
-          "title": "Study Forms",
-          "fullTime": {
-            "label": "Full-time",
-            "description": "Full-time study form (day classes)"
-          },
-          "partTime": {
-            "label": "Part-time",
-            "description": "Part-time study form (evening/distance classes)"
-          }
+          "fullTime": "Full-time studies (daily classes)",
+          "partTime": "Part-time studies (evening/remote classes)"
         }
+      },
+      "noData": {
+        "noFaculties": "No faculties available"
       },
       "editNote": "Note: Faculty and Study Forms cannot be changed when editing a direction. Only Name and Code can be modified.",
       "validation": {
@@ -1019,7 +1012,7 @@
     "workloadWarnings": {
       "title": "Workload Warnings",
       "loading": "Loading...",
-      "hoursOk": "Hours OK",
+      "hoursOk": "Hours",
       "hoursIssues": "Hours Issues",
       "assignmentExceeded": "Assignment Exceeded",
       "scheduled": "Scheduled:",

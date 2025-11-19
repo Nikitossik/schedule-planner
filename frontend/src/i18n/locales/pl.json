@@ -322,31 +322,24 @@
         "edit": "Edytuj kierunek"
       },
       "fields": {
-        "name": {
-          "label": "Nazwa",
-          "placeholder": "Wprowadź nazwę kierunku"
-        },
-        "code": {
-          "label": "Kod",
-          "placeholder": "Wprowadź kod kierunku"
-        },
-        "faculty": {
-          "label": "Wydział",
-          "placeholder": "Wybierz wydział",
-          "loading": "Ładowanie...",
-          "noFaculties": "Brak wydziałów"
-        },
+        "name": "Nazwa",
+        "code": "Kod",
+        "faculty": "Wydział",
+        "studyForms": "Formy Studiów"
+      },
+      "placeholders": {
+        "name": "Wprowadź nazwę kierunku",
+        "code": "Wprowadź kod kierunku",
+        "faculty": "Wybierz wydział"
+      },
+      "descriptions": {
         "studyForms": {
-          "title": "Formy Studiów",
-          "fullTime": {
-            "label": "Stacjonarne",
-            "description": "Studia stacjonarne (zajęcia dzienne)"
-          },
-          "partTime": {
-            "label": "Niestacjonarne",
-            "description": "Studia niestacjonarne (zajęcia wieczorowe/zdalne)"
-          }
+          "fullTime": "Studia stacjonarne (zajęcia dzienne)",
+          "partTime": "Studia niestacjonarne (zajęcia wieczorowe/zdalne)"
         }
+      },
+      "noData": {
+        "noFaculties": "Brak wydziałów"
       },
       "editNote": "Uwaga: Wydział i Formy Studiów nie mogą być zmieniane podczas edycji kierunku. Można modyfikować tylko Nazwę i Kod.",
       "validation": {
@@ -1015,7 +1008,7 @@
     "workloadWarnings": {
       "title": "Ostrzeżenia obciążenia",
       "loading": "Ładowanie...",
-      "hoursOk": "Godziny OK",
+      "hoursOk": "Godziny",
       "hoursIssues": "Problemy z godzinami",
       "assignmentExceeded": "Przekroczono przypisanie",
       "scheduled": "Zaplanowane:",
