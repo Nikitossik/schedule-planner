@@ -14,3 +14,4 @@ from .subject_assignment import SubjectAssignment
 from .schedule import Schedule
 from .lesson import Lesson
 from .academic_year import AcademicYear
+from .university_holiday import UniversityHoliday

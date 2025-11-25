@@ -53,6 +53,7 @@
     "academicStructure": "Struktura akademicka",
     "facultiesDirections": "Wydziały i kierunki",
     "academicYearsSemesters": "Lata akademickie i semestry",
+    "holidays": "Dni wolne",
     "contracts": "Kontrakty",
     "workloads": "Obciążenia",
     "directions": "Kierunki"
@@ -422,11 +423,57 @@
       "updateError": "Błąd podczas aktualizacji przedmiotu"
     }
   },
+  "holidays": {
+    "defaultName": "Dzień wolny",
+    "form": {
+      "title": {
+        "create": "Utwórz dzień wolny",
+        "edit": "Edytuj dzień wolny"
+      },
+      "fields": {
+        "name": "Nazwa",
+        "date": "Data",
+        "isAnnual": "Powtarzaj rocznie"
+      },
+      "placeholders": {
+        "name": "Wprowadź nazwę dnia wolnego (opcjonalnie)",
+        "date": "Wybierz datę"
+      },
+      "descriptions": {
+        "isAnnual": "Ten dzień wolny będzie się powtarzać co roku w tej samej dacie",
+        "isAnnualDisabled": "Typ dnia wolnego nie może być zmieniony po utworzeniu"
+      },
+      "validation": {
+        "dateRequired": "Data jest wymagana"
+      },
+      "editNote": "Uwaga: Podczas edycji dnia wolnego można zmienić tylko nazwę."
+    },
+    "messages": {
+      "createSuccess": "Dzień wolny został utworzony pomyślnie",
+      "updateSuccess": "Dzień wolny został zaktualizowany pomyślnie",
+      "createError": "Błąd podczas tworzenia dnia wolnego",
+      "updateError": "Błąd podczas aktualizacji dnia wolnego"
+    },
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Nazwa",
+        "type": "Typ",
+        "date": "Data"
+      },
+      "types": {
+        "annual": "Roczne",
+        "manual": "Ręczne"
+      },
+      "addButton": "+ Dodaj dzień wolny"
+    }
+  },
   "sidebar": {
     "academicManagement": "Zarządzanie akademickie",
     "academicYearsSemesters": "Lata akademickie i semestry",
     "facultiesDirections": "Wydziały i kierunki",
     "subjects": "Przedmioty",
+    "holidays": "Dni wolne",
     "peopleManagement": "Zarządzanie ludźmi",
     "users": "Użytkownicy",
     "groups": "Grupy",
@@ -908,7 +955,8 @@
         "noEventsInRange": "Brak zaplanowanych zajęć w tym okresie.",
         "showMore": "+{{total}} więcej"
       },
-      "loading": "Ładowanie zajęć..."
+      "loading": "Ładowanie zajęć...",
+      "holidayBlockedMessage": "Nie można planować zajęć w dni świąteczne"
     },
     "form": {
       "title": {

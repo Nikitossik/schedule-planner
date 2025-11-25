@@ -12,6 +12,7 @@ from .study_form import StudyFormService
 from .subject_assignment import SubjectAssignmentService
 from .lesson import LessonService
 from .academic_year import AcademicYearService
+from .university_holiday import UniversityHolidayService
 
 __all__ = [
     "UserService",
@@ -28,4 +29,5 @@ __all__ = [
     "SubjectAssignmentService",
     "LessonService",
     "AcademicYearService",
+    "UniversityHolidayService",
 ]

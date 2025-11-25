@@ -20,7 +20,8 @@ function Calendar({
   buttonVariant = "ghost",
   formatters,
   components,
-  locale, // Проп для передачи локали снаружи
+  locale,
+  hideYear = false,
   ...props
 }) {
   const defaultClassNames = getDefaultClassNames();
@@ -55,6 +56,10 @@ function Calendar({
       formatters={{
         formatMonthDropdown: (date, options) =>
           format(date, "LLLL", { ...options, locale: dateFnsLocale }),
+        formatYearDropdown: (date, options) =>
+          hideYear
+            ? ""
+            : format(date, "yyyy", { ...options, locale: dateFnsLocale }),
         ...formatters,
       }}
       classNames={{

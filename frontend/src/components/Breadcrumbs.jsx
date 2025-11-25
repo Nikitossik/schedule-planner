@@ -31,6 +31,7 @@ export function Breadcrumbs() {
     "academic-management": t("breadcrumbs.academicManagement"),
     "academic-years-semesters": t("breadcrumbs.academicYearsSemesters"),
     "faculties-directions": t("breadcrumbs.facultiesDirections"),
+    holidays: t("breadcrumbs.holidays"),
   };
 
   const segments = location.pathname

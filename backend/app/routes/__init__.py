@@ -13,3 +13,4 @@ from .professor_workload import professor_workload_router
 from .study_form import study_form_router
 from .lesson import lesson_router
 from .academic_year import academic_year_router
+from .university_holiday import university_holiday_router

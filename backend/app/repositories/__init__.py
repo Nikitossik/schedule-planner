@@ -12,3 +12,4 @@ from .professor_workload import ProfessorWorkloadRepository
 from .professor_contract import ProfessorContractRepository
 from .subject_assignment import SubjectAssignmentRepository
 from .lesson import LessonRepository
+from .university_holiday import UniversityHolidayRepository

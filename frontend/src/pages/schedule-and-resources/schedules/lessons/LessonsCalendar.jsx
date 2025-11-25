@@ -17,7 +17,10 @@ moment.updateLocale("en", {
 });
 
 import { useCalendarLessons } from "@/hooks/useCalendarLessons";
+import { useEntityList } from "@/hooks/useEntityList";
 import { useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { format } from "date-fns";
 import {
   Select,
   SelectContent,
@@ -126,11 +129,132 @@ export function LessonsCalendar({
     refetch,
   } = useCalendarLessons(schedule?.id, dateRange.date_from, dateRange.date_to);
 
+  // Загружаем праздники для того же периода
+  const { data: holidaysData, isLoading: holidaysLoading } = useEntityList(
+    "university_holiday",
+    {
+      loadAll: true,
+      desc: false,
+      date_from: dateRange.date_from,
+      date_to: dateRange.date_to,
+    }
+  );
+
+  const holidays = holidaysData?.items || [];
+
   const lessons = lessonsData?.items || [];
+
+  // Отладочная информация для праздников
+  console.log("Holidays data:", holidays);
+  console.log("Date range:", dateRange);
+
+  // Создаем Set для быстрой проверки праздничных дат и мапу с информацией о праздниках
+  const holidayDatesSet = useMemo(() => {
+    const dates = new Set();
+    const currentYear = new Date().getFullYear();
+
+    holidays.forEach((h) => {
+      const holidayDate = new Date(h.date);
+
+      if (h.is_annual) {
+        // Для ежегодных праздников создаем даты для текущего года и соседних лет
+        for (let year = currentYear - 1; year <= currentYear + 1; year++) {
+          const annualDate = new Date(
+            year,
+            holidayDate.getMonth(),
+            holidayDate.getDate()
+          );
+          dates.add(format(annualDate, "yyyy-MM-dd"));
+        }
+      } else {
+        // Для обычных праздников используем указанную дату
+        dates.add(format(holidayDate, "yyyy-MM-dd"));
+      }
+    });
+
+    console.log("Holiday dates set:", Array.from(dates));
+    return dates;
+  }, [holidays]);
+
+  const holidayInfoMap = useMemo(() => {
+    const map = new Map();
+    const currentYear = new Date().getFullYear();
+
+    holidays.forEach((h) => {
+      const holidayDate = new Date(h.date);
+
+      if (h.is_annual) {
+        // Для ежегодных праздников создаем записи для текущего года и соседних лет
+        for (let year = currentYear - 1; year <= currentYear + 1; year++) {
+          const annualDate = new Date(
+            year,
+            holidayDate.getMonth(),
+            holidayDate.getDate()
+          );
+          const dateKey = format(annualDate, "yyyy-MM-dd");
+          map.set(dateKey, {
+            ...h,
+            date: format(annualDate, "yyyy-MM-dd"),
+          });
+        }
+      } else {
+        // Для обычных праздников используем указанную дату
+        map.set(format(holidayDate, "yyyy-MM-dd"), h);
+      }
+    });
+
+    console.log("Holiday info map:", map);
+    return map;
+  }, [holidays]);
+
+  // Функция проверки праздника
+  const isHolidayDate = useMemo(
+    () => (date) => {
+      const dateStr = format(date, "yyyy-MM-dd");
+      return holidayDatesSet.has(dateStr);
+    },
+    [holidayDatesSet]
+  );
+
+  // Функция получения информации о празднике
+  const getHolidayInfo = useMemo(
+    () => (date) => {
+      const dateStr = format(date, "yyyy-MM-dd");
+      return holidayInfoMap.get(dateStr);
+    },
+    [holidayInfoMap]
+  );
 
   // Создаем ресурсы и события
   const resources = createResourcesFromLessons(lessons, groupBy);
   const events = transformLessonsToEvents(lessons, groupBy);
+
+  // Кастомные форматы календаря с поддержкой праздников
+  const customFormats = useMemo(
+    () => ({
+      dayFormat: (date, culture, localizer) => {
+        const dayNumber = localizer.format(date, "DD", culture);
+        const holiday = getHolidayInfo(date);
+        if (holiday) {
+          const holidayName =
+            holiday.name || t("holidays.defaultName", "Выходной день");
+          return `${dayNumber} (${holidayName})`;
+        }
+        return dayNumber;
+      },
+      dayHeaderFormat: (date, culture, localizer) => {
+        const dayHeader = localizer.format(date, "ddd DD", culture);
+        const holiday = getHolidayInfo(date);
+        if (holiday) {
+          const holidayName =
+            holiday.name || t("holidays.defaultName", "Выходной день");
+          return `${dayHeader} (${holidayName})`;
+        }
+        return dayHeader;
+      },
+    }),
+    [getHolidayInfo, t]
+  );
 
   // Создаем обработчики
   const handleNavigateToLessons = createNavigateToLessonsHandler(
@@ -142,27 +266,102 @@ export function LessonsCalendar({
     setCurrentView
   );
   const handleSelectEvent = createSelectEventHandler(onEditLesson);
-  const handleSelectSlot = createSelectSlotHandler(onCreateLesson);
+  const handleSelectSlot = useMemo(() => {
+    return (slotInfo) => {
+      // Блокируем создание событий в праздничные дни
+      if (isHolidayDate(slotInfo.start)) {
+        console.log("Blocked slot selection on holiday:", slotInfo.start);
+        return false;
+      }
+      // Используем оригинальный обработчик для обычных дней
+      return createSelectSlotHandler(
+        onCreateLesson,
+        isHolidayDate,
+        t
+      )(slotInfo);
+    };
+  }, [onCreateLesson, isHolidayDate, t]);
   const handleNavigate = createNavigateHandler(setCurrentDate);
   const handleViewChange = createViewChangeHandler(setCurrentView);
 
-  const handleEventDrop = createEventDropHandler(
+  const handleEventDrop = useMemo(() => {
+    return (args) => {
+      // Проверяем, не пытаемся ли мы сбросить событие на праздничный день
+      if (args.start && isHolidayDate(args.start)) {
+        console.log("Blocked event drop on holiday:", args.start);
+        // Показываем уведомление пользователю
+        if (t) {
+          alert(
+            t(
+              "lessons.holidayBlockedMessage",
+              "На праздничный день нельзя назначать занятия"
+            )
+          );
+        }
+        return false;
+      }
+
+      // Используем оригинальный обработчик для обычных дней
+      return createEventDropHandler(
+        lessons,
+        schedule,
+        groupBy,
+        onUpdateLesson,
+        refetch,
+        invalidateConflictsCache,
+        invalidateWorkloadCache
+      )(args);
+    };
+  }, [
     lessons,
     schedule,
     groupBy,
     onUpdateLesson,
     refetch,
     invalidateConflictsCache,
-    invalidateWorkloadCache
-  );
+    invalidateWorkloadCache,
+    isHolidayDate,
+    t,
+  ]);
 
-  const handleEventResize = createEventResizeHandler(
+  const handleEventResize = useMemo(() => {
+    return (args) => {
+      // Проверяем, не пытаемся ли мы изменить размер события на праздничный день
+      if (
+        (args.start && isHolidayDate(args.start)) ||
+        (args.end && isHolidayDate(args.end))
+      ) {
+        console.log("Blocked event resize on holiday:", args.start || args.end);
+        // Показываем уведомление пользователю
+        if (t) {
+          alert(
+            t(
+              "lessons.holidayBlockedMessage",
+              "На праздничный день нельзя назначать занятия"
+            )
+          );
+        }
+        return false;
+      }
+
+      // Используем оригинальный обработчик для обычных дней
+      return createEventResizeHandler(
+        schedule,
+        onUpdateLesson,
+        refetch,
+        invalidateConflictsCache,
+        invalidateWorkloadCache
+      )(args);
+    };
+  }, [
     schedule,
     onUpdateLesson,
     refetch,
     invalidateConflictsCache,
-    invalidateWorkloadCache
-  );
+    invalidateWorkloadCache,
+    isHolidayDate,
+    t,
+  ]);
 
   // Рефетч данных при изменении refreshTrigger
   useEffect(() => {
@@ -238,9 +437,7 @@ export function LessonsCalendar({
         </div>
       </div>
 
-      {/* Календарь */}
       <div className="h-[700px] max-w-[1240px] relative bg-background border rounded-lg p-4">
-        {/* Статистическая панель */}
         <div className="mb-2 pb-2 border-b border-border">
           <div className="text-sm text-muted-foreground text-center">
             {t("lessons.calendar.lessonsScheduled", { count: lessons.length })}
@@ -270,30 +467,32 @@ export function LessonsCalendar({
             onNavigate={handleNavigate}
             step={30}
             timeslots={2}
+            formats={customFormats}
             onSelectEvent={handleSelectEvent}
             onSelectSlot={handleSelectSlot}
             selectable
+            selectRangeFormat={() => false}
+            longPressThreshold={10}
             popup
             showMultiDayTimes
             scrollToTime={new Date(1970, 1, 1, 8)}
-            min={new Date(1970, 1, 1, 8, 0, 0)} // 8:00 AM
-            max={new Date(1970, 1, 1, 22, 0, 0)} // 10:00 PM
-            // DnD пропсы
+            min={new Date(1970, 1, 1, 8, 0, 0)}
+            max={new Date(1970, 1, 1, 22, 0, 0)}
             onEventDrop={handleEventDrop}
             onEventResize={handleEventResize}
             resizable
-            draggableAccessor={() => true}
-            // Важно: включаем группировку ресурсов для недельного вида
-            // resourceGroupingLayout={currentView === "week" && groupBy !== "none"}
+            draggableAccessor={(event) => {
+              return !event.isHoliday;
+            }}
             components={{
               event: (eventProps) => (
                 <EventComponent {...eventProps} groupBy={groupBy} />
               ),
             }}
             eventPropGetter={(event) => {
-              // Всегда используем только цвет предмета
+              // Стили для уроков
               const subjectColor =
-                event.resource.lesson.subject?.color || "#000"; // fallback на серый
+                event.resource?.lesson?.subject?.color || "#000";
               const borderColor = darkenColor(subjectColor, 0.2);
 
               return {
@@ -304,6 +503,30 @@ export function LessonsCalendar({
                   fontSize: "12px",
                 },
               };
+            }}
+            dayPropGetter={(date) => {
+              if (isHolidayDate(date)) {
+                return {
+                  className: "holiday-day",
+                  style: {
+                    cursor: "not-allowed",
+                    pointerEvents: "none",
+                  },
+                };
+              }
+              return {};
+            }}
+            slotPropGetter={(date) => {
+              if (isHolidayDate(date)) {
+                return {
+                  className: "holiday-slot",
+                  style: {
+                    cursor: "not-allowed",
+                    pointerEvents: "none",
+                  },
+                };
+              }
+              return {};
             }}
             messages={calendarMessages}
           />

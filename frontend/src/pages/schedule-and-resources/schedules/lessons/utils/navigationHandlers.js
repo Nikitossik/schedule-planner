@@ -57,8 +57,24 @@ export const createSelectEventHandler = (onEditLesson) => {
 /**
  * Создает обработчик выбора слота
  */
-export const createSelectSlotHandler = (onCreateLesson) => {
+export const createSelectSlotHandler = (onCreateLesson, isHolidayDate, t) => {
   return (slotInfo) => {
+    // Проверяем, является ли выбранная дата праздником
+    if (isHolidayDate && isHolidayDate(slotInfo.start)) {
+      // Показываем уведомление о том, что нельзя создать занятие в праздничный день
+      if (t) {
+        alert(
+          t(
+            "lessons.holidayBlockedMessage",
+            "На праздничный день нельзя назначать занятия"
+          )
+        );
+      } else {
+        alert("На праздничный день нельзя назначать занятия");
+      }
+      return;
+    }
+
     if (onCreateLesson) {
       onCreateLesson({
         date: slotInfo.start.toISOString().split("T")[0],

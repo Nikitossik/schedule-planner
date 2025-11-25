@@ -44,6 +44,11 @@ export function AppSidebar({ ...props }) {
             icon: Calendar,
           },
           {
+            title: t("sidebar.holidays"),
+            url: "/holidays/",
+            icon: CalendarDays,
+          },
+          {
             title: t("sidebar.facultiesDirections"),
             url: "/faculties-directions/",
             icon: School,

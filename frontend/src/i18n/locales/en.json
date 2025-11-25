@@ -53,6 +53,7 @@
     "academicStructure": "Academic structure",
     "facultiesDirections": "Faculties & directions",
     "academicYearsSemesters": "Academic years & semesters",
+    "holidays": "Holidays",
     "contracts": "Contracts",
     "workloads": "Workloads",
     "directions": "Directions"
@@ -423,11 +424,57 @@
       "updateError": "Error updating subject"
     }
   },
+  "holidays": {
+    "defaultName": "Holiday",
+    "form": {
+      "title": {
+        "create": "Create Holiday",
+        "edit": "Edit Holiday"
+      },
+      "fields": {
+        "name": "Name",
+        "date": "Date",
+        "isAnnual": "Repeat annually"
+      },
+      "placeholders": {
+        "name": "Enter holiday name (optional)",
+        "date": "Select date"
+      },
+      "descriptions": {
+        "isAnnual": "This holiday will repeat every year on the same date",
+        "isAnnualDisabled": "Holiday type cannot be changed after creation"
+      },
+      "validation": {
+        "dateRequired": "Date is required"
+      },
+      "editNote": "Note: Only the name can be changed when editing a holiday."
+    },
+    "messages": {
+      "createSuccess": "Holiday created successfully",
+      "updateSuccess": "Holiday updated successfully",
+      "createError": "Error creating holiday",
+      "updateError": "Error updating holiday"
+    },
+    "table": {
+      "columns": {
+        "id": "ID",
+        "name": "Name",
+        "type": "Type",
+        "date": "Date"
+      },
+      "types": {
+        "annual": "Annual",
+        "manual": "Manual"
+      },
+      "addButton": "+ Add Holiday"
+    }
+  },
   "sidebar": {
     "academicManagement": "Academic management",
     "academicYearsSemesters": "Academic years & semesters",
     "facultiesDirections": "Faculties & directions",
     "subjects": "Subjects",
+    "holidays": "Holidays",
     "peopleManagement": "People management",
     "users": "Users",
     "groups": "Groups",
@@ -912,7 +959,8 @@
         "noEventsInRange": "No lessons scheduled for this period.",
         "showMore": "+{{total}} more"
       },
-      "loading": "Loading lessons..."
+      "loading": "Loading lessons...",
+      "holidayBlockedMessage": "Cannot schedule lessons on holidays"
     },
     "form": {
       "title": {

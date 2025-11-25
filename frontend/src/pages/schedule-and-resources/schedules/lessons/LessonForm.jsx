@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,7 @@ import {
 import { toast } from "sonner";
 import { useEntityList } from "@/hooks/useEntityList";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { format } from "date-fns";
 
 export function LessonForm({
   lesson,
@@ -151,7 +152,44 @@ export function LessonForm({
   });
   const assignments = assignmentsData?.items || [];
 
-  // 4. Комнаты: фильтруем по доступности в указанное время
+  // 4. Праздники: загружаем все праздники для блокировки в DatePicker
+  const { data: holidaysData } = useEntityList("university_holiday", {
+    pagination: { loadAll: true },
+  });
+  const holidays = holidaysData?.items || [];
+
+  // Создаем массив функций-матчеров для блокировки праздничных дней в DatePicker
+  const disabledDayMatchers = useMemo(() => {
+    if (!holidays || holidays.length === 0) return [];
+
+    const currentYear = new Date().getFullYear();
+    const matchers = [];
+
+    holidays.forEach((holiday) => {
+      const holidayDate = new Date(holiday.date);
+
+      if (holiday.is_annual) {
+        // Для ежегодных праздников создаем матчер, который проверяет день и месяц
+        matchers.push(
+          (date) =>
+            date.getMonth() === holidayDate.getMonth() &&
+            date.getDate() === holidayDate.getDate()
+        );
+      } else {
+        // Для обычных праздников создаем матчер для конкретной даты
+        matchers.push(
+          (date) =>
+            date.getFullYear() === holidayDate.getFullYear() &&
+            date.getMonth() === holidayDate.getMonth() &&
+            date.getDate() === holidayDate.getDate()
+        );
+      }
+    });
+
+    return matchers;
+  }, [holidays]);
+
+  // 5. Комнаты: фильтруем по доступности в указанное время
   const roomFilters = {};
 
   // Если указаны дата и время, добавляем фильтры доступности
@@ -521,6 +559,7 @@ export function LessonForm({
                   onChange={(value) => setValue("date", value)}
                   modal={true}
                   placeholder={t("lessons.form.placeholders.selectDate")}
+                  disabled={disabledDayMatchers}
                 />
                 {errors.date && (
                   <p className="text-sm text-red-500">{errors.date.message}</p>

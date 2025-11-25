@@ -201,6 +201,71 @@ def seed_rooms(db):
         repo.create(room)
 
 
+def seed_university_holidays(db):
+    """Создаем университетские праздники (выходные дни)"""
+    repo = repos.UniversityHolidayRepository(db)
+
+    # Ежегодные праздники (annual=True)
+    annual_holidays = [
+        {"name": "Nowy Rok", "is_annual": True, "date": date(2025, 1, 1)},
+        {"name": "Trzech Króli", "is_annual": True, "date": date(2025, 1, 6)},
+        {"name": "Święto Pracy", "is_annual": True, "date": date(2025, 5, 1)},
+        {"name": "Święto Konstytucji", "is_annual": True, "date": date(2025, 5, 3)},
+        {"name": "Wszystkich Świętych", "is_annual": True, "date": date(2025, 11, 1)},
+        {
+            "name": "Święto Niepodległości",
+            "is_annual": True,
+            "date": date(2025, 11, 11),
+        },
+        {
+            "name": "Wigilia Bożego Narodzenia",
+            "is_annual": True,
+            "date": date(2025, 12, 24),
+        },
+        {
+            "name": "Boże Narodzenie",
+            "is_annual": True,
+            "date": date(2025, 12, 25),
+        },
+        {
+            "name": "Boże Narodzenie",
+            "is_annual": True,
+            "date": date(2025, 12, 26),
+        },
+    ]
+
+    # Одноразовые праздники (annual=False)
+    specific_holidays = [
+        {"name": None, "is_annual": False, "date": date(2025, 10, 25)},
+        {"name": None, "is_annual": False, "date": date(2025, 10, 26)},
+    ]
+
+    print(f"Creating {len(annual_holidays)} annual holidays...")
+    for holiday in annual_holidays:
+        try:
+            repo.create(holiday)
+            print(
+                f"✅ Created annual holiday: {holiday['name']} - {holiday['date'].strftime('%d.%m')}"
+            )
+        except Exception as e:
+            print(f"❌ Failed to create annual holiday {holiday['name']}: {e}")
+            db.rollback()
+            continue
+
+    print(f"Creating {len(specific_holidays)} specific holidays...")
+    for holiday in specific_holidays:
+        try:
+            repo.create(holiday)
+            name_display = holiday["name"]
+            print(
+                f"✅ Created specific holiday: {name_display} - {holiday['date'].strftime('%d.%m.%Y')}"
+            )
+        except Exception as e:
+            print(f"❌ Failed to create specific holiday {holiday['date']}: {e}")
+            db.rollback()
+            continue
+
+
 def seed_users(db):
     service = services.UserService(db)
     groups = repos.GroupRepository(db).get_multiple()
@@ -736,6 +801,7 @@ def seed_test_data(db):
     seed_faculties(db)
     seed_directions_and_study_forms(db)
     seed_semesters_and_academic_year(db)
+    seed_university_holidays(db)
     seed_groups(db)
     seed_subjects(db)
     seed_rooms(db)
@@ -744,68 +810,3 @@ def seed_test_data(db):
     seed_professor_workloads(db)
     seed_subject_assignments(db)
     seed_schedules_and_lessons(db)
-
-
-def seed_all_new(db):
-    """Новая функция для создания всех тестовых данных с конфликтами и превышениями часов"""
-    print("🚀 Starting comprehensive data seeding for Computer Science faculty...")
-
-    try:
-        # Используем существующие функции
-        print("\n📚 1. Creating Computer Science Faculty...")
-        seed_faculties(db)
-
-        print("\n🎯 2. Creating Directions and Study Forms...")
-        seed_directions_and_study_forms(db)
-
-        print("\n📅 3. Creating Academic Year and Semesters...")
-        seed_semesters_and_academic_year(db)
-
-        print("\n👥 4. Creating Groups...")
-        seed_groups(db)
-
-        print("\n📝 5. Creating 9 Subjects...")
-        seed_subjects(db)
-
-        print("\n🏫 6. Creating Rooms...")
-        seed_rooms(db)
-
-        print("\n👨‍🏫 7. Creating 3 Professors...")
-        seed_users(db)
-
-        print("\n📋 8. Creating Professor Contracts...")
-        seed_professor_contracts(db)
-
-        print("\n⚖️ 9. Creating Professor Workloads...")
-        seed_professor_workloads(db)
-
-        print("\n🔗 10. Creating Subject Assignments...")
-        seed_subject_assignments(db)
-
-        print("\n📊 11. Creating Schedules and Lessons with Conflicts...")
-        seed_schedules_and_lessons(db)
-
-        db.commit()
-
-        print("\n✅ SEEDING COMPLETED SUCCESSFULLY!")
-        print("🎯 Created:")
-        print("   - 1 Computer Science Faculty")
-        print("   - 3 Directions (PKG, AMIPI, INF)")
-        print("   - 2 Study Forms per direction (Full-time, Part-time)")
-        print("   - 1 Academic Year with 2 Semesters")
-        print("   - 6 Groups (2 per direction)")
-        print("   - 9 Subjects (3 per direction)")
-        print("   - 33 Rooms")
-        print("   - 3 Professors with contracts and workloads")
-        print("   - Subject assignments with correct hours")
-        print("   - 3 Schedules with lessons")
-        print("   - 5 CONFLICTS (Room, Professor, Group)")
-        print("   - WORKLOAD HOUR VIOLATIONS")
-
-    except Exception as e:
-        print(f"\n❌ SEEDING FAILED: {e}")
-        import traceback
-
-        traceback.print_exc()
-        db.rollback()
-        raise

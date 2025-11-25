@@ -15,6 +15,7 @@ import LanguageSwitch from "@/components/LanguageSwitch";
 import { AcademicYearsSemestersPage } from "./pages/academic-management/academic-years-semesters";
 import { FacultiesDirectionsPage } from "./pages/academic-management/faculties-directions";
 import { SubjectsPage } from "./pages/academic-management/subjects";
+import { HolidaysPage } from "./pages/academic-management/holidays";
 
 // People Management
 import { UsersPage } from "@/pages/people-management/users";
@@ -109,6 +110,7 @@ const router = createBrowserRouter(
           element={<FacultiesDirectionsPage />}
         />
         <Route path="/subjects" element={<SubjectsPage />} />
+        <Route path="/holidays" element={<HolidaysPage />} />
 
         <Route index element={<Navigate to="/users" replace />} />
         <Route path="/users" element={<UsersPage />} />

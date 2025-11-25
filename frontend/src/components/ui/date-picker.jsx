@@ -20,7 +20,13 @@ export function DatePicker({
   modal = false,
   minDate,
   maxDate,
-  locale, // Опциональный проп для переопределения
+  locale,
+  captionLayout = "dropdown",
+  hideYear = false,
+  fromYear,
+  toYear,
+  disabled,
+  ...props
 }) {
   const [open, setOpen] = React.useState(false);
   const { i18n } = useTranslation();
@@ -50,6 +56,11 @@ export function DatePicker({
   // Определяем месяц для отображения в календаре
   const defaultMonth = isValid ? selectedDate : new Date();
 
+  // Устанавливаем диапазон лет по умолчанию
+  const currentYear = new Date().getFullYear();
+  const yearFrom = fromYear ?? currentYear;
+  const yearTo = toYear ?? currentYear + 10;
+
   return (
     <Popover open={open} onOpenChange={setOpen} modal={modal}>
       <PopoverTrigger asChild>
@@ -58,7 +69,14 @@ export function DatePicker({
           className="w-full justify-between font-normal"
         >
           {isValid
-            ? selectedDate.toLocaleDateString(i18n.language)
+            ? captionLayout === "dropdown-months"
+              ? // Показываем только день и месяц для dropdown-months
+                selectedDate.toLocaleDateString(i18n.language, {
+                  day: "2-digit",
+                  month: "2-digit",
+                })
+              : // Показываем полную дату для других режимов
+                selectedDate.toLocaleDateString(i18n.language)
             : placeholder}
           <ChevronDownIcon className="h-4 w-4" />
         </Button>
@@ -69,12 +87,25 @@ export function DatePicker({
           locale={calendarLocale}
           selected={isValid ? selectedDate : undefined}
           defaultMonth={defaultMonth}
-          captionLayout="dropdown"
-          disabled={(date) => {
-            if (minDate && date < new Date(minDate + "T00:00:00")) return true;
-            if (maxDate && date > new Date(maxDate + "T00:00:00")) return true;
-            return false;
-          }}
+          captionLayout={captionLayout}
+          hideYear={hideYear}
+          fromYear={yearFrom}
+          toYear={yearTo}
+          disabled={[
+            // Объединяем различные disabled условия
+            ...(minDate
+              ? [(date) => date < new Date(minDate + "T00:00:00")]
+              : []),
+            ...(maxDate
+              ? [(date) => date > new Date(maxDate + "T00:00:00")]
+              : []),
+            // Просто добавляем переданный disabled (может быть массивом функций или одной функцией)
+            ...(disabled
+              ? Array.isArray(disabled)
+                ? disabled
+                : [disabled]
+              : []),
+          ].filter(Boolean)}
           onSelect={(date) => {
             if (date) {
               // Форматируем дату правильно, избегая проблем с часовыми поясами
@@ -85,6 +116,7 @@ export function DatePicker({
               setOpen(false);
             }
           }}
+          {...props}
         />
       </PopoverContent>
     </Popover>

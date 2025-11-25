@@ -28,6 +28,7 @@ class SemesterPeriodEnum(str, enum.Enum):
     winter = "winter"
     summer = "summer"
 
+
 class ExportFormat(str, enum.Enum):
     excel = "excel"
     pdf = "pdf"
