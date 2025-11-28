@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 
 from ..dependencies import get_db, get_current_user, RoleChecker
-from ..models import User
+from ..models.user import User
 from ..schemas.shared import PaginatedResponse
 from ..schemas.user import (
     UserIn,

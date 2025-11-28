@@ -28,7 +28,7 @@ export function EventComponent({ event, groupBy }) {
   // Всегда используем цвет предмета
   const backgroundStyle = {
     backgroundColor: subjectColor,
-    borderLeftColor: darkenColor(subjectColor, 0.2),
+    borderLeftColor: subjectColor,
   };
 
   return (

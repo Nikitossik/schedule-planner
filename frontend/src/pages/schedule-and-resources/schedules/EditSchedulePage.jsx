@@ -1,17 +1,22 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import { useEntityQuery } from "@/hooks/useEntityQuery";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, Repeat } from "lucide-react";
 import ScheduleForm from "./ScheduleForm";
 import { LessonsList } from "./lessons";
+import { RecurringLessonsPage } from "./recurring-lessons";
 
 export default function EditSchedulePage() {
   const { t } = useTranslation();
   const { scheduleId } = useParams();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("calendar");
 
   const {
     data: schedule,
@@ -32,7 +37,6 @@ export default function EditSchedulePage() {
       {
         onSuccess: () => {
           toast.success(t("schedules.messages.updateSuccess"));
-          navigate("/schedules");
         },
         onError: (err) => {
           toast.error(err.message || t("schedules.messages.updateError"));
@@ -71,8 +75,27 @@ export default function EditSchedulePage() {
 
       <Separator />
 
-      {/* Lessons section */}
-      <LessonsList schedule={schedule} onUpdate={refetch} />
+      {/* Tabs section */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 max-w-96">
+          <TabsTrigger value="calendar" className="flex items-center gap-2">
+            <Calendar className="w-4 h-4" />
+            {t("schedules.tabs.calendar")}
+          </TabsTrigger>
+          <TabsTrigger value="recurring" className="flex items-center gap-2">
+            <Repeat className="w-4 h-4" />
+            {t("schedules.tabs.recurringLessons")}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="calendar" className="mt-6">
+          <LessonsList schedule={schedule} onUpdate={refetch} />
+        </TabsContent>
+
+        <TabsContent value="recurring" className="mt-6">
+          <RecurringLessonsPage scheduleId={scheduleId} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

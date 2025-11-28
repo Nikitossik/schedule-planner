@@ -22,7 +22,6 @@ class Schedule(Base):
     - name: human-readable schedule name.
     - semester_id: FK to Semester this schedule belongs to.
     - direction_id: FK to Direction this schedule is created for.
-    - created_at: timestamp when the schedule record was created.
     - relationships: semester, direction, lessons.
     - properties: academic_year, faculty.
     """
@@ -37,9 +36,6 @@ class Schedule(Base):
     direction_id: Mapped[int] = mapped_column(
         ForeignKey("direction.id")
     )  # FK to the related direction
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, server_default=func.now()
-    )  # Creation timestamp (server-side)
 
     # Relationships
     semester: Mapped["Semester"] = relationship(

@@ -19,6 +19,20 @@
       "create": "Utwórz",
       "update": "Aktualizuj",
       "saving": "Zapisywanie..."
+    },
+    "error": {
+      "loadingFailed": "Nie udało się wczytać danych"
+    },
+    "days": {
+      "short": {
+        "monday": "Pon",
+        "tuesday": "Wt",
+        "wednesday": "Śr",
+        "thursday": "Czw",
+        "friday": "Pt",
+        "saturday": "Sob",
+        "sunday": "Nie"
+      }
     }
   },
   "navigation": {
@@ -925,6 +939,10 @@
       "scheduleInfo": "Informacje o planie zajęć",
       "loading": "Ładowanie planu zajęć...",
       "error": "Błąd ładowania planu zajęć"
+    },
+    "tabs": {
+      "calendar": "Kalendarz",
+      "recurringLessons": "Zajęcia cykliczne"
     }
   },
   "lessons": {
@@ -957,78 +975,6 @@
       },
       "loading": "Ładowanie zajęć...",
       "holidayBlockedMessage": "Nie można planować zajęć w dni świąteczne"
-    },
-    "form": {
-      "title": {
-        "create": "Utwórz zajęcia",
-        "edit": "Edytuj zajęcia"
-      },
-      "fields": {
-        "group": {
-          "label": "Grupa",
-          "placeholder": "Wybierz grupę"
-        },
-        "workload": {
-          "label": "Profesor i obciążenie",
-          "placeholder": "Wybierz obciążenie profesora"
-        },
-        "subjectAssignment": {
-          "label": "Przypisanie przedmiotu",
-          "placeholder": "Wybierz przypisanie przedmiotu"
-        },
-        "lessonType": {
-          "label": "Typ zajęć",
-          "placeholder": "Wybierz typ zajęć",
-          "options": {
-            "lecture": "Wykład",
-            "practice": "Ćwiczenia",
-            "lab": "Laboratorium",
-            "seminar": "Seminarium"
-          }
-        },
-        "date": {
-          "label": "Data",
-          "placeholder": "Wybierz datę"
-        },
-        "startTime": {
-          "label": "Godzina rozpoczęcia",
-          "placeholder": "Wybierz godzinę rozpoczęcia"
-        },
-        "endTime": {
-          "label": "Godzina zakończenia",
-          "placeholder": "Wybierz godzinę zakończenia"
-        },
-        "isOnline": {
-          "label": "Zajęcia online"
-        },
-        "room": {
-          "label": "Sala",
-          "placeholder": "Wybierz salę"
-        },
-        "notes": {
-          "label": "Uwagi",
-          "placeholder": "Dodatkowe uwagi (opcjonalne)"
-        }
-      },
-      "noData": {
-        "noGroups": "Nie znaleziono grup dla tego planu",
-        "noWorkloads": "Brak dostępnych obciążeń",
-        "noAssignments": "Brak dostępnych przypisań przedmiotów",
-        "noRooms": "Brak dostępnych sal"
-      },
-      "buttons": {
-        "create": "Utwórz zajęcia",
-        "update": "Aktualizuj zajęcia",
-        "delete": "Usuń zajęcia",
-        "cancel": "Anuluj",
-        "saving": "Zapisywanie..."
-      },
-      "deleteConfirm": {
-        "title": "Usuń zajęcia",
-        "message": "Czy na pewno chcesz usunąć te zajęcia? Tej operacji nie można cofnąć.",
-        "confirm": "Tak, usuń",
-        "cancel": "Anuluj"
-      }
     },
     "messages": {
       "createSuccess": "Zajęcia utworzone",
@@ -1160,6 +1106,79 @@
         "practice": "Ćwiczenia",
         "lab": "Laboratorium",
         "seminar": "Seminarium"
+      }
+    }
+  },
+  "recurringLessons": {
+    "add": "Dodaj szablon",
+    "search": {
+      "placeholder": "Szukaj szablonów..."
+    },
+    "table": {
+      "name": "Nazwa",
+      "subject": "Przedmiot",
+      "group": "Grupa",
+      "type": "Typ",
+      "days": "Dni",
+      "time": "Czas",
+      "room": "Sala",
+      "period": "Okres",
+      "online": "Online",
+      "semesterEnd": "Do końca semestru",
+      "columns": {
+        "name": "Nazwa",
+        "group": "Grupa",
+        "professor": "Wykładowca",
+        "subject": "Przedmiot",
+        "lessonType": "Typ",
+        "daysOfWeek": "Dni",
+        "time": "Czas",
+        "room": "Sala",
+        "dateRange": "Okres"
+      },
+      "search": {
+        "placeholder": "Szukaj zajęć cyklicznych..."
+      },
+      "actions": {
+        "edit": "Edytuj",
+        "delete": "Usuń",
+        "generate": "Wygeneruj zajęcia"
+      }
+    },
+    "form": {
+      "title": {
+        "add": "Dodaj szablon zajęć cyklicznych",
+        "edit": "Edytuj szablon zajęć cyklicznych"
+      },
+      "fields": {
+        "name": "Nazwa szablonu",
+        "startDate": "Data rozpoczęcia",
+        "endDate": "Data zakończenia"
+      },
+      "sections": {
+        "daysOfWeek": "Dni tygodnia",
+        "dateTimeRange": "Zakres dat i czas"
+      },
+      "placeholders": {
+        "templateName": "Wprowadź nazwę szablonu...",
+        "selectStartDate": "Wybierz datę rozpoczęcia",
+        "selectEndDate": "Wybierz datę zakończenia"
+      },
+      "validation": {
+        "nameRequired": "Nazwa szablonu jest wymagana"
+      },
+      "messages": {
+        "selectedDays": "Wybrane dni",
+        "created": "Szablon zajęć cyklicznych utworzony pomyślnie",
+        "updated": "Szablon zajęć cyklicznych zaktualizowany pomyślnie",
+        "saveFailed": "Nie udało się zapisać szablonu zajęć cyklicznych"
+      },
+      "buttons": {
+        "cancel": "Anuluj",
+        "create": "Utwórz szablon",
+        "update": "Zaktualizuj szablon",
+        "delete": "Usuń",
+        "saving": "Zapisywanie..."
       }
     }
   },

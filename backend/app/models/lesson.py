@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from .subject_assignment import SubjectAssignment
     from .group import Group
     from .room import Room
+    from .recurring_template import RecurringLessonTemplate
 
 
 class Lesson(Base):
@@ -55,6 +56,10 @@ class Lesson(Base):
         default=False
     )  # True if the lesson is online
 
+    recurring_template_id: Mapped[int] = mapped_column(
+        ForeignKey("recurring_lesson_template.id"), nullable=True
+    )
+
     # Time window (date and start/end times)
     date: Mapped[date] = mapped_column(Date)  # Lesson calendar date
     start_time: Mapped[time] = mapped_column(Time)  # Start time (local)
@@ -76,6 +81,9 @@ class Lesson(Base):
         "SubjectAssignment", back_populates="lessons"
     )  # Many-to-one: assignment that ties subject and professor
     room: Mapped["Room"] = relationship("Room")  # Many-to-one: physical room (if any)
+    recurring_template: Mapped["RecurringLessonTemplate"] = relationship(
+        "RecurringLessonTemplate", back_populates="lessons"
+    )
 
     # Convenience properties accessing related data via subject_assignment
     @property

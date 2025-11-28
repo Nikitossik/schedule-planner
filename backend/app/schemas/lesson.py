@@ -11,6 +11,8 @@ from .minis import (
     ProfessorWorkloadMiniOut,
 )
 
+from ..utils.enums import LessonTypeEnum
+
 
 class LessonBase(BaseModel):
     """
@@ -55,8 +57,7 @@ class LessonBase(BaseModel):
         description="End time (HH:MM:SS).",
         examples=["11:30:00"],
     )
-    lesson_type: str = Field(
-        max_length=50,
+    lesson_type: LessonTypeEnum = Field(
         description="Lesson type (e.g., LECTURE, SEMINAR, LAB).",
         examples=["LECTURE"],
     )

@@ -32,13 +32,14 @@ import {
   FlaskConical,
   MessageSquare,
   Presentation,
+  Repeat,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEntityList } from "@/hooks/useEntityList";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useEntityMutation } from "@/hooks/useEntityMutation";
 
-export function LessonForm({
-  lesson,
+export function RecurringLessonForm({
+  template,
   schedule,
   onSave,
   onCancel,
@@ -48,38 +49,71 @@ export function LessonForm({
   const { t } = useTranslation();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Трансформируем данные урока для формы
-  const getDefaultValues = useCallback(() => {
-    if (lesson && isEdit) {
-      return {
-        schedule_id: schedule?.id || lesson.schedule?.id,
-        group_id: lesson.group?.id?.toString() || "",
-        subject_assignment_id: lesson.subject_assignment_id?.toString() || "",
-        room_id: lesson.room?.id?.toString() || "",
-        is_online: lesson.is_online || false,
-        date: lesson.date || "",
-        start_time: lesson.start_time || "",
-        end_time: lesson.end_time || "",
-        lesson_type: lesson.lesson_type || "lecture",
+  const createRecurringTemplate = useEntityMutation(
+    "recurring_template",
+    "create"
+  );
+  const updateRecurringTemplate = useEntityMutation(
+    "recurring_template",
+    "patch"
+  );
 
-        workload_id: lesson.workload?.id?.toString() || "",
+  // Получаем сегодняшнюю дату для валидации
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Получаем дату окончания семестра
+  const semesterEndDate = schedule?.semester?.end_date || null;
+
+  // Трансформируем данные шаблона для формы
+  const getDefaultValues = useCallback(() => {
+    if (template && isEdit) {
+      // Конвертируем days_of_week из JSON строки в массив
+      let daysOfWeek = template.days_of_week || [];
+      if (typeof daysOfWeek === "string") {
+        try {
+          daysOfWeek = JSON.parse(daysOfWeek);
+        } catch {
+          daysOfWeek = [];
+        }
+      }
+
+      return {
+        name: template.name || "",
+        schedule_id: schedule?.id || template.schedule?.id,
+        group_id: template.group?.id?.toString() || "",
+        subject_assignment_id: template.subject_assignment_id?.toString() || "",
+        room_id: template.room?.id?.toString() || "",
+        is_online: template.is_online || false,
+        lesson_type: template.lesson_type || "lecture",
+        days_of_week: daysOfWeek,
+        start_time: template.start_time || "",
+        end_time: template.end_time || "",
+        start_date:
+          template.start_date || new Date().toISOString().split("T")[0],
+        end_date: template.end_date || semesterEndDate || "",
+        workload_id: template.workload?.id?.toString() || "",
       };
     }
 
-    // Для создания урока - используем данные из lesson или дефолтные значения
+    // Для создания шаблона - дефолтные значения
     return {
+      name: "",
       schedule_id: schedule?.id,
       group_id: "",
       subject_assignment_id: "",
       room_id: "",
       is_online: false,
-      date: lesson?.date || "",
-      start_time: lesson?.start_time || "",
-      end_time: lesson?.end_time || "",
       lesson_type: "lecture",
+      days_of_week: [],
+      start_time: "",
+      end_time: "",
+      start_date: new Date().toISOString().split("T")[0],
+      end_date: semesterEndDate || "",
       workload_id: "",
     };
-  }, [lesson, schedule, isEdit]);
+  }, [template, schedule, isEdit, semesterEndDate]);
+
   const {
     control,
     handleSubmit,
@@ -92,18 +126,20 @@ export function LessonForm({
     defaultValues: getDefaultValues(),
   });
 
-  // Сбрасываем форму когда меняется урок
+  // Сбрасываем форму когда меняется шаблон
   useEffect(() => {
     reset(getDefaultValues());
-  }, [lesson, getDefaultValues, reset]);
+  }, [template, getDefaultValues, reset]);
 
   // Отслеживаемые поля для каскадной фильтрации
   const watchedGroupId = watch("group_id");
   const watchedWorkloadId = watch("workload_id");
   const watchedIsOnline = watch("is_online");
-  const watchedDate = watch("date");
+  const watchedStartDate = watch("start_date");
+  const watchedEndDate = watch("end_date");
   const watchedStartTime = watch("start_time");
   const watchedEndTime = watch("end_time");
+  const watchedDaysOfWeek = watch("days_of_week");
 
   // 1. Группы: фильтруем по semester_id и direction_id из schedule
   const { data: groupsData } = useEntityList("group", {
@@ -123,134 +159,102 @@ export function LessonForm({
   // 2. Workloads: фильтруем по семестру, направлению из schedule и study_form из группы
   const { data: workloadsData } = useEntityList("professor_workload", {
     filters:
-      schedule && (selectedGroup || (isEdit && lesson?.group))
+      schedule && (selectedGroup || (isEdit && template?.group))
         ? {
             semester_ids: [schedule.semester.id],
             direction_ids: [schedule.direction.id],
             study_forms: [
-              (selectedGroup || (isEdit && lesson?.group))?.study_form?.form,
+              (selectedGroup || (isEdit && template?.group))?.study_form?.form,
             ],
           }
         : {},
-
     pagination: { loadAll: true },
   });
   const workloads = workloadsData?.items || [];
 
   // 3. Subject assignments: фильтруем по выбранному workload_id
   const currentWorkloadId =
-    watchedWorkloadId || (isEdit && lesson?.workload?.id);
+    watchedWorkloadId || (isEdit && template?.workload?.id);
   const { data: assignmentsData } = useEntityList("subject_assignment", {
     filters: currentWorkloadId
       ? {
           workload_id: currentWorkloadId,
         }
       : {},
-
     pagination: { loadAll: true },
   });
   const assignments = assignmentsData?.items || [];
 
-  // 4. Праздники: загружаем все праздники для блокировки в DatePicker
-  const { data: holidaysData } = useEntityList("university_holiday", {
-    pagination: { loadAll: true },
-  });
-  const holidays = holidaysData?.items || [];
-
-  // Создаем массив функций-матчеров для блокировки праздничных дней в DatePicker
-  const disabledDayMatchers = useMemo(() => {
-    if (!holidays || holidays.length === 0) return [];
-
-    const currentYear = new Date().getFullYear();
-    const matchers = [];
-
-    holidays.forEach((holiday) => {
-      const holidayDate = new Date(holiday.date);
-
-      if (holiday.is_annual) {
-        // Для ежегодных праздников создаем матчер, который проверяет день и месяц
-        matchers.push(
-          (date) =>
-            date.getMonth() === holidayDate.getMonth() &&
-            date.getDate() === holidayDate.getDate()
-        );
-      } else {
-        // Для обычных праздников создаем матчер для конкретной даты
-        matchers.push(
-          (date) =>
-            date.getFullYear() === holidayDate.getFullYear() &&
-            date.getMonth() === holidayDate.getMonth() &&
-            date.getDate() === holidayDate.getDate()
-        );
-      }
-    });
-
-    return matchers;
-  }, [holidays]);
-
-  // 5. Комнаты: фильтруем по доступности в указанное время
-  const roomFilters = {};
-
-  // Если указаны дата и время, добавляем фильтры доступности
-  if (watchedDate && watchedStartTime && watchedEndTime && !watchedIsOnline) {
-    roomFilters.available_date = watchedDate;
-    roomFilters.available_start_time = watchedStartTime;
-    roomFilters.available_end_time = watchedEndTime;
-
-    // При редактировании исключаем текущий урок
-    if (isEdit && lesson?.id) {
-      roomFilters.exclude_lesson_id = lesson.id;
-    }
-  }
-
+  // 4. Комнаты: загружаем все комнаты (без фильтрации по времени для шаблонов)
   const { data: roomsData } = useEntityList("room", {
-    filters: roomFilters,
     pagination: { loadAll: true },
   });
   const rooms = roomsData?.items || [];
 
-  // Сброс формы при изменении lesson (для редактирования)
-  useEffect(() => {
-    const values = getDefaultValues();
-    reset(values);
+  // Дни недели для селектора (используем встроенные возможности JS)
+  const { i18n } = useTranslation();
+  const daysOfWeek = useMemo(() => {
+    const locale = i18n?.language === "pl" ? "pl" : "en";
 
-    // Принудительно устанавливаем workload_id после небольшой задержки
-    if (isEdit && lesson?.workload?.id) {
-      const timeoutId = setTimeout(() => {
-        const workloadIdString = lesson.workload.id.toString();
-        console.log("Setting workload_id via setTimeout:", workloadIdString);
-        setValue("workload_id", workloadIdString);
-      }, 200);
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(2024, 0, 1 + index); // Начинаем с понедельника
+      const dayName = date.toLocaleDateString(locale, { weekday: "short" });
 
-      return () => clearTimeout(timeoutId);
-    }
-  }, [lesson, isEdit, reset, getDefaultValues, setValue]);
+      return {
+        value: index,
+        short: dayName,
+      };
+    });
+  }, [i18n?.language]);
 
   // Очистка зависимых полей при изменении родительских
   useEffect(() => {
-    if (!isEdit) {
-      // Только для создания новых уроков
+    if (!isEdit && setValue) {
       setValue("workload_id", "");
       setValue("subject_assignment_id", "");
     }
   }, [watchedGroupId, setValue, isEdit]);
 
   useEffect(() => {
-    if (!isEdit) {
+    if (!isEdit && setValue) {
       setValue("subject_assignment_id", "");
     }
   }, [watchedWorkloadId, setValue, isEdit]);
 
-  // Очистка комнаты при изменении даты/времени (если не онлайн)
+  // Обновление названия шаблона на основе выбранных данных
+  const watchedSubjectAssignmentId = watch("subject_assignment_id");
+
   useEffect(() => {
-    if (!isEdit && !watchedIsOnline) {
-      setValue("room_id", "");
+    if (
+      !isEdit &&
+      watchedWorkloadId &&
+      watchedGroupId &&
+      watchedSubjectAssignmentId
+    ) {
+      const selectedWorkload = workloads.find(
+        (w) => w.id.toString() === watchedWorkloadId
+      );
+      const selectedGroup = groups.find(
+        (g) => g.id.toString() === watchedGroupId
+      );
+      const selectedAssignment = assignments.find(
+        (a) => a.id.toString() === watchedSubjectAssignmentId
+      );
+
+      if (selectedWorkload && selectedGroup && selectedAssignment) {
+        const subjectName = selectedAssignment.subject?.name || "Subject";
+        const groupName = selectedGroup.name || "Group";
+        const generatedName = `${subjectName} - ${groupName}`;
+        setValue("name", generatedName);
+      }
     }
   }, [
-    watchedDate,
-    watchedStartTime,
-    watchedEndTime,
-    watchedIsOnline,
+    watchedWorkloadId,
+    watchedGroupId,
+    watchedSubjectAssignmentId,
+    workloads,
+    groups,
+    assignments,
     setValue,
     isEdit,
   ]);
@@ -259,28 +263,40 @@ export function LessonForm({
   useEffect(() => {
     if (
       isEdit &&
-      lesson?.workload?.id &&
+      template?.workload?.id &&
       workloads.length > 0 &&
       !watchedWorkloadId
     ) {
-      const workloadIdString = lesson.workload.id.toString();
       const workloadExists = workloads.find(
-        (w) => w.id.toString() === workloadIdString
+        (w) => w.id === template.workload.id
       );
-
       if (workloadExists) {
-        console.log(
-          "Setting workload_id from workloads effect:",
-          workloadIdString
-        );
-        setValue("workload_id", workloadIdString);
+        setValue("workload_id", template.workload.id.toString());
       }
     }
-  }, [isEdit, lesson, workloads, watchedWorkloadId, setValue]);
+  }, [isEdit, template, workloads, watchedWorkloadId, setValue]);
+
+  // Функции для работы с днями недели
+  const toggleDayOfWeek = (dayValue) => {
+    // Конвертируем в массив, если пришла строка (JSON)
+    let currentDays = watchedDaysOfWeek || [];
+    if (typeof currentDays === "string") {
+      try {
+        currentDays = JSON.parse(currentDays);
+      } catch {
+        currentDays = [];
+      }
+    }
+
+    const newDays = currentDays.includes(dayValue)
+      ? currentDays.filter((day) => day !== dayValue)
+      : [...currentDays, dayValue].sort();
+    setValue("days_of_week", newDays);
+  };
 
   const handleFormSubmit = async (data) => {
     try {
-      // Преобразуем строковые ID в числа для API
+      // Преобразуем данные для API
       const transformedData = {
         ...data,
         schedule_id: parseInt(data.schedule_id),
@@ -289,25 +305,29 @@ export function LessonForm({
           ? parseInt(data.subject_assignment_id)
           : null,
         room_id: data.room_id ? parseInt(data.room_id) : null,
+        days_of_week: JSON.stringify(data.days_of_week || []),
       };
 
       // Удаляем workload_id из данных, он нужен только для UI
       delete transformedData.workload_id;
 
-      await onSave(transformedData);
-      toast.success(isEdit ? "Lesson updated" : "Lesson created");
+      if (isEdit) {
+        await updateRecurringTemplate.mutateAsync({
+          id: template.id,
+          data: transformedData,
+        });
+        toast.success(t("recurringLessons.form.messages.updated"));
+      } else {
+        await createRecurringTemplate.mutateAsync(transformedData);
+        toast.success(t("recurringLessons.form.messages.created"));
+      }
+
+      onSave?.();
     } catch (error) {
-      toast.error(error.message || "Failed to save lesson");
+      toast.error(
+        error.message || t("recurringLessons.form.messages.saveFailed")
+      );
     }
-  };
-
-  const handleDeleteClick = () => {
-    setShowDeleteConfirm(true);
-  };
-
-  const handleConfirmDelete = () => {
-    onDelete(lesson.id);
-    setShowDeleteConfirm(false);
   };
 
   const lessonTypes = [
@@ -334,15 +354,40 @@ export function LessonForm({
   ];
 
   return (
-    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5" />
-          {isEdit ? t("lessons.form.title.edit") : t("lessons.form.title.add")}
+          <Repeat className="h-5 w-5" />
+          {isEdit
+            ? t("recurringLessons.form.title.edit")
+            : t("recurringLessons.form.title.add")}
         </DialogTitle>
       </DialogHeader>
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+        {/* Template Name */}
+        <Card>
+          <CardContent className="pt-3 space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                {t("recurringLessons.form.fields.name")}
+              </label>
+              <Input
+                {...register("name", {
+                  required: t("recurringLessons.form.validation.nameRequired"),
+                })}
+                placeholder={t(
+                  "recurringLessons.form.placeholders.templateName"
+                )}
+              />
+              {errors.name && (
+                <p className="text-sm text-red-500">{errors.name.message}</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Group Selection */}
         <Card>
           <CardContent className="pt-3 space-y-4">
@@ -538,71 +583,135 @@ export function LessonForm({
           </CardContent>
         </Card>
 
-        {/* Date and Time */}
+        {/* Days of Week Selection */}
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <h3 className="text-lg font-medium flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              {t("recurringLessons.form.sections.daysOfWeek")}
+            </h3>
+
+            <div className="grid grid-cols-7 gap-2">
+              {daysOfWeek.map((day) => (
+                <div
+                  key={day.value}
+                  className="flex flex-col items-center space-y-2"
+                >
+                  <label className="text-sm font-medium">{day.short}</label>
+                  <Checkbox
+                    checked={(watchedDaysOfWeek || []).includes(day.value)}
+                    onCheckedChange={() => toggleDayOfWeek(day.value)}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {errors.days_of_week && (
+              <p className="text-sm text-red-500">
+                {errors.days_of_week.message}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Date Range and Time */}
         <Card>
           <CardContent className="pt-6 space-y-4">
             <h3 className="text-lg font-medium flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              {t("lessons.form.sections.dateTime")}
+              {t("recurringLessons.form.sections.dateTimeRange")}
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Date */}
+            <div className="space-y-4">
+              {/* Start Date */}
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  {t("lessons.form.fields.date")}
+                  {t("recurringLessons.form.fields.startDate")}
                 </label>
                 <DatePicker
-                  value={watch("date")}
-                  onChange={(value) => setValue("date", value)}
+                  value={watch("start_date")}
+                  onChange={(value) => setValue("start_date", value)}
                   modal={true}
-                  placeholder={t("lessons.form.placeholders.selectDate")}
-                  disabled={disabledDayMatchers}
+                  placeholder={t(
+                    "recurringLessons.form.placeholders.selectStartDate"
+                  )}
+                  disabled={[(date) => date < today]}
                 />
-                {errors.date && (
-                  <p className="text-sm text-red-500">{errors.date.message}</p>
-                )}
-              </div>
-
-              {/* Start time */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  {t("lessons.form.fields.startTime")}
-                </label>
-                <Input
-                  type="time"
-                  step="1"
-                  {...register("start_time", {
-                    required: t("lessons.form.validation.startTimeRequired"),
-                  })}
-                  className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                />
-                {errors.start_time && (
+                {errors.start_date && (
                   <p className="text-sm text-red-500">
-                    {errors.start_time.message}
+                    {errors.start_date.message}
                   </p>
                 )}
               </div>
 
-              {/* End time */}
+              {/* End Date */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  {t("lessons.form.fields.endTime")}
+                <label className="text-sm font-medium flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  {t("recurringLessons.form.fields.endDate")}
                 </label>
-                <Input
-                  type="time"
-                  step="1"
-                  {...register("end_time", {
-                    required: t("lessons.form.validation.endTimeRequired"),
-                  })}
-                  className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                <DatePicker
+                  value={watch("end_date")}
+                  onChange={(value) => setValue("end_date", value)}
+                  modal={true}
+                  placeholder={t(
+                    "recurringLessons.form.placeholders.selectEndDate"
+                  )}
+                  disabled={[
+                    (date) => date < today,
+                    (date) =>
+                      watchedStartDate && date <= new Date(watchedStartDate),
+                  ]}
                 />
-                {errors.end_time && (
+                {errors.end_date && (
                   <p className="text-sm text-red-500">
-                    {errors.end_time.message}
+                    {errors.end_date.message}
                   </p>
                 )}
+              </div>
+
+              {/* Time Range */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Start time */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    {t("lessons.form.fields.startTime")}
+                  </label>
+                  <Input
+                    type="time"
+                    step="1"
+                    {...register("start_time", {
+                      required: t("lessons.form.validation.startTimeRequired"),
+                    })}
+                    className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                  />
+                  {errors.start_time && (
+                    <p className="text-sm text-red-500">
+                      {errors.start_time.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* End time */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    {t("lessons.form.fields.endTime")}
+                  </label>
+                  <Input
+                    type="time"
+                    step="1"
+                    {...register("end_time", {
+                      required: t("lessons.form.validation.endTimeRequired"),
+                    })}
+                    className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                  />
+                  {errors.end_time && (
+                    <p className="text-sm text-red-500">
+                      {errors.end_time.message}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -638,25 +747,16 @@ export function LessonForm({
                 <Select
                   value={watch("room_id")}
                   onValueChange={(value) => setValue("room_id", value)}
-                  disabled={
-                    !watchedDate || !watchedStartTime || !watchedEndTime
-                  }
                 >
                   <SelectTrigger>
                     <SelectValue
-                      placeholder={
-                        !watchedDate || !watchedStartTime || !watchedEndTime
-                          ? t("lessons.form.placeholders.setDateTimeFirst")
-                          : t("lessons.form.placeholders.selectRoom")
-                      }
+                      placeholder={t("lessons.form.placeholders.selectRoom")}
                     />
                   </SelectTrigger>
                   <SelectContent>
                     {rooms.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground text-center">
-                        {!watchedDate || !watchedStartTime || !watchedEndTime
-                          ? t("lessons.form.messages.setDateTimeForRooms")
-                          : t("lessons.form.messages.noRooms")}
+                        {t("lessons.form.messages.noRooms")}
                       </div>
                     ) : (
                       rooms.map((room) => (
@@ -698,45 +798,36 @@ export function LessonForm({
               <Button
                 type="button"
                 variant="destructive"
-                onClick={handleDeleteClick}
+                onClick={() => setShowDeleteConfirm(true)}
                 disabled={isSubmitting}
               >
-                {t("lessons.form.buttons.delete")}
+                {t("recurringLessons.form.buttons.delete")}
               </Button>
             )}
           </div>
           <div className="flex gap-2">
-            {!isEdit && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isSubmitting}
-              >
-                {t("lessons.form.buttons.cancel")}
-              </Button>
-            )}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              {t("recurringLessons.form.buttons.cancel")}
+            </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
-                <>{t("lessons.form.buttons.saving")}</>
+                <>{t("recurringLessons.form.buttons.saving")}</>
               ) : (
                 <>
-                  {lesson && isEdit
-                    ? t("lessons.form.buttons.update")
-                    : t("lessons.form.buttons.create")}
+                  {template && isEdit
+                    ? t("recurringLessons.form.buttons.update")
+                    : t("recurringLessons.form.buttons.create")}
                 </>
               )}
             </Button>
           </div>
         </DialogFooter>
       </form>
-
-      <ConfirmDialog
-        open={showDeleteConfirm}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setShowDeleteConfirm(false)}
-        message={t("lessons.form.confirmDelete")}
-      />
     </DialogContent>
   );
 }

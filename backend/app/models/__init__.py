@@ -15,3 +15,4 @@ from .schedule import Schedule
 from .lesson import Lesson
 from .academic_year import AcademicYear
 from .university_holiday import UniversityHoliday
+from .recurring_template import RecurringLessonTemplate

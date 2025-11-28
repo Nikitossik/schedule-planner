@@ -1,8 +1,11 @@
 """Mini (compact) schemas intended for embedding as nested objects inside larger API responses."""
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 from datetime import date
 from ..utils.enums import SemesterPeriodEnum
+from datetime import time
+from typing import Optional, List
+import json
 
 
 class FacultyMiniOut(BaseModel):
@@ -183,3 +186,25 @@ class RoomMiniOut(BaseModel):
     capacity: int = Field(
         ..., description="Seating capacity of the room.", examples=[30]
     )
+
+
+class RecurringLessonTemplateMiniOut(BaseModel):
+    """Minimal output schema for RecurringLessonTemplate used in relationships."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int = Field(description="Template identifier.")
+    name: Optional[str] = Field(description="Template name.")
+    days_of_week: List[int] = Field(description="Days of week.")
+    start_time: time = Field(description="Start time.")
+    end_time: time = Field(description="End time.")
+
+    @field_serializer("days_of_week")
+    def serialize_days_of_week(self, value):
+        """Convert JSON string to list of integers for API response"""
+        if isinstance(value, str):
+            try:
+                return json.loads(value)
+            except (json.JSONDecodeError, TypeError):
+                return []
+        return value if isinstance(value, list) else []

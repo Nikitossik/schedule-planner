@@ -203,6 +203,7 @@ app.include_router(routes.room_router)
 app.include_router(routes.group_router)
 app.include_router(routes.schedule_router)
 app.include_router(routes.lesson_router)
+app.include_router(routes.recurring_template_router)
 
 
 if __name__ == "__main__":

@@ -68,11 +68,6 @@ class ScheduleOut(BaseModel):
         description="Schedule display name.",
         examples=["CS Fall 2024"],
     )
-    created_at: datetime = Field(
-        ...,
-        description="Timestamp when the schedule was created (UTC).",
-        examples=["2024-08-20T12:34:56Z"],
-    )
 
     academic_year: AcademicYearMiniOut = Field(
         ...,

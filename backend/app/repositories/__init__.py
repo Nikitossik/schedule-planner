@@ -13,3 +13,4 @@ from .professor_contract import ProfessorContractRepository
 from .subject_assignment import SubjectAssignmentRepository
 from .lesson import LessonRepository
 from .university_holiday import UniversityHolidayRepository
+from .recurring_template import RecurringLessonTemplateRepository
