@@ -30,6 +30,9 @@ class SubjectMiniOut(BaseModel):
         description='Hex color for UI tagging (e.g., "#RRGGBB").',
         examples=["#FF0000"],
     )
+    allocated_hours: int = Field(
+        ..., description="Allocated hours for the subject.", examples=[40]
+    )
 
 
 class GroupMiniOut(BaseModel):

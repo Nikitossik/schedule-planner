@@ -67,7 +67,7 @@ export const RecurringLessonsPage = ({ scheduleId }) => {
         entity="recurring_template"
         columns={columns}
         showSearch={false}
-        defaultFilters={{ schedule_id: scheduleId }}
+        defaultFilters={{ schedule_ids: [scheduleId] }}
         defaultSorting={[{ id: "id", desc: false }]}
         localStorageKey={`recurringLessonsTableState_${scheduleId}`}
         searchPlaceholder={t("recurringLessons.search.placeholder")}

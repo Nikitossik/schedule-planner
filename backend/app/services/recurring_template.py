@@ -23,6 +23,36 @@ class RecurringLessonTemplateService(
         self.lesson_service = LessonService(db)
         self.holiday_service = UniversityHolidayService(db)
 
+    def apply_filters(self, query, params):
+        """
+        Apply filters to recurring lesson templates query.
+
+        Supported filters:
+        - schedule_ids: filter by multiple schedule IDs
+        - start_date_from/start_date_to: filter by start_date range
+
+        Args:
+            query: SQLAlchemy query for RecurringLessonTemplate.
+            params: Combined query/filter params.
+
+        Returns:
+            The filtered SQLAlchemy query.
+        """
+        if params.schedule_ids:
+            query = query.filter(
+                RecurringLessonTemplate.schedule_id.in_(params.schedule_ids)
+            )
+        if params.start_date_from:
+            query = query.filter(
+                RecurringLessonTemplate.start_date >= params.start_date_from
+            )
+        if params.start_date_to:
+            query = query.filter(
+                RecurringLessonTemplate.start_date <= params.start_date_to
+            )
+
+        return super().apply_filters(query, params)
+
     def create(self, data: RecurringLessonTemplateIn) -> RecurringLessonTemplate:
         """Переопределенный метод создания - создаем шаблон и генерируем уроки"""
 

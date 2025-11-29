@@ -280,3 +280,85 @@ class WorkloadSummaryOut(BaseModel):
         description="Optional schedule identifier used for scoping the summary.",
         examples=[5],
     )
+
+
+class SubjectHoursWarningOut(BaseModel):
+    """
+    Warning for a subject that has exceeded its allocated hours in a schedule.
+    Represents excess across all assignments of the subject.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    type: Literal["subject_exceeded"] = Field(
+        ...,
+        description='Warning type code. Always "subject_exceeded".',
+        examples=["subject_exceeded"],
+    )
+    subject_id: int = Field(
+        ...,
+        description="Identifier of the subject causing the warning.",
+        examples=[12],
+    )
+    subject_name: str = Field(
+        ...,
+        description="Human-readable subject name.",
+        examples=["Calculus II"],
+    )
+    subject_code: str = Field(
+        ...,
+        description="Subject code.",
+        examples=["MATH202"],
+    )
+    scheduled_hours: float = Field(
+        ...,
+        description="Total scheduled hours for this subject across all assignments.",
+        examples=[50.0],
+    )
+    allocated_hours: float = Field(
+        ...,
+        description="Maximum allocated hours for this subject.",
+        examples=[45.0],
+    )
+    excess_hours: float = Field(
+        ...,
+        description="Computed excess hours (scheduled_hours - allocated_hours).",
+        examples=[5.0],
+    )
+    lessons: List[LessonOut] = Field(
+        ...,
+        description="List of all lessons for this subject in the schedule.",
+        examples=[[{"id": 1, "lesson_type": "LECTURE"}]],
+    )
+
+
+class CombinedWarningsSummaryOut(BaseModel):
+    """
+    Combined summary of both professor workload and subject hours warnings.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    professor_warnings: List[LocalWorkloadWarningOut] = Field(
+        default=[],
+        description="List of professor workload warnings.",
+    )
+    subject_warnings: List[SubjectHoursWarningOut] = Field(
+        default=[],
+        description="List of subject hours warnings.",
+    )
+    total_professor_warnings: int = Field(
+        ...,
+        description="Total number of professor warnings.",
+        examples=[2],
+    )
+    total_subject_warnings: int = Field(
+        ...,
+        description="Total number of subject warnings.",
+        examples=[1],
+    )
+    schedule_id: Optional[int] = Field(
+        default=None,
+        description="Optional schedule identifier used for scoping the summary.",
+        examples=[5],
+    )

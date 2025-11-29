@@ -47,6 +47,15 @@ export const useSubjectColumns = () => {
       },
     },
     {
+      accessorKey: "allocated_hours",
+      header: t("subjects.table.columns.allocatedHours"),
+      cell: ({ row }) => (
+        <Badge variant="secondary">
+          {row.original.allocated_hours} {t("subjects.table.hoursUnit")}
+        </Badge>
+      ),
+    },
+    {
       accessorKey: "color",
       header: t("subjects.table.columns.color"),
       cell: ({ row }) => (

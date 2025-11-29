@@ -27,17 +27,17 @@ export function SchedulePageProvider({ children, schedule }) {
     staleTime: 30000, // Кешируем на 30 секунд
   });
 
-  // Данные предупреждений о превышении часов
-  const { data: workloadWarningsData, isLoading: workloadLoading } = useQuery({
-    queryKey: ["local-workload-warnings", schedule?.id],
+  // Данные предупреждений о превышении часов (объединенные)
+  const { data: combinedWarningsData, isLoading: workloadLoading } = useQuery({
+    queryKey: ["combined-warnings", schedule?.id],
     queryFn: async () => {
       if (!schedule?.id) return null;
 
       const res = await protectedFetch(
-        `http://localhost:8000/api/professor_workload/warnings/local/${schedule.id}`
+        `http://localhost:8000/api/professor_workload/warnings/combined/${schedule.id}`
       );
 
-      if (!res.ok) throw new Error("Failed to fetch workload warnings");
+      if (!res.ok) throw new Error("Failed to fetch combined warnings");
       return res.json();
     },
     enabled: !!schedule?.id,
@@ -65,8 +65,14 @@ export function SchedulePageProvider({ children, schedule }) {
   const conflictsSummary = conflictsData || {};
   const { single = [], shared = [], total_conflicts = 0 } = conflictsSummary;
 
-  const workloadWarnings = workloadWarningsData?.warnings || [];
-  const totalWarnings = workloadWarningsData?.total_warnings || 0;
+  const professorWarnings = combinedWarningsData?.professor_warnings || [];
+  const subjectWarnings = combinedWarningsData?.subject_warnings || [];
+  const workloadWarnings = professorWarnings; // Для обратной совместимости
+  const totalProfessorWarnings =
+    combinedWarningsData?.total_professor_warnings || 0;
+  const totalSubjectWarnings =
+    combinedWarningsData?.total_subject_warnings || 0;
+  const totalWarnings = totalProfessorWarnings + totalSubjectWarnings;
 
   const scheduleGroups = scheduleGroupsData?.groups || [];
   const groupsInvolved = scheduleGroups; // Алиас для совместимости
@@ -82,7 +88,9 @@ export function SchedulePageProvider({ children, schedule }) {
     schedule,
     conflictsData: conflictsSummary,
     conflicts: conflictsSummary, // Алиас для совместимости
-    workloadWarnings,
+    workloadWarnings, // Для обратной совместимости (только профессора)
+    professorWarnings,
+    subjectWarnings,
     scheduleGroups,
     groupsInvolved,
 
@@ -92,6 +100,8 @@ export function SchedulePageProvider({ children, schedule }) {
     hasIssues,
     totalConflicts: total_conflicts,
     totalWarnings,
+    totalProfessorWarnings,
+    totalSubjectWarnings,
 
     // Загрузка
     isLoading,

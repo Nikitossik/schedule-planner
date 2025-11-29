@@ -31,6 +31,11 @@ const createSchema = (isEdit, t) => {
       direction_id: z.string().optional(),
       academic_year_id: z.string().optional(),
       semester_id: z.string().optional(),
+      allocated_hours: z
+        .number()
+        .int()
+        .positive(t("subjects.form.validation.allocatedHoursPositive"))
+        .optional(),
       color: z
         .string()
         .regex(
@@ -53,6 +58,10 @@ const createSchema = (isEdit, t) => {
     semester_id: z
       .string()
       .min(1, t("subjects.form.validation.semesterRequired")),
+    allocated_hours: z
+      .number()
+      .int()
+      .positive(t("subjects.form.validation.allocatedHoursPositive")),
     color: z
       .string()
       .regex(
@@ -79,6 +88,7 @@ export default function SubjectForm({
     direction_id: String(defaultValues?.direction?.id ?? ""),
     academic_year_id: String(defaultValues?.academic_year?.id ?? ""),
     semester_id: String(defaultValues?.semester?.id ?? ""),
+    allocated_hours: defaultValues?.allocated_hours || 0,
     color: defaultValues?.color || "#3b82f6", // Используем цвет с бека или дефолтный
   };
 
@@ -335,6 +345,27 @@ export default function SubjectForm({
                   </SelectContent>
                 </Select>
               )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="allocated_hours"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("subjects.form.fields.allocatedHours")}</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder={t("subjects.form.placeholders.allocatedHours")}
+                  {...field}
+                  onChange={(e) =>
+                    field.onChange(parseFloat(e.target.value) || 0)
+                  }
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

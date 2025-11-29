@@ -33,6 +33,11 @@ class SubjectBase(BaseModel):
         description='Optional hex color for UI tagging (e.g., "#RRGGBB").',
         examples=["#1E90FF"],
     )
+    allocated_hours: int = Field(
+        0,
+        description="Allocated hours for the subject.",
+        examples=[40],
+    )
 
 
 class SubjectIn(SubjectBase):
@@ -70,6 +75,11 @@ class SubjectUpdate(BaseModel):
         max_length=7,
         description='Optional new UI color (hex, e.g., "#RRGGBB").',
         examples=["#FF8C00"],
+    )
+    allocated_hours: int | None = Field(
+        None,
+        description="Optional new allocated hours for the subject.",
+        examples=[40],
     )
 
 

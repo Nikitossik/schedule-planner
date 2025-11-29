@@ -111,7 +111,7 @@ export function LessonsCalendar({
   };
 
   const invalidateWorkloadCache = () => {
-    queryClient.invalidateQueries(["local-workload-warnings", schedule?.id]);
+    queryClient.invalidateQueries(["combined-warnings", schedule?.id]);
   };
 
   // Состояние для навигации и вида календаря

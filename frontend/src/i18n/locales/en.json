@@ -392,8 +392,10 @@
         "direction": "Direction",
         "academicYear": "Academic Year",
         "semester": "Semester",
+        "allocatedHours": "Allocated Hours",
         "color": "Color"
       },
+      "hoursUnit": "hrs",
       "searchPlaceholder": "Search subjects...",
       "addButton": "+ Create Subject",
       "semesterFormat": "Semester {{number}} - {{period}}"
@@ -409,6 +411,7 @@
         "direction": "Direction",
         "academicYear": "Academic Year",
         "semester": "Semester",
+        "allocatedHours": "Allocated Hours",
         "color": "Color"
       },
       "placeholders": {
@@ -416,7 +419,8 @@
         "code": "Enter subject code",
         "direction": "Select direction",
         "academicYear": "Select academic year",
-        "semester": "Select semester"
+        "semester": "Select semester",
+        "allocatedHours": "Enter allocated hours"
       },
       "validation": {
         "nameRequired": "Subject name is required",
@@ -424,6 +428,7 @@
         "directionRequired": "Direction is required",
         "academicYearRequired": "Academic year is required",
         "semesterRequired": "Semester is required",
+        "allocatedHoursPositive": "Allocated hours must be a positive integer",
         "colorInvalid": "Color must be a valid hex color"
       },
       "editNote": "Note: Direction, Academic Year and Semester cannot be changed when editing a subject. Only Name, Code and Color can be modified.",
@@ -1011,9 +1016,13 @@
       "loading": "Loading...",
       "hoursOk": "Hours",
       "hoursIssues": "Hours Issues",
+      "professorSection": "Professor Warnings",
+      "subjectSection": "Subject Warnings",
       "assignmentExceeded": "Assignment Exceeded",
+      "subjectExceeded": "Subject Hours Exceeded",
       "scheduled": "Scheduled:",
       "allowed": "Allowed:",
+      "allocated": "Allocated:",
       "excess": "Excess:",
       "lessonsAffected": "{{count}} lesson{{s}} affected",
       "showingWarnings": "Showing {{shown}} of {{total}} warnings"

@@ -15,12 +15,15 @@ from ..models import (
     Semester,
     SubjectAssignment,
     Lesson,
+    Subject,
 )
 from ..schemas.professor_workload import (
     ProfessorWorkloadIn,
     ProfessorWorkloadUpdate,
     LocalWorkloadWarningOut,
     WorkloadSummaryOut,
+    SubjectHoursWarningOut,
+    CombinedWarningsSummaryOut,
 )
 from ..schemas.lesson import LessonOut
 from .base import BaseService
@@ -330,3 +333,100 @@ class ProfessorWorkloadService(BaseService[ProfessorWorkload, ProfessorWorkloadI
             excess_hours=scheduled_hours - assignment.hours_per_subject,
             lessons=[LessonOut.model_validate(lesson) for lesson in lessons],
         )
+
+    def get_combined_warnings(self, schedule_id: int) -> CombinedWarningsSummaryOut:
+        """
+        Get both professor workload and subject hours warnings for a schedule.
+
+        Args:
+            schedule_id (int): Target schedule ID to analyze.
+
+        Returns:
+            CombinedWarningsSummaryOut: Combined warnings for professors and subjects.
+        """
+        # Get professor workload warnings
+        professor_summary = self.get_local_workload_warnings(schedule_id)
+
+        # Get subject hours warnings
+        subject_warnings = self._get_subject_hours_warnings(schedule_id)
+
+        return CombinedWarningsSummaryOut(
+            professor_warnings=professor_summary.warnings,
+            subject_warnings=subject_warnings,
+            total_professor_warnings=professor_summary.total_warnings,
+            total_subject_warnings=len(subject_warnings),
+            schedule_id=schedule_id,
+        )
+
+    def _get_subject_hours_warnings(
+        self, schedule_id: int
+    ) -> list[SubjectHoursWarningOut]:
+        """
+        Analyze subjects in a schedule for hours exceeding allocated_hours.
+
+        Strategy:
+        - Load all subjects that have lessons in the given schedule.
+        - For each subject, compute total scheduled hours across all its assignments/lessons.
+        - Produce SubjectHoursWarningOut entries when scheduled > allocated_hours.
+
+        Args:
+            schedule_id (int): Target schedule ID to analyze.
+
+        Returns:
+            list[SubjectHoursWarningOut]: List of subject warnings.
+        """
+        # Get all subjects with lessons in this schedule
+        subjects = (
+            self.db.query(Subject)
+            .join(SubjectAssignment)
+            .join(Lesson)
+            .filter(Lesson.schedule_id == schedule_id)
+            .options(
+                selectinload(Subject.subject_assignments).selectinload(
+                    SubjectAssignment.lessons
+                )
+            )
+            .distinct()
+            .all()
+        )
+
+        warnings = []
+
+        for subject in subjects:
+            # Collect all lessons for this subject in this schedule
+            all_lessons = []
+            for assignment in subject.subject_assignments:
+                schedule_lessons = [
+                    lesson
+                    for lesson in assignment.lessons
+                    if lesson.schedule_id == schedule_id
+                ]
+                all_lessons.extend(schedule_lessons)
+
+            if not all_lessons:
+                continue
+
+            # Calculate total scheduled hours
+            scheduled_hours = self._calculate_lesson_hours(all_lessons)
+
+            # Check if exceeds allocated hours
+            if (
+                subject.allocated_hours > 0
+                and scheduled_hours > subject.allocated_hours
+            ):
+                warnings.append(
+                    SubjectHoursWarningOut(
+                        type="subject_exceeded",
+                        subject_id=subject.id,
+                        subject_name=subject.name,
+                        subject_code=subject.code,
+                        scheduled_hours=scheduled_hours,
+                        allocated_hours=float(subject.allocated_hours),
+                        excess_hours=scheduled_hours - subject.allocated_hours,
+                        lessons=[
+                            LessonOut.model_validate(lesson) for lesson in all_lessons
+                        ],
+                    )
+                )
+
+        return warnings

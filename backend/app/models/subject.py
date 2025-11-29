@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import Integer, String, ForeignKey
 
 from typing import TYPE_CHECKING
 
@@ -38,7 +38,7 @@ class Subject(Base):
     color: Mapped[str] = mapped_column(
         String(7), default="#000000"
     )  # Hex color code for UI labels
-
+    allocated_hours: Mapped[int] = mapped_column(Integer, default=0)
     semester_id: Mapped[int] = mapped_column(
         ForeignKey("semester.id")
     )  # FK to the offering semester

@@ -137,18 +137,21 @@ def seed_subjects(db):
             "code": "DS-3",
             "direction_id": 3,
             "semester_id": 1,
+            "allocated_hours": 200,
         },
         {
             "name": "Computer Networks",
             "code": "CN-3",
             "direction_id": 3,
             "semester_id": 1,
+            "allocated_hours": 200,
         },
         {
             "name": "Database Systems",
             "code": "DBS-3",
             "direction_id": 3,
             "semester_id": 1,
+            "allocated_hours": 200,
         },
         # AMIPI - 5 семестр (semester_id=2, direction_id=2)
         {
@@ -156,18 +159,21 @@ def seed_subjects(db):
             "code": "MD-5",
             "direction_id": 2,
             "semester_id": 2,
+            "allocated_hours": 200,
         },
         {
             "name": "Web Technologies",
             "code": "WT-5",
             "direction_id": 2,
             "semester_id": 2,
+            "allocated_hours": 200,
         },
         {
             "name": "Cloud Computing",
             "code": "CC-5",
             "direction_id": 2,
             "semester_id": 2,
+            "allocated_hours": 200,
         },
         # PKG - 5 семестр (semester_id=2, direction_id=1)
         {
@@ -175,14 +181,22 @@ def seed_subjects(db):
             "code": "GED-5",
             "direction_id": 1,
             "semester_id": 2,
+            "allocated_hours": 200,
         },
         {
             "name": "3D Graphics Programming",
             "code": "3DGP-5",
             "direction_id": 1,
             "semester_id": 2,
+            "allocated_hours": 200,
         },
-        {"name": "Game AI", "code": "GAI-5", "direction_id": 1, "semester_id": 2},
+        {
+            "name": "Game AI",
+            "code": "GAI-5",
+            "direction_id": 1,
+            "semester_id": 2,
+            "allocated_hours": 200,
+        },
     ]
 
     for subject in subjects:

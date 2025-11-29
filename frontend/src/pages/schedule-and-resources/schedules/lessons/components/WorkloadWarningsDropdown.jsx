@@ -16,7 +16,10 @@ import { useSchedulePageData } from "@/contexts/SchedulePageContext";
 export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
   const { t } = useTranslation();
   const {
-    workloadWarnings,
+    professorWarnings,
+    subjectWarnings,
+    totalProfessorWarnings,
+    totalSubjectWarnings,
     totalWarnings,
     hasWorkloadIssues,
     workloadLoading,
@@ -59,61 +62,144 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {workloadWarnings.map((warning) => (
-          <DropdownMenuItem
-            key={warning.subject_assignment_id}
-            className="cursor-pointer p-3"
-            onClick={() =>
-              onNavigateToLessons && onNavigateToLessons(warning.lessons)
-            }
-          >
-            <div className="space-y-1 w-full">
-              <div className="font-medium text-amber-600 flex items-center justify-between">
-                <span>{t("lessons.workloadWarnings.assignmentExceeded")}</span>
-                <Badge variant="outline" className="text-xs">
-                  +{warning.excess_hours.toFixed(1)}h
-                </Badge>
-              </div>
-
-              <div className="text-sm space-y-1">
-                <div className="font-medium text-foreground">
-                  {warning.professor_name}
-                </div>
-                <div className="text-muted-foreground">
-                  {warning.subject_name}
-                </div>
-              </div>
-
-              <div className="text-xs text-muted-foreground space-y-1">
-                <div className="flex justify-between">
-                  <span>{t("lessons.workloadWarnings.scheduled")}</span>
-                  <span className="font-medium">
-                    {warning.scheduled_hours}h
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>{t("lessons.workloadWarnings.allowed")}</span>
-                  <span className="font-medium">{warning.allowed_hours}h</span>
-                </div>
-                <div className="flex justify-between text-red-600">
-                  <span>{t("lessons.workloadWarnings.excess")}</span>
-                  <span className="font-medium">
-                    +{warning.excess_hours.toFixed(1)}h
-                  </span>
-                </div>
-              </div>
-
-              {warning.lessons && (
-                <div className="text-xs text-muted-foreground">
-                  {t("lessons.workloadWarnings.lessonsAffected", {
-                    count: warning.lessons.length,
-                    s: warning.lessons.length !== 1 ? "s" : "",
-                  })}
-                </div>
-              )}
+        {/* Предупреждения по преподавателям */}
+        {professorWarnings.length > 0 && (
+          <>
+            <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">
+              {t("lessons.workloadWarnings.professorSection")}
             </div>
-          </DropdownMenuItem>
-        ))}
+            {professorWarnings.map((warning) => (
+              <DropdownMenuItem
+                key={warning.subject_assignment_id}
+                className="cursor-pointer p-3"
+                onClick={() =>
+                  onNavigateToLessons && onNavigateToLessons(warning.lessons)
+                }
+              >
+                <div className="space-y-1 w-full">
+                  <div className="font-medium text-amber-600 flex items-center justify-between">
+                    <span>
+                      {t("lessons.workloadWarnings.assignmentExceeded")}
+                    </span>
+                    <Badge variant="outline" className="text-xs">
+                      +{warning.excess_hours.toFixed(1)}h
+                    </Badge>
+                  </div>
+
+                  <div className="text-sm space-y-1">
+                    <div className="font-medium text-foreground">
+                      {warning.professor_name}
+                    </div>
+                    <div className="text-muted-foreground">
+                      {warning.subject_name}
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div className="flex justify-between">
+                      <span>{t("lessons.workloadWarnings.scheduled")}</span>
+                      <span className="font-medium">
+                        {warning.scheduled_hours}h
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{t("lessons.workloadWarnings.allowed")}</span>
+                      <span className="font-medium">
+                        {warning.allowed_hours}h
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-red-600">
+                      <span>{t("lessons.workloadWarnings.excess")}</span>
+                      <span className="font-medium">
+                        +{warning.excess_hours.toFixed(1)}h
+                      </span>
+                    </div>
+                  </div>
+
+                  {warning.lessons && (
+                    <div className="text-xs text-muted-foreground">
+                      {t("lessons.workloadWarnings.lessonsAffected", {
+                        count: warning.lessons.length,
+                        s: warning.lessons.length !== 1 ? "s" : "",
+                      })}
+                    </div>
+                  )}
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </>
+        )}
+
+        {/* Разделитель между секциями */}
+        {professorWarnings.length > 0 && subjectWarnings.length > 0 && (
+          <DropdownMenuSeparator />
+        )}
+
+        {/* Предупреждения по предметам */}
+        {subjectWarnings.length > 0 && (
+          <>
+            <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">
+              {t("lessons.workloadWarnings.subjectSection")}
+            </div>
+            {subjectWarnings.map((warning) => (
+              <DropdownMenuItem
+                key={warning.subject_id}
+                className="cursor-pointer p-3"
+                onClick={() =>
+                  onNavigateToLessons && onNavigateToLessons(warning.lessons)
+                }
+              >
+                <div className="space-y-1 w-full">
+                  <div className="font-medium text-orange-600 flex items-center justify-between">
+                    <span>{t("lessons.workloadWarnings.subjectExceeded")}</span>
+                    <Badge variant="outline" className="text-xs">
+                      +{warning.excess_hours.toFixed(1)}h
+                    </Badge>
+                  </div>
+
+                  <div className="text-sm space-y-1">
+                    <div className="font-medium text-foreground">
+                      {warning.subject_name}
+                    </div>
+                    <div className="text-muted-foreground text-xs">
+                      {warning.subject_code}
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div className="flex justify-between">
+                      <span>{t("lessons.workloadWarnings.scheduled")}</span>
+                      <span className="font-medium">
+                        {warning.scheduled_hours.toFixed(1)}h
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{t("lessons.workloadWarnings.allocated")}</span>
+                      <span className="font-medium">
+                        {warning.allocated_hours}h
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-red-600">
+                      <span>{t("lessons.workloadWarnings.excess")}</span>
+                      <span className="font-medium">
+                        +{warning.excess_hours.toFixed(1)}h
+                      </span>
+                    </div>
+                  </div>
+
+                  {warning.lessons && (
+                    <div className="text-xs text-muted-foreground">
+                      {t("lessons.workloadWarnings.lessonsAffected", {
+                        count: warning.lessons.length,
+                        s: warning.lessons.length !== 1 ? "s" : "",
+                      })}
+                    </div>
+                  )}
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </>
+        )}
 
         {totalWarnings > 3 && (
           <>

@@ -153,68 +153,13 @@ class RecurringLessonTemplateOut(RecurringLessonTemplateBase):
     )
 
 
-class RecurringLessonTemplateQueryParams(BaseQueryParams):
-    """Query parameters for filtering recurring lesson templates."""
-
-    schedule_id: Optional[int] = Field(
-        None,
-        description="Filter by schedule ID.",
-        examples=[5],
-    )
-    group_id: Optional[int] = Field(
-        None,
-        description="Filter by group ID.",
-        examples=[10],
-    )
-    subject_assignment_id: Optional[int] = Field(
-        None,
-        description="Filter by subject assignment ID.",
-        examples=[42],
-    )
-    is_online: Optional[bool] = Field(
-        None,
-        description="Filter by online/offline lessons.",
-        examples=[False],
-    )
-    lesson_type: Optional[str] = Field(
-        None,
-        description="Filter by lesson type.",
-        examples=["lecture"],
-    )
-
-
-class RecurringLessonTemplateFilterParams(BaseFilterParams):
+class RecurringLessonTemplateFilterParams(BaseModel):
     """Advanced filtering parameters for recurring lesson templates."""
 
     schedule_ids: Optional[List[int]] = Field(
         None,
         description="Filter by multiple schedule IDs.",
         examples=[[1, 2, 3]],
-    )
-    group_ids: Optional[List[int]] = Field(
-        None,
-        description="Filter by multiple group IDs.",
-        examples=[[10, 11, 12]],
-    )
-    subject_assignment_ids: Optional[List[int]] = Field(
-        None,
-        description="Filter by multiple subject assignment IDs.",
-        examples=[[40, 41, 42]],
-    )
-    room_ids: Optional[List[int]] = Field(
-        None,
-        description="Filter by multiple room IDs.",
-        examples=[[101, 102, 103]],
-    )
-    lesson_types: Optional[List[str]] = Field(
-        None,
-        description="Filter by multiple lesson types.",
-        examples=[["lecture", "practice"]],
-    )
-    days_of_week: Optional[List[int]] = Field(
-        None,
-        description="Filter templates that include any of these days.",
-        examples=[[1, 3, 5]],
     )
     start_date_from: Optional[pdate] = Field(
         None,
@@ -226,3 +171,11 @@ class RecurringLessonTemplateFilterParams(BaseFilterParams):
         description="Filter templates starting until this date.",
         examples=["2025-12-31"],
     )
+
+
+class RecurringLessonTemplateQueryParams(
+    BaseQueryParams, RecurringLessonTemplateFilterParams
+):
+    """Query parameters for filtering recurring lesson templates."""
+
+    pass

@@ -391,8 +391,10 @@
         "direction": "Kierunek",
         "academicYear": "Rok Akademicki",
         "semester": "Semestr",
+        "allocatedHours": "Przydzielone godziny",
         "color": "Kolor"
       },
+      "hoursUnit": "godz.",
       "searchPlaceholder": "Szukaj przedmiotów...",
       "addButton": "+ Utwórz przedmiot",
       "semesterFormat": "Semestr {{number}} - {{period}}"
@@ -408,6 +410,7 @@
         "direction": "Kierunek",
         "academicYear": "Rok Akademicki",
         "semester": "Semestr",
+        "allocatedHours": "Przydzielone godziny",
         "color": "Kolor"
       },
       "placeholders": {
@@ -415,7 +418,8 @@
         "code": "Wprowadź kod przedmiotu",
         "direction": "Wybierz kierunek",
         "academicYear": "Wybierz rok akademicki",
-        "semester": "Wybierz semestr"
+        "semester": "Wybierz semestr",
+        "allocatedHours": "Wprowadź przydzielone godziny"
       },
       "validation": {
         "nameRequired": "Nazwa przedmiotu jest wymagana",
@@ -423,6 +427,7 @@
         "directionRequired": "Kierunek jest wymagany",
         "academicYearRequired": "Rok akademicki jest wymagany",
         "semesterRequired": "Semestr jest wymagany",
+        "allocatedHoursPositive": "Przydzielone godziny muszą być dodatnią liczbą całkowitą",
         "colorInvalid": "Kolor musi być prawidłowym kolorem hex"
       },
       "editNote": "Uwaga: Kierunek, Rok Akademicki i Semestr nie mogą być zmieniane podczas edycji przedmiotu. Można modyfikować tylko Nazwę, Kod i Kolor.",
@@ -1009,9 +1014,13 @@
       "loading": "Ładowanie...",
       "hoursOk": "Godziny",
       "hoursIssues": "Problemy z godzinami",
+      "professorSection": "Ostrzeżenia profesorów",
+      "subjectSection": "Ostrzeżenia przedmiotów",
       "assignmentExceeded": "Przekroczono przypisanie",
+      "subjectExceeded": "Przekroczono godziny przedmiotu",
       "scheduled": "Zaplanowane:",
       "allowed": "Dozwolone:",
+      "allocated": "Przydzielone:",
       "excess": "Nadmiar:",
       "lessonsAffected": "Dotyczy {{count}} zajęć",
       "showingWarnings": "Pokazuje {{shown}} z {{total}} ostrzeżeń"

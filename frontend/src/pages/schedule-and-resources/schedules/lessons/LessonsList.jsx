@@ -68,7 +68,7 @@ function LessonsListContent({ schedule, onUpdate }) {
       // Инвалидируем кеши
       queryClient.invalidateQueries(["calendar-lessons", schedule?.id]);
       queryClient.invalidateQueries(["conflicts-summary", schedule?.id]);
-      queryClient.invalidateQueries(["local-workload-warnings", schedule?.id]);
+      queryClient.invalidateQueries(["combined-warnings", schedule?.id]);
 
       setIsCreateDialogOpen(false);
       setEditingLesson(null);
@@ -88,7 +88,7 @@ function LessonsListContent({ schedule, onUpdate }) {
       // Инвалидируем кеши
       queryClient.invalidateQueries(["calendar-lessons", schedule?.id]);
       queryClient.invalidateQueries(["conflicts-summary", schedule?.id]);
-      queryClient.invalidateQueries(["local-workload-warnings", schedule?.id]);
+      queryClient.invalidateQueries(["combined-warnings", schedule?.id]);
 
       setIsCreateDialogOpen(false);
       setEditingLesson(null);
