@@ -616,7 +616,11 @@
         "academicYear": "Rok Akademicki",
         "semester": "Semestr",
         "group": "Grupa",
-        "notes": "Uwagi"
+        "notes": "Uwagi",
+        "unavailableDays": "Dni niedostępności"
+      },
+      "descriptions": {
+        "unavailableDays": "Wybierz dni tygodnia, w które ten profesor nie jest dostępny do nauczania"
       },
       "placeholders": {
         "name": "Wprowadź imię",
@@ -1101,7 +1105,8 @@
         "noSubjects": "Nie znaleziono przedmiotów dla wybranego profesora",
         "setDateTimeForRooms": "Ustaw datę i czas, aby zobaczyć dostępne sale",
         "noRooms": "Brak dostępnych sal w tym czasie",
-        "onlineLesson": "Zajęcia będą prowadzone online"
+        "onlineLesson": "Zajęcia będą prowadzone online",
+        "unavailable": "Niedostępny"
       },
       "validation": {
         "startTimeRequired": "Określ czas rozpoczęcia",
@@ -1193,6 +1198,15 @@
         "update": "Zaktualizuj szablon",
         "delete": "Usuń",
         "saving": "Zapisywanie..."
+      },
+      "unavailabilityWarning": {
+        "title": "Ostrzeżenie o niedostępności profesora",
+        "description": "{{professor}} jest niedostępny w niektóre z wybranych dni.",
+        "unavailableDays": "Zajęcia zostaną pominięte w:",
+        "lessonsWillBeCreatedOn": "Zajęcia zostaną utworzone tylko w:",
+        "confirmation": "Czy chcesz kontynuować tworzenie szablonu?",
+        "cancel": "Anuluj",
+        "continue": "Kontynuuj"
       }
     }
   },

@@ -617,7 +617,11 @@
         "academicYear": "Academic Year",
         "semester": "Semester",
         "group": "Group",
-        "notes": "Notes"
+        "notes": "Notes",
+        "unavailableDays": "Unavailable Days"
+      },
+      "descriptions": {
+        "unavailableDays": "Select the days of the week when this professor is unavailable for teaching"
       },
       "placeholders": {
         "name": "Enter first name",
@@ -1103,7 +1107,8 @@
         "noSubjects": "No subjects found for selected professor",
         "setDateTimeForRooms": "Set date and time to see available rooms",
         "noRooms": "No rooms available at this time",
-        "onlineLesson": "Lesson will be conducted online"
+        "onlineLesson": "Lesson will be conducted online",
+        "unavailable": "Unavailable"
       },
       "validation": {
         "startTimeRequired": "Specify start time",
@@ -1195,6 +1200,15 @@
         "update": "Update Template",
         "delete": "Delete",
         "saving": "Saving..."
+      },
+      "unavailabilityWarning": {
+        "title": "Professor Unavailability Warning",
+        "description": "{{professor}} is unavailable on some of the selected days.",
+        "unavailableDays": "Lessons will be skipped on:",
+        "lessonsWillBeCreatedOn": "Lessons will only be created on:",
+        "confirmation": "Do you want to continue creating the template?",
+        "cancel": "Cancel",
+        "continue": "Continue"
       }
     }
   },

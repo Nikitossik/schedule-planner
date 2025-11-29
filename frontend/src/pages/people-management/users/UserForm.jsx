@@ -3,9 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -42,6 +44,7 @@ const createSchema = (t) =>
       semester_id: z.string().optional(),
       group_id: z.string().optional(),
       notes: z.string().optional(),
+      unavailable_days: z.array(z.number()).optional(),
     })
     .refine((data) => !data.password || data.password.length >= 6, {
       path: ["password"],
@@ -55,7 +58,7 @@ export function UserForm({
   showButtons = true,
   isLoading = false,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { disableStudentAccounts } = useFeatureFlags();
 
   // Преобразуем данные из API формата в формат формы
@@ -72,6 +75,15 @@ export function UserForm({
     semester_id: String(defaultValues?.student_profile?.semester?.id ?? ""),
     group_id: String(defaultValues?.student_profile?.group?.id ?? ""),
     notes: defaultValues?.professor_profile?.notes || "",
+    unavailable_days: (() => {
+      const days = defaultValues?.professor_profile?.unavailable_days;
+      if (!days) return [];
+      try {
+        return typeof days === "string" ? JSON.parse(days) : days;
+      } catch {
+        return [];
+      }
+    })(),
   };
 
   const form = useForm({
@@ -83,6 +95,22 @@ export function UserForm({
   const userType = form.watch("user_type");
   const watchedAcademicYearId = form.watch("academic_year_id");
   const watchedSemesterId = form.watch("semester_id");
+  const watchedUnavailableDays = form.watch("unavailable_days");
+
+  // Дни недели для селектора
+  const daysOfWeek = useMemo(() => {
+    const locale = i18n?.language === "pl" ? "pl" : "en";
+
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(2024, 0, 1 + index); // Начинаем с понедельника
+      const dayName = date.toLocaleDateString(locale, { weekday: "short" });
+
+      return {
+        value: index,
+        label: dayName,
+      };
+    });
+  }, [i18n?.language]);
 
   // Загружаем академические годы
   const { data: academicYearsData, isLoading: academicYearsLoading } =
@@ -94,27 +122,36 @@ export function UserForm({
     "semester",
     watchedAcademicYearId
       ? { filters: { academic_year_ids: [watchedAcademicYearId] } }
-      : {} // 🔥 Изменили на null чтобы не загружать если нет года
+      : {}
   );
   const semesters = semestersData?.items || [];
 
   // Загружаем группы для выбранного семестра
   const { data: groupsData, isLoading: groupsLoading } = useEntityList(
     "group",
-    watchedSemesterId ? { filters: { semester_ids: [watchedSemesterId] } } : {} // 🔥 Изменили на null чтобы не загружать если нет семестра
+    watchedSemesterId ? { filters: { semester_ids: [watchedSemesterId] } } : {}
   );
   const groups = groupsData?.items || [];
 
   // Очищаем зависимые поля при изменении родительских
   const handleAcademicYearChange = (value) => {
     form.setValue("academic_year_id", value);
-    form.setValue("semester_id", ""); // Очищаем семестр при смене года
-    form.setValue("group_id", ""); // Очищаем группу при смене года
+    form.setValue("semester_id", "");
+    form.setValue("group_id", "");
   };
 
   const handleSemesterChange = (value) => {
     form.setValue("semester_id", value);
-    form.setValue("group_id", ""); // Очищаем группу при смене семестра
+    form.setValue("group_id", "");
+  };
+
+  // Функция для переключения дня недели
+  const toggleUnavailableDay = (dayValue) => {
+    const currentDays = watchedUnavailableDays || [];
+    const newDays = currentDays.includes(dayValue)
+      ? currentDays.filter((day) => day !== dayValue)
+      : [...currentDays, dayValue].sort();
+    form.setValue("unavailable_days", newDays);
   };
 
   return (
@@ -171,9 +208,9 @@ export function UserForm({
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {["admin", "coordinator", "user"].map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {t(`users.form.roles.${role}`)}
+                    {["admin", "coordinator", "user"].map((roleOption) => (
+                      <SelectItem key={roleOption} value={roleOption}>
+                        {t(`users.form.roles.${roleOption}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -383,6 +420,29 @@ export function UserForm({
                 </FormItem>
               )}
             />
+
+            <div className="space-y-3">
+              <FormLabel>{t("users.form.fields.unavailableDays")}</FormLabel>
+              <p className="text-sm text-muted-foreground">
+                {t("users.form.descriptions.unavailableDays")}
+              </p>
+              <div className="grid grid-cols-7 gap-2">
+                {daysOfWeek.map((day) => (
+                  <div
+                    key={day.value}
+                    className="flex flex-col items-center space-y-2"
+                  >
+                    <label className="text-sm font-medium">{day.label}</label>
+                    <Checkbox
+                      checked={(watchedUnavailableDays || []).includes(
+                        day.value
+                      )}
+                      onCheckedChange={() => toggleUnavailableDay(day.value)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 

@@ -105,6 +105,15 @@ export function LessonForm({
   const watchedStartTime = watch("start_time");
   const watchedEndTime = watch("end_time");
 
+  // Получаем день недели из выбранной даты (0 = Monday, 6 = Sunday)
+  const selectedDayOfWeek = useMemo(() => {
+    if (!watchedDate) return null;
+    const date = new Date(watchedDate);
+    const day = date.getDay();
+    // Преобразуем из JS формата (0=Sunday) в наш формат (0=Monday)
+    return day === 0 ? 6 : day - 1;
+  }, [watchedDate]);
+
   // 1. Группы: фильтруем по semester_id и direction_id из schedule
   const { data: groupsData } = useEntityList("group", {
     filters: schedule
@@ -136,6 +145,28 @@ export function LessonForm({
     pagination: { loadAll: true },
   });
   const workloads = workloadsData?.items || [];
+
+  // Функция для проверки доступности профессора в выбранный день
+  const isProfessorAvailable = useCallback(
+    (workload) => {
+      if (!selectedDayOfWeek === null) return true; // Если дата не выбрана, показываем всех
+
+      const unavailableDays =
+        workload?.professor?.professor_profile?.unavailable_days;
+      if (!unavailableDays) return true; // Если нет данных о недоступности, профессор доступен
+
+      try {
+        const daysArray =
+          typeof unavailableDays === "string"
+            ? JSON.parse(unavailableDays)
+            : unavailableDays;
+        return !daysArray.includes(selectedDayOfWeek);
+      } catch {
+        return true; // В случае ошибки парсинга считаем профессора доступным
+      }
+    },
+    [selectedDayOfWeek]
+  );
 
   // 3. Subject assignments: фильтруем по выбранному workload_id
   const currentWorkloadId =
@@ -429,17 +460,26 @@ export function LessonForm({
                         : t("lessons.form.messages.noProfessors")}
                     </div>
                   ) : (
-                    workloads.map((workload) => (
-                      <SelectItem
-                        key={workload.id}
-                        value={workload.id.toString()}
-                      >
-                        {workload?.professor.name} {workload?.professor.surname}
-                        <span className="text-sm text-gray-500 ml-2">
-                          ({workload.assigned_hours}h)
-                        </span>
-                      </SelectItem>
-                    ))
+                    workloads.map((workload) => {
+                      const isAvailable = isProfessorAvailable(workload);
+                      return (
+                        <SelectItem
+                          key={workload.id}
+                          value={workload.id.toString()}
+                        >
+                          {workload?.professor.name}{" "}
+                          {workload?.professor.surname}
+                          <span className="text-sm text-gray-500 ml-2">
+                            ({workload.assigned_hours}h)
+                          </span>
+                          {!isAvailable && (
+                            <Badge variant="destructive" className="ml-2">
+                              {t("lessons.form.messages.unavailable")}
+                            </Badge>
+                          )}
+                        </SelectItem>
+                      );
+                    })
                   )}
                 </SelectContent>
               </Select>

@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -33,6 +35,7 @@ import {
   MessageSquare,
   Presentation,
   Repeat,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEntityList } from "@/hooks/useEntityList";
@@ -46,8 +49,11 @@ export function RecurringLessonForm({
   onDelete,
   isEdit = false,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showUnavailabilityWarning, setShowUnavailabilityWarning] =
+    useState(false);
+  const [pendingFormData, setPendingFormData] = useState(null);
 
   const createRecurringTemplate = useEntityMutation(
     "recurring_template",
@@ -192,20 +198,61 @@ export function RecurringLessonForm({
   const rooms = roomsData?.items || [];
 
   // Дни недели для селектора (используем встроенные возможности JS)
-  const { i18n } = useTranslation();
   const daysOfWeek = useMemo(() => {
     const locale = i18n?.language === "pl" ? "pl" : "en";
 
     return Array.from({ length: 7 }, (_, index) => {
       const date = new Date(2024, 0, 1 + index); // Начинаем с понедельника
       const dayName = date.toLocaleDateString(locale, { weekday: "short" });
+      const fullDayName = date.toLocaleDateString(locale, { weekday: "long" });
 
       return {
         value: index,
         short: dayName,
+        full: fullDayName,
       };
     });
   }, [i18n?.language]);
+
+  // Получаем выбранный workload для проверки недоступных дней
+  const selectedWorkload = useMemo(() => {
+    if (!watchedWorkloadId) return null;
+    return workloads.find((w) => w.id.toString() === watchedWorkloadId);
+  }, [watchedWorkloadId, workloads]);
+
+  // Вычисляем конфликтующие дни (недоступные дни профессора среди выбранных)
+  const unavailabilityInfo = useMemo(() => {
+    if (!selectedWorkload || !watchedDaysOfWeek?.length) return null;
+
+    const unavailableDays =
+      selectedWorkload?.professor?.professor_profile?.unavailable_days;
+    if (!unavailableDays) return null;
+
+    try {
+      const daysArray =
+        typeof unavailableDays === "string"
+          ? JSON.parse(unavailableDays)
+          : unavailableDays;
+
+      const conflictDays = watchedDaysOfWeek.filter((day) =>
+        daysArray.includes(day)
+      );
+
+      if (!conflictDays.length) return null;
+
+      const availableDays = watchedDaysOfWeek.filter(
+        (day) => !daysArray.includes(day)
+      );
+
+      return {
+        conflictDays,
+        availableDays,
+        professorName: `${selectedWorkload.professor.name} ${selectedWorkload.professor.surname}`,
+      };
+    } catch {
+      return null;
+    }
+  }, [selectedWorkload, watchedDaysOfWeek]);
 
   // Очистка зависимых полей при изменении родительских
   useEffect(() => {
@@ -295,6 +342,18 @@ export function RecurringLessonForm({
   };
 
   const handleFormSubmit = async (data) => {
+    // Если есть конфликт с недоступными днями - показываем предупреждение (и при создании, и при редактировании)
+    if (unavailabilityInfo) {
+      setPendingFormData(data);
+      setShowUnavailabilityWarning(true);
+      return;
+    }
+
+    // Если нет конфликта - продолжаем
+    await submitForm(data);
+  };
+
+  const submitForm = async (data) => {
     try {
       // Преобразуем данные для API
       const transformedData = {
@@ -328,6 +387,19 @@ export function RecurringLessonForm({
         error.message || t("recurringLessons.form.messages.saveFailed")
       );
     }
+  };
+
+  const handleConfirmWithUnavailability = async () => {
+    setShowUnavailabilityWarning(false);
+    if (pendingFormData) {
+      await submitForm(pendingFormData);
+      setPendingFormData(null);
+    }
+  };
+
+  const handleCancelUnavailabilityWarning = () => {
+    setShowUnavailabilityWarning(false);
+    setPendingFormData(null);
   };
 
   const lessonTypes = [
@@ -828,6 +900,86 @@ export function RecurringLessonForm({
           </div>
         </DialogFooter>
       </form>
+
+      {/* Unavailability Warning Dialog */}
+      <Dialog
+        open={showUnavailabilityWarning}
+        onOpenChange={setShowUnavailabilityWarning}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-500" />
+              {t("recurringLessons.form.unavailabilityWarning.title")}
+            </DialogTitle>
+            <DialogDescription className="space-y-4">
+              <p>
+                {t("recurringLessons.form.unavailabilityWarning.description", {
+                  professor: unavailabilityInfo?.professorName,
+                })}
+              </p>
+
+              <div className="space-y-2">
+                <p className="font-medium text-foreground">
+                  {t(
+                    "recurringLessons.form.unavailabilityWarning.unavailableDays"
+                  )}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {unavailabilityInfo?.conflictDays.map((dayValue) => {
+                    const dayInfo = daysOfWeek.find(
+                      (d) => d.value === dayValue
+                    );
+                    return (
+                      <Badge key={dayValue} variant="destructive">
+                        {dayInfo?.full || dayValue}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {unavailabilityInfo?.availableDays.length > 0 && (
+                <div className="space-y-2">
+                  <p className="font-medium text-foreground">
+                    {t(
+                      "recurringLessons.form.unavailabilityWarning.lessonsWillBeCreatedOn"
+                    )}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {unavailabilityInfo.availableDays.map((dayValue) => {
+                      const dayInfo = daysOfWeek.find(
+                        (d) => d.value === dayValue
+                      );
+                      return (
+                        <Badge key={dayValue} variant="secondary">
+                          {dayInfo?.full || dayValue}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <p className="text-sm text-muted-foreground">
+                {t("recurringLessons.form.unavailabilityWarning.confirmation")}
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancelUnavailabilityWarning}
+            >
+              {t("recurringLessons.form.unavailabilityWarning.cancel")}
+            </Button>
+            <Button type="button" onClick={handleConfirmWithUnavailability}>
+              {t("recurringLessons.form.unavailabilityWarning.continue")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DialogContent>
   );
 }

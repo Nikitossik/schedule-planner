@@ -120,7 +120,7 @@ class RecurringLessonTemplateService(
         return lessons
 
     def _calculate_lesson_dates(self, template: RecurringLessonTemplate) -> List[date]:
-        """Вычисляем все даты уроков с учетом праздников"""
+        """Вычисляем все даты уроков с учетом праздников и недоступных дней профессора"""
 
         dates = []
         current_date = template.start_date
@@ -129,17 +129,24 @@ class RecurringLessonTemplateService(
         # Получаем праздники для исключения
         holiday_dates = self._get_holiday_dates(current_date, end_date)
 
+        # Получаем недоступные дни профессора
+        unavailable_days = self._get_professor_unavailable_days(template)
+
         # Получаем дни недели (работаем со строкой напрямую)
         days_of_week = template.days_of_week
 
         # Проходим по всем дням в диапазоне
         while current_date <= end_date:
             # Проверяем день недели (0=Понедельник в ISO)
+            day_of_week = current_date.weekday()
+
             # Конвертируем номер дня в строку и проверяем его наличие в JSON строке
-            if str(current_date.weekday()) in days_of_week:
+            if str(day_of_week) in days_of_week:
                 # Исключаем праздники
                 if current_date not in holiday_dates:
-                    dates.append(current_date)
+                    # Исключаем недоступные дни профессора
+                    if unavailable_days is None or day_of_week not in unavailable_days:
+                        dates.append(current_date)
 
             current_date += timedelta(days=1)
 
@@ -172,6 +179,30 @@ class RecurringLessonTemplateService(
     def _get_semester_end_date(self, template: RecurringLessonTemplate) -> date:
         """Получаем дату окончания семестра"""
         return template.schedule.semester.end_date
+
+    def _get_professor_unavailable_days(
+        self, template: RecurringLessonTemplate
+    ) -> set[int] | None:
+        """Получаем недоступные дни профессора из subject_assignment"""
+        import json
+
+        if not template.subject_assignment:
+            return None
+
+        # Получаем профессора через subject_assignment -> workload -> contract -> professor_profile
+        professor_profile = (
+            template.subject_assignment.workload.contract.professor_profile
+        )
+
+        if not professor_profile or not professor_profile.unavailable_days:
+            return None
+
+        try:
+            # Парсим JSON строку в список дней
+            unavailable_days_list = json.loads(professor_profile.unavailable_days)
+            return set(unavailable_days_list)
+        except (json.JSONDecodeError, TypeError):
+            return None
 
     def _delete_future_lessons_by_template(self, template_id: int) -> int:
         """Удаляем только будущие уроки по шаблону"""

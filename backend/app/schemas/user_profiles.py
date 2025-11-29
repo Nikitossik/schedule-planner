@@ -92,6 +92,12 @@ class ProfessorProfileBase(BaseModel):
         examples=["Experienced in AI and machine learning."],
     )
 
+    unavailable_days: str | None = Field(
+        default=None,
+        description="JSON array of unavailable days (e.g., '[1,3,5]' for Mon,Wed,Fri).",
+        examples=["[1,3,5]"],
+    )
+
 
 class ProfessorProfileIn(ProfessorProfileBase):
     """

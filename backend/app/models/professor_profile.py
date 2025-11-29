@@ -1,7 +1,7 @@
 from __future__ import annotations
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey, Text
+from sqlalchemy import ForeignKey, Text, String
 
 from typing import TYPE_CHECKING
 
@@ -40,6 +40,9 @@ class ProfessorProfile(Base):
         cascade="all, delete-orphan",
     )
     notes: Mapped[str] = mapped_column(Text, nullable=True)
+    unavailable_days: Mapped[str] = mapped_column(
+        String(20), nullable=True
+    )  # JSON array: "[1,3,5]" for Mon,Wed,Fri
 
     # One-to-many: contracts per semester; cascades on profile deletion
     # workloads: Mapped[list["ProfessorWorkload"]] = relationship(

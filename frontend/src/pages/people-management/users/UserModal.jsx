@@ -56,6 +56,7 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
       if (values.user_type === "professor") {
         payload.professor_profile = {
           notes: values.notes || null,
+          unavailable_days: JSON.stringify(values.unavailable_days || []),
         };
       }
 
