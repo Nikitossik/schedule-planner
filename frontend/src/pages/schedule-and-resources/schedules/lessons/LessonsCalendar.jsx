@@ -133,10 +133,13 @@ export function LessonsCalendar({
   const { data: holidaysData, isLoading: holidaysLoading } = useEntityList(
     "university_holiday",
     {
-      loadAll: true,
-      desc: false,
-      date_from: dateRange.date_from,
-      date_to: dateRange.date_to,
+      pagination: {
+        loadAll: true,
+      },
+      filters: {
+        date_from: dateRange.date_from,
+        date_to: dateRange.date_to,
+      },
     }
   );
 
