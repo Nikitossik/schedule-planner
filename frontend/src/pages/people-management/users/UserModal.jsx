@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
+import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
 
 import {
   Dialog,
@@ -15,6 +16,7 @@ import { UserForm } from "./UserForm";
 
 export default function UserModal({ isOpen, user, onClose, onSuccess }) {
   const { t } = useTranslation();
+  const { disableStudentAccounts } = useFeatureFlags();
   const isEdit = !!user;
   const createUser = useEntityMutation("user", "create");
   const updateUser = useEntityMutation("user", "patch");
@@ -39,8 +41,12 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
         payload.password = "password";
       }
 
-      // Формируем профиль студента
-      if (values.user_type === "student" && values.group_id) {
+      // Формируем профиль студента (только если флаг отключен)
+      if (
+        values.user_type === "student" &&
+        !disableStudentAccounts &&
+        values.group_id
+      ) {
         payload.student_profile = {
           group_id: parseInt(values.group_id),
         };

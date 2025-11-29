@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 
 import { useEntityList } from "@/hooks/useEntityList";
+import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
 
 const createSchema = (t) =>
   z
@@ -55,6 +56,7 @@ export function UserForm({
   isLoading = false,
 }) {
   const { t } = useTranslation();
+  const { disableStudentAccounts } = useFeatureFlags();
 
   // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
@@ -199,7 +201,10 @@ export function UserForm({
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="student">
+                      <SelectItem
+                        value="student"
+                        disabled={disableStudentAccounts}
+                      >
                         {t("users.form.userTypes.student")}
                       </SelectItem>
                       <SelectItem value="professor">

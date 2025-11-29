@@ -187,6 +187,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(routes.config_router)
 app.include_router(routes.auth_router)
 app.include_router(routes.user_router)
 app.include_router(routes.faculty_router)

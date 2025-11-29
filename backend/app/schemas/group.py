@@ -23,6 +23,12 @@ class GroupBase(BaseModel):
         description="Human-readable group name/identifier.",
         examples=["CS-101"],
     )
+    student_count: int | None = Field(
+        None,
+        ge=0,
+        description="Manual student count (for production mode without student accounts).",
+        examples=[25],
+    )
     semester_id: int = Field(
         gt=0,
         description="Identifier of the semester this group belongs to.",
@@ -49,6 +55,12 @@ class GroupUpdate(BaseModel):
         max_length=100,
         description="Optional new group name/identifier.",
         examples=["CS-102"],
+    )
+    student_count: int | None = Field(
+        None,
+        ge=0,
+        description="Optional manual student count.",
+        examples=[30],
     )
     semester_id: int | None = Field(
         None,
@@ -97,9 +109,9 @@ class GroupOut(BaseModel):
         description="Direction/program associated via the study form.",
         examples=[{"id": 3, "name": "Computer Science"}],
     )
-    students_count: int = Field(
+    students_count_display: int = Field(
         ...,
-        description="Number of students currently assigned to the group.",
+        description="Display count: manual if set, otherwise actual.",
         examples=[28],
     )
 

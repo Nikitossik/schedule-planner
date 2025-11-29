@@ -37,6 +37,9 @@ class Group(Base):
     name: Mapped[str] = mapped_column(
         String(100)
     )  # Group display name (e.g., "CS-101")
+    student_count: Mapped[int | None] = mapped_column(
+        nullable=True
+    )  # Manual student count (for production mode without student accounts)
     study_form_id: Mapped[int] = mapped_column(
         ForeignKey("study_form.id")
     )  # FK to the associated study form
@@ -57,9 +60,11 @@ class Group(Base):
     # lessons: Mapped[list["Lesson"]] = relationship("Lesson", back_populates="group")  # One-to-many: lessons scheduled for this group (currently disabled)
 
     @property
-    def students_count(self):
-        # Number of students currently loaded for this group; for large datasets consider a DB COUNT.
-        return len(self.students)
+    def students_count_display(self):
+        # Returns manual count if set, otherwise actual count from relationship
+        return (
+            self.student_count if self.student_count is not None else len(self.students)
+        )
 
     @property
     def academic_year(self):

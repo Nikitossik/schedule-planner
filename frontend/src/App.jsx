@@ -41,6 +41,10 @@ import NotFoundPage from "./pages/errors/NotFoundPage";
 import ForbiddenPage from "./pages/errors/ForbiddenPage";
 
 import { AuthProvider } from "@/contexts/AuthContext.jsx";
+import {
+  FeatureFlagsProvider,
+  useFeatureFlags,
+} from "@/contexts/FeatureFlagsContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 import { AppSidebar } from "@/components/AppSidebar";
@@ -133,12 +137,35 @@ const router = createBrowserRouter(
   )
 );
 
+function LoadingScreen() {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <p className="text-muted-foreground">Loading configuration...</p>
+      </div>
+    </div>
+  );
+}
+
+function RouterWithFlags() {
+  const { isLoading } = useFeatureFlags();
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  return <RouterProvider router={router} />;
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <ReactQueryProvider>
-        <Toaster />
-        <RouterProvider router={router} />
+        <FeatureFlagsProvider>
+          <Toaster />
+          <RouterWithFlags />
+        </FeatureFlagsProvider>
       </ReactQueryProvider>
     </AuthProvider>
   );

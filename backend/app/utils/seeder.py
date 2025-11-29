@@ -119,6 +119,9 @@ def seed_groups(db):
                 "name": group_name,
                 "study_form_id": study_form.id,
                 "semester_id": semester_id,
+                "student_count": random.randint(10, 20)
+                if setting.DISABLE_STUDENT_ACCOUNTS
+                else None,
             }
         )
 
@@ -270,21 +273,23 @@ def seed_users(db):
     service = services.UserService(db)
     groups = repos.GroupRepository(db).get_multiple()
 
-    # Студенты для каждой группы
-    for group in groups:
-        for i in range(15, 25):  # 15-25 студентов в группе
-            name = fake.first_name()
-            student_data = {
-                "email": fake.email(),
-                "name": name,
-                "surname": fake.last_name(),
-                "password": name.lower(),
-                "role": "user",
-                "user_type": "student",
-                "group_id": group.id,
-            }
-            student = sch.user.UserIn(**student_data)
-            service.create(student)
+    if not setting.DISABLE_STUDENT_ACCOUNTS:
+        for group in groups:
+            for i in range(10, 15):
+                name = fake.first_name()
+                student_data = {
+                    "email": fake.email(),
+                    "name": name,
+                    "surname": fake.last_name(),
+                    "password": name.lower(),
+                    "role": "user",
+                    "user_type": "student",
+                    "student_profile": {
+                        "group_id": group.id,
+                    },
+                }
+                student = sch.user.UserIn(**student_data)
+                service.create(student)
 
     # 3 преподавателя
     professors = [
@@ -301,6 +306,7 @@ def seed_users(db):
             "password": name.lower().replace("dr. ", ""),
             "role": "user",
             "user_type": "professor",
+            "professor_profile": {},
         }
         professor = sch.user.UserIn(**professor_data)
         service.create(professor)

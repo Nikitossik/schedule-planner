@@ -682,12 +682,14 @@
       },
       "fields": {
         "name": "Name",
+        "studentCount": "Student Count",
         "studyForm": "Study form",
         "academicYear": "Academic year",
         "semester": "Semester"
       },
       "placeholders": {
         "name": "Enter group name",
+        "studentCount": "Enter number of students",
         "studyForm": "Select study form",
         "academicYear": "Select academic year",
         "semester": "Select semester",

@@ -20,10 +20,12 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { useEntityList } from "@/hooks/useEntityList";
+import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
 
 const createSchema = (t) =>
   z.object({
     name: z.string().min(1, t("groups.form.validation.nameRequired")),
+    student_count: z.string().optional(),
     study_form_id: z
       .string()
       .min(1, t("groups.form.validation.studyFormRequired")),
@@ -44,10 +46,17 @@ export default function GroupForm({
   isLoading = false,
 }) {
   const { t } = useTranslation();
+  const { disableStudentAccounts } = useFeatureFlags();
 
   // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
+    student_count:
+      defaultValues?.student_count !== undefined
+        ? String(defaultValues.student_count)
+        : defaultValues?.students_count_display
+        ? String(defaultValues.students_count_display)
+        : "",
     study_form_id: String(defaultValues?.study_form?.id ?? ""),
     academic_year_id: String(defaultValues?.academic_year?.id ?? ""),
     semester_id: String(defaultValues?.semester?.id ?? ""),
@@ -120,6 +129,27 @@ export default function GroupForm({
             </FormItem>
           )}
         />
+
+        {disableStudentAccounts && (
+          <FormField
+            control={form.control}
+            name="student_count"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("groups.form.fields.studentCount")}</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    min="0"
+                    placeholder={t("groups.form.placeholders.studentCount")}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}

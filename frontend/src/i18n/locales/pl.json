@@ -681,12 +681,14 @@
       },
       "fields": {
         "name": "Nazwa",
+        "studentCount": "Liczba studentów",
         "studyForm": "Forma studiów",
         "academicYear": "Rok akademicki",
         "semester": "Semestr"
       },
       "placeholders": {
         "name": "Wprowadź nazwę grupy",
+        "studentCount": "Wprowadź liczbę studentów",
         "studyForm": "Wybierz formę studiów",
         "academicYear": "Wybierz rok akademicki",
         "semester": "Wybierz semestr",

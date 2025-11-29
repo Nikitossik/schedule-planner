@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     INITIAL_ADMIN_EMAIL: str
     INITIAL_ADMIN_PASSWORD: str
     RESET_DB_ON_START: bool
+    DISABLE_STUDENT_ACCOUNTS: bool
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env", env_file_encoding="utf-8"

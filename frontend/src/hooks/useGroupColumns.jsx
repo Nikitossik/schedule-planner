@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { actionsColumn } from "@/components/datatable/commonColumns";
+import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
 
 export function useGroupColumns() {
   const { t } = useTranslation();
@@ -17,15 +18,16 @@ export function useGroupColumns() {
         header: t("groups.table.columns.name"),
       },
       {
-        accessorKey: "students_count",
+        accessorKey: "students_count_display",
         header: t("groups.table.columns.studentsCount"),
-        cell: ({ row }) => (
-          <Badge variant="outline">
-            {t("groups.table.studentsText", {
-              count: row.original.students_count || 0,
-            })}
-          </Badge>
-        ),
+        cell: ({ row }) => {
+          const count = row.original.students_count_display || 0;
+          return (
+            <Badge variant="outline">
+              {t("groups.table.studentsText", { count })}
+            </Badge>
+          );
+        },
       },
       {
         header: t("groups.table.columns.directionAndStudyForm"),

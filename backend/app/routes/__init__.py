@@ -15,3 +15,4 @@ from .lesson import lesson_router
 from .academic_year import academic_year_router
 from .university_holiday import university_holiday_router
 from .recuring_template import recurring_template_router
+from .config import config_router
