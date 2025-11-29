@@ -1,7 +1,7 @@
 from __future__ import annotations
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Text
 
 from typing import TYPE_CHECKING
 
@@ -26,7 +26,9 @@ class ProfessorProfile(Base):
 
     __tablename__ = "professor_profile"
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)  # One-to-one PK/FK to the owning User
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("user.id"), primary_key=True
+    )  # One-to-one PK/FK to the owning User
 
     # relations
     user: Mapped["User"] = relationship(
@@ -36,7 +38,10 @@ class ProfessorProfile(Base):
         "ProfessorContract",
         back_populates="professor_profile",
         cascade="all, delete-orphan",
-    )  # One-to-many: contracts per semester; cascades on profile deletion
+    )
+    notes: Mapped[str] = mapped_column(Text, nullable=True)
+
+    # One-to-many: contracts per semester; cascades on profile deletion
     # workloads: Mapped[list["ProfessorWorkload"]] = relationship(
     #     "ProfessorWorkload", back_populates="professor_profile"
     # )  # One-to-many: workload items (currently disabled)

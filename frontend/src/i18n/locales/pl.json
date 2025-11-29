@@ -610,7 +610,8 @@
         "userType": "Typ Użytkownika",
         "academicYear": "Rok Akademicki",
         "semester": "Semestr",
-        "group": "Grupa"
+        "group": "Grupa",
+        "notes": "Uwagi"
       },
       "placeholders": {
         "name": "Wprowadź imię",
@@ -623,7 +624,8 @@
         "semester": "Wybierz semestr",
         "group": "Wybierz grupę",
         "selectAcademicYearFirst": "Najpierw wybierz rok akademicki",
-        "selectSemesterFirst": "Najpierw wybierz semestr"
+        "selectSemesterFirst": "Najpierw wybierz semestr",
+        "notes": "Wprowadź uwagi dotyczące dostępności lub inne informacje o profesorze"
       },
       "validation": {
         "passwordLength": "Hasło musi mieć co najmniej 6 znaków"
@@ -640,7 +642,8 @@
       "sections": {
         "basicInfo": "Podstawowe informacje",
         "roleAndType": "Rola i typ użytkownika",
-        "studentProfile": "Profil studenta"
+        "studentProfile": "Profil studenta",
+        "professorProfile": "Profil profesora"
       },
       "noData": {
         "noAcademicYears": "Nie znaleziono lat akademickich",

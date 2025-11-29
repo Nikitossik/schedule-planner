@@ -22,14 +22,35 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
 
   const handleSubmit = async (values) => {
     try {
+      // Базовые данные пользователя (без профилей)
       const payload = {
-        ...values,
+        email: values.email,
+        name: values.name,
+        surname: values.surname,
+        role: values.role,
         user_type: values.user_type || null,
-        group_id: values.group_id ? parseInt(values.group_id) : null,
       };
 
-      if (isEdit && !payload.password) {
-        delete payload.password;
+      // Добавляем пароль только если он указан
+      if (values.password) {
+        payload.password = values.password;
+      } else if (!isEdit) {
+        // При создании пароль обязателен - используем дефолтный если не указан
+        payload.password = "password";
+      }
+
+      // Формируем профиль студента
+      if (values.user_type === "student" && values.group_id) {
+        payload.student_profile = {
+          group_id: parseInt(values.group_id),
+        };
+      }
+
+      // Формируем профиль профессора
+      if (values.user_type === "professor") {
+        payload.professor_profile = {
+          notes: values.notes || null,
+        };
       }
 
       if (isEdit) {
@@ -71,6 +92,7 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
         role: "user",
         user_type: "",
         group_id: "",
+        notes: "",
       };
 
   return (

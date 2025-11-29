@@ -5,6 +5,7 @@ import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -39,6 +40,7 @@ const createSchema = (t) =>
       academic_year_id: z.string().optional(),
       semester_id: z.string().optional(),
       group_id: z.string().optional(),
+      notes: z.string().optional(),
     })
     .refine((data) => !data.password || data.password.length >= 6, {
       path: ["password"],
@@ -67,6 +69,7 @@ export function UserForm({
     ),
     semester_id: String(defaultValues?.student_profile?.semester?.id ?? ""),
     group_id: String(defaultValues?.student_profile?.group?.id ?? ""),
+    notes: defaultValues?.professor_profile?.notes || "",
   };
 
   const form = useForm({
@@ -346,6 +349,31 @@ export function UserForm({
                       )}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        )}
+
+        {role === "user" && userType === "professor" && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">
+              {t("users.form.sections.professorProfile")}
+            </h3>
+
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("users.form.fields.notes")}</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder={t("users.form.placeholders.notes")}
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

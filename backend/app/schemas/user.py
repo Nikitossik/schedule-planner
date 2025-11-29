@@ -10,6 +10,12 @@ from typing_extensions import Self
 from ..utils.enums import UserRoleEnum, UserTypeEnum
 from .minis import GroupMiniOut, SemesterMiniOut, AcademicYearMiniOut
 from .shared import BaseQueryParams, BaseFilterParams
+from .user_profiles import StudentProfileIn, StudentProfileUpdate, StudentProfileOut
+from .user_profiles import (
+    ProfessorProfileIn,
+    ProfessorProfileUpdate,
+    ProfessorProfileOut,
+)
 
 
 class UserBase(BaseModel):
@@ -73,15 +79,15 @@ class UserIn(UserBase):
             examples=["s3cr3tPwd"],
         ),
     ]
-    group_id: Annotated[
-        int | None,
-        Field(
-            default=None,
-            gt=0,
-            description="Optional group ID (typically for students).",
-            examples=[10],
-        ),
-    ]
+
+    student_profile: StudentProfileIn | None = Field(
+        None,
+        description="Optional student profile data.",
+    )
+    professor_profile: ProfessorProfileIn | None = Field(
+        None,
+        description="Optional professor profile data.",
+    )
 
     @model_validator(mode="after")
     def check_user_specific_fields(self) -> Self:
@@ -161,47 +167,15 @@ class UserUpdate(BaseModel):
             examples=["PROFESSOR"],
         ),
     ]
-    group_id: Annotated[
-        int | None,
-        Field(
-            None,
-            gt=0,
-            description="Optional new group ID.",
-            examples=[12],
-        ),
-    ]
 
-
-class StudentProfileOut(BaseModel):
-    """
-    Student profile projection nested inside UserOut.
-    Provides group and derived academic period info.
-    """
-
-    group: GroupMiniOut | None = Field(
-        default=None,
-        description="Mini representation of the student's group.",
-        examples=[{"id": 10, "name": "CS-101"}],
+    student_profile: StudentProfileUpdate | None = Field(
+        None,
+        description="Optional student profile data.",
     )
-    academic_year: AcademicYearMiniOut | None = Field(
-        default=None,
-        description="Mini representation of the academic year (derived via group).",
-        examples=[{"id": 1, "name": "2024-2025"}],
+    professor_profile: ProfessorProfileUpdate | None = Field(
+        None,
+        description="Optional professor profile data.",
     )
-    semester: SemesterMiniOut | None = Field(
-        default=None,
-        description="Mini representation of the semester (derived via group).",
-        examples=[{"id": 2, "name": "Fall 2024"}],
-    )
-
-
-class ProfessorProfileOut(BaseModel):
-    """
-    Professor profile projection nested inside UserOut.
-    Reserved for future professor-specific fields.
-    """
-
-    pass
 
 
 class UserOut(UserBase):
@@ -222,7 +196,6 @@ class UserOut(UserBase):
     professor_profile: ProfessorProfileOut | None = Field(
         default=None,
         description="Professor profile details when the user is a professor.",
-        examples=[{}],
     )
 
 

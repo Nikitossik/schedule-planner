@@ -115,7 +115,7 @@ class UserService(BaseService[User, UserIn]):
         Raises:
             AlreadyExistsException: If a user with the same email already exists.
         """
-        user_data = user.model_dump()
+        user_data = user.model_dump(exclude={"student_profile", "professor_profile"})
 
         found_user = self.repo.get_by_email(user_data["email"])
 
@@ -126,31 +126,39 @@ class UserService(BaseService[User, UserIn]):
 
         new_user = super().create(user_data)
 
-        self.create_user_profile(new_user, user_data)
+        # Create profile using data from student_profile or professor_profile
+        self.create_user_profile(new_user, user)
 
         return new_user
 
-    def create_user_profile(self, new_user: User, user_data):
+    def create_user_profile(self, new_user: User, user_in: UserIn):
         """
         Create a student or professor profile for the newly created user.
 
         Args:
             new_user (User): Persisted user entity.
-            user_data (dict): Original payload including user_type and optional group_id.
+            user_in (UserIn): Original input schema with profile data.
 
         Returns:
             None
         """
-        profile_data = {**user_data, "user_id": new_user.id}
-
-        if user_data["user_type"] == "student":
+        if user_in.user_type == "student" and user_in.student_profile:
+            profile_data = {
+                **user_in.student_profile.model_dump(),
+                "user_id": new_user.id,
+            }
             self.student_repo.create(profile_data)
-        elif user_data["user_type"] == "professor":
+        elif user_in.user_type == "professor" and user_in.professor_profile:
+            profile_data = {
+                **user_in.professor_profile.model_dump(),
+                "user_id": new_user.id,
+            }
             self.professor_repo.create(profile_data)
 
     def update(self, user_id: int, user: UserIn | UserUpdate) -> User:
         """
         Update an existing user. Password is re-hashed if provided.
+        Updates profile data based on user type.
 
         Args:
             user_id (int): Identifier of the user to update.
@@ -159,14 +167,32 @@ class UserService(BaseService[User, UserIn]):
         Returns:
             User: Updated user entity.
         """
-        user_data = user.model_dump(exclude_none=True)
+        user_data = user.model_dump(
+            exclude_none=True, exclude={"student_profile", "professor_profile"}
+        )
 
         if user_data.get("password"):
             user_data["password_hash"] = security.get_password_hash(
                 user_data["password"]
             )
 
-        return super().update(user_id, user_data)
+        updated_user = super().update(user_id, user_data)
+
+        # Update profile based on user type using relationship
+        if updated_user.user_type == "student" and user.student_profile:
+            profile_data = user.student_profile.model_dump(exclude_none=True)
+            if profile_data and updated_user.student_profile:
+                for key, value in profile_data.items():
+                    setattr(updated_user.student_profile, key, value)
+        elif updated_user.user_type == "professor" and user.professor_profile:
+            profile_data = user.professor_profile.model_dump(exclude_none=True)
+            if profile_data and updated_user.professor_profile:
+                for key, value in profile_data.items():
+                    setattr(updated_user.professor_profile, key, value)
+
+        self.db.commit()
+        self.db.refresh(updated_user)
+        return updated_user
 
     def delete(self, user_id: int):
         """
