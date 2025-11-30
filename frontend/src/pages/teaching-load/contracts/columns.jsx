@@ -1,5 +1,62 @@
-export { useContractColumns } from "@/hooks/useContractColumns";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
+import { actionsColumn } from "@/components/datatable/commonColumns";
 
-// Export the hook as default for backward compatibility
-import { useContractColumns } from "@/hooks/useContractColumns";
+export function useContractColumns() {
+  const { t } = useTranslation();
+
+  return useMemo(
+    () => [
+      {
+        accessorKey: "id",
+        header: t("contracts.table.columns.id"),
+      },
+      {
+        header: t("contracts.table.columns.professor"),
+        cell: ({ row }) =>
+          `${row.original.professor?.name} ${row.original.professor?.surname}` ??
+          "",
+      },
+      {
+        header: t("contracts.table.columns.academicYear"),
+        cell: ({ row }) => (
+          <Badge variant="outline">
+            {row.original.academic_year?.name ?? ""}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "semester",
+        header: t("contracts.table.columns.semester"),
+        cell: ({ row }) => (
+          <Badge variant="outline">
+            {t("contracts.table.semesterFormat", {
+              number: row.original.semester?.number,
+              period: t(
+                `filterLabels.periods.${row.original.semester?.period}`
+              ),
+            })}
+          </Badge>
+        ),
+      },
+      {
+        header: t("contracts.table.columns.hours"),
+        cell: ({ row }) => (
+          <Badge variant="secondary">
+            {row.original.total_workload_hours || 0} /{" "}
+            {row.original.total_hours} {t("contracts.table.hoursUnit")}
+          </Badge>
+        ),
+      },
+      actionsColumn({
+        entity: "professor_contract",
+        useModal: true,
+        displayName: "contract",
+      }),
+    ],
+    [t]
+  );
+}
+
 export const columns = useContractColumns;

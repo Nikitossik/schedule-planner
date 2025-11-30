@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useScheduleColumns } from "@/hooks/useScheduleColumns";
+import { useScheduleColumns } from "./columns";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
 import ScheduleModal from "./ScheduleModal";
 

@@ -738,13 +738,12 @@
         "professor": "Profesor",
         "academicYear": "Rok akademicki",
         "semester": "Semestr",
-        "totalHours": "Łączne godziny kontraktu",
-        "usedHours": "Łączne wykorzystane godziny",
-        "remainingHours": "Pozostałe godziny"
+        "hours": "Godziny"
       },
       "searchPlaceholder": "Szukaj kontraktów...",
       "addButton": "+ Utwórz kontrakt",
-      "semesterFormat": "Semestr {{number}} - {{period}}"
+      "semesterFormat": "Semestr {{number}} - {{period}}",
+      "hoursUnit": "godz"
     },
     "form": {
       "title": {
@@ -797,11 +796,10 @@
         "directionAndStudyForm": "Kierunek i forma studiów",
         "academicYear": "Rok akademicki",
         "semester": "Semestr",
-        "assignedHours": "Przypisane godziny",
-        "usedHours": "Łączne wykorzystane godziny",
-        "remainingHours": "Pozostałe godziny"
+        "hours": "Godziny"
       },
-      "semesterFormat": "Semestr {{number}} - {{period}}"
+      "semesterFormat": "Semestr {{number}} - {{period}}",
+      "hoursUnit": "godz"
     },
     "form": {
       "title": {

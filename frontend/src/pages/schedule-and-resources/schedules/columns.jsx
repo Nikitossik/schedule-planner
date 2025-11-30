@@ -59,3 +59,5 @@ export function useScheduleColumns() {
     [t]
   );
 }
+
+export const columns = useScheduleColumns;

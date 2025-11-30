@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useWorkloadColumns } from "@/hooks/useWorkloadColumns";
+import { useWorkloadColumns } from "./columns";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
 import WorkloadModal from "./WorkloadModal";
 import { useFilterComposer } from "@/components/datatable/toolbar/filters/useFilterComposer";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
-import { useSubjectAssignmentColumns } from "@/hooks/useSubjectAssignmentColumns";
+import { useSubjectAssignmentColumns } from "./columns";
 import {
   Dialog,
   DialogContent,

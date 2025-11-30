@@ -739,13 +739,12 @@
         "professor": "Professor",
         "academicYear": "Academic year",
         "semester": "Semester",
-        "totalHours": "Total contract hours",
-        "usedHours": "Total used hours",
-        "remainingHours": "Remaining hours"
+        "hours": "Hours"
       },
       "searchPlaceholder": "Search contracts...",
       "addButton": "+ Create contract",
-      "semesterFormat": "Semester {{number}} - {{period}}"
+      "semesterFormat": "Semester {{number}} - {{period}}",
+      "hoursUnit": "hrs"
     },
     "form": {
       "title": {
@@ -798,11 +797,10 @@
         "directionAndStudyForm": "Direction and study form",
         "academicYear": "Academic year",
         "semester": "Semester",
-        "assignedHours": "Assigned hours",
-        "usedHours": "Total used hours",
-        "remainingHours": "Remaining hours"
+        "hours": "Hours"
       },
-      "semesterFormat": "Semester {{number}} - {{period}}"
+      "semesterFormat": "Semester {{number}} - {{period}}",
+      "hoursUnit": "hrs"
     },
     "form": {
       "title": {
