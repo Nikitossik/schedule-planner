@@ -43,6 +43,7 @@ export function RecurringLessonForm({
   const [showUnavailabilityWarning, setShowUnavailabilityWarning] =
     useState(false);
   const [pendingFormData, setPendingFormData] = useState(null);
+  const [userEditedName, setUserEditedName] = useState(false); // Флаг что пользователь сам ввел имя
 
   const createRecurringTemplate = useEntityMutation(
     "recurring_template",
@@ -162,14 +163,15 @@ export function RecurringLessonForm({
     setValue("subject_assignment_id", "");
   }, [watchedWorkloadId, setValue, isEdit]);
 
-  // Автоматическое обновление названия шаблона
+  // Автоматическое обновление названия шаблона (только если пользователь не вводил свое)
   useEffect(() => {
-    if (
-      !isEdit &&
-      watchedWorkloadId &&
-      watchedGroupId &&
-      watchedSubjectAssignmentId
-    ) {
+    // Не генерируем автоматически если:
+    // - В режиме редактирования
+    // - Пользователь сам ввел имя
+    // - Не выбраны все необходимые поля
+    if (isEdit || userEditedName) return;
+
+    if (watchedWorkloadId && watchedGroupId && watchedSubjectAssignmentId) {
       const selectedWorkload = workloads.find(
         (w) => w.id.toString() === watchedWorkloadId
       );
@@ -196,6 +198,7 @@ export function RecurringLessonForm({
     assignments,
     setValue,
     isEdit,
+    userEditedName,
   ]);
 
   // Функция submit
@@ -299,6 +302,22 @@ export function RecurringLessonForm({
                   placeholder={t(
                     "recurringLessons.form.placeholders.templateName"
                   )}
+                  onChange={(e) => {
+                    // Если пользователь вводит что-то вручную - отключаем автогенерацию
+                    if (e.target.value.trim()) {
+                      setUserEditedName(true);
+                    } else {
+                      setUserEditedName(false);
+                    }
+                    // Вызываем стандартный onChange от register
+                    const event = {
+                      target: {
+                        name: "name",
+                        value: e.target.value,
+                      },
+                    };
+                    setValue("name", e.target.value);
+                  }}
                 />
                 {errors.name && (
                   <p className="text-sm text-red-500">{errors.name.message}</p>
