@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { DatePicker } from "@/components/ui/date-picker";
+import { TimePicker } from "@/components/ui/timepicker/time-picker";
 import {
   Calendar,
   Clock,
@@ -47,6 +48,10 @@ export function LessonForm({
 }) {
   const { t } = useTranslation();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Состояния для TimePicker
+  const [startTimeDate, setStartTimeDate] = useState(new Date());
+  const [endTimeDate, setEndTimeDate] = useState(new Date());
 
   // Трансформируем данные урока для формы
   const getDefaultValues = useCallback(() => {
@@ -95,6 +100,29 @@ export function LessonForm({
   // Сбрасываем форму когда меняется урок
   useEffect(() => {
     reset(getDefaultValues());
+
+    // Устанавливаем время для TimePicker
+    if (lesson?.start_time) {
+      const [hours, minutes, seconds] = lesson.start_time.split(":");
+      const date = new Date();
+      date.setHours(
+        parseInt(hours),
+        parseInt(minutes),
+        parseInt(seconds || "0")
+      );
+      setStartTimeDate(date);
+    }
+
+    if (lesson?.end_time) {
+      const [hours, minutes, seconds] = lesson.end_time.split(":");
+      const date = new Date();
+      date.setHours(
+        parseInt(hours),
+        parseInt(minutes),
+        parseInt(seconds || "0")
+      );
+      setEndTimeDate(date);
+    }
   }, [lesson, getDefaultValues, reset]);
 
   // Отслеживаемые поля для каскадной фильтрации
@@ -102,8 +130,21 @@ export function LessonForm({
   const watchedWorkloadId = watch("workload_id");
   const watchedIsOnline = watch("is_online");
   const watchedDate = watch("date");
-  const watchedStartTime = watch("start_time");
-  const watchedEndTime = watch("end_time");
+
+  // Получаем время в формате HH:MM:SS из Date объектов для фильтрации комнат
+  const watchedStartTime = useMemo(() => {
+    const hours = String(startTimeDate.getHours()).padStart(2, "0");
+    const minutes = String(startTimeDate.getMinutes()).padStart(2, "0");
+    const seconds = String(startTimeDate.getSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  }, [startTimeDate]);
+
+  const watchedEndTime = useMemo(() => {
+    const hours = String(endTimeDate.getHours()).padStart(2, "0");
+    const minutes = String(endTimeDate.getMinutes()).padStart(2, "0");
+    const seconds = String(endTimeDate.getSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  }, [endTimeDate]);
 
   // Получаем день недели из выбранной даты (0 = Monday, 6 = Sunday)
   const selectedDayOfWeek = useMemo(() => {
@@ -311,6 +352,14 @@ export function LessonForm({
 
   const handleFormSubmit = async (data) => {
     try {
+      // Форматируем время из Date объектов в строки HH:MM:SS
+      const formatTime = (date) => {
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
+        return `${hours}:${minutes}:${seconds}`;
+      };
+
       // Преобразуем строковые ID в числа для API
       const transformedData = {
         ...data,
@@ -320,6 +369,8 @@ export function LessonForm({
           ? parseInt(data.subject_assignment_id)
           : null,
         room_id: data.room_id ? parseInt(data.room_id) : null,
+        start_time: formatTime(startTimeDate),
+        end_time: formatTime(endTimeDate),
       };
 
       // Удаляем workload_id из данных, он нужен только для UI
@@ -586,7 +637,7 @@ export function LessonForm({
               {t("lessons.form.sections.dateTime")}
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-4">
               {/* Date */}
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
@@ -605,44 +656,31 @@ export function LessonForm({
                 )}
               </div>
 
-              {/* Start time */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  {t("lessons.form.fields.startTime")}
-                </label>
-                <Input
-                  type="time"
-                  step="1"
-                  {...register("start_time", {
-                    required: t("lessons.form.validation.startTimeRequired"),
-                  })}
-                  className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                />
-                {errors.start_time && (
-                  <p className="text-sm text-red-500">
-                    {errors.start_time.message}
-                  </p>
-                )}
-              </div>
+              {/* Time range */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Start time */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    {t("lessons.form.fields.startTime")}
+                  </label>
+                  <TimePicker
+                    date={startTimeDate}
+                    setDate={setStartTimeDate}
+                    showSeconds={false}
+                  />
+                </div>
 
-              {/* End time */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  {t("lessons.form.fields.endTime")}
-                </label>
-                <Input
-                  type="time"
-                  step="1"
-                  {...register("end_time", {
-                    required: t("lessons.form.validation.endTimeRequired"),
-                  })}
-                  className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                />
-                {errors.end_time && (
-                  <p className="text-sm text-red-500">
-                    {errors.end_time.message}
-                  </p>
-                )}
+                {/* End time */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    {t("lessons.form.fields.endTime")}
+                  </label>
+                  <TimePicker
+                    date={endTimeDate}
+                    setDate={setEndTimeDate}
+                    showSeconds={false}
+                  />
+                </div>
               </div>
             </div>
           </CardContent>

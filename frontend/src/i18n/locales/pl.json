@@ -35,6 +35,11 @@
       }
     }
   },
+  "timePicker": {
+    "hours": "Godziny",
+    "minutes": "Minuty",
+    "seconds": "Sekundy"
+  },
   "navigation": {
     "dashboard": "Panel główny",
     "schedule": "Harmonogram",

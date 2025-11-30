@@ -35,6 +35,11 @@
       }
     }
   },
+  "timePicker": {
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "schedule": "Schedule",

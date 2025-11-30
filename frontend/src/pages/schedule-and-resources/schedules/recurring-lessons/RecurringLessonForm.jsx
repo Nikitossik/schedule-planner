@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { DatePicker } from "@/components/ui/date-picker";
+import { TimePicker } from "@/components/ui/timepicker/time-picker";
 import {
   Calendar,
   Clock,
@@ -54,6 +55,10 @@ export function RecurringLessonForm({
   const [showUnavailabilityWarning, setShowUnavailabilityWarning] =
     useState(false);
   const [pendingFormData, setPendingFormData] = useState(null);
+
+  // Состояния для TimePicker
+  const [startTimeDate, setStartTimeDate] = useState(new Date());
+  const [endTimeDate, setEndTimeDate] = useState(new Date());
 
   const createRecurringTemplate = useEntityMutation(
     "recurring_template",
@@ -135,6 +140,29 @@ export function RecurringLessonForm({
   // Сбрасываем форму когда меняется шаблон
   useEffect(() => {
     reset(getDefaultValues());
+
+    // Устанавливаем время для TimePicker
+    if (template?.start_time) {
+      const [hours, minutes, seconds] = template.start_time.split(":");
+      const date = new Date();
+      date.setHours(
+        parseInt(hours),
+        parseInt(minutes),
+        parseInt(seconds || "0")
+      );
+      setStartTimeDate(date);
+    }
+
+    if (template?.end_time) {
+      const [hours, minutes, seconds] = template.end_time.split(":");
+      const date = new Date();
+      date.setHours(
+        parseInt(hours),
+        parseInt(minutes),
+        parseInt(seconds || "0")
+      );
+      setEndTimeDate(date);
+    }
   }, [template, getDefaultValues, reset]);
 
   // Отслеживаемые поля для каскадной фильтрации
@@ -143,9 +171,22 @@ export function RecurringLessonForm({
   const watchedIsOnline = watch("is_online");
   const watchedStartDate = watch("start_date");
   const watchedEndDate = watch("end_date");
-  const watchedStartTime = watch("start_time");
-  const watchedEndTime = watch("end_time");
   const watchedDaysOfWeek = watch("days_of_week");
+
+  // Получаем время в формате HH:MM:SS из Date объектов
+  const watchedStartTime = useMemo(() => {
+    const hours = String(startTimeDate.getHours()).padStart(2, "0");
+    const minutes = String(startTimeDate.getMinutes()).padStart(2, "0");
+    const seconds = String(startTimeDate.getSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  }, [startTimeDate]);
+
+  const watchedEndTime = useMemo(() => {
+    const hours = String(endTimeDate.getHours()).padStart(2, "0");
+    const minutes = String(endTimeDate.getMinutes()).padStart(2, "0");
+    const seconds = String(endTimeDate.getSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  }, [endTimeDate]);
 
   // 1. Группы: фильтруем по semester_id и direction_id из schedule
   const { data: groupsData } = useEntityList("group", {
@@ -355,6 +396,14 @@ export function RecurringLessonForm({
 
   const submitForm = async (data) => {
     try {
+      // Форматируем время из Date объектов в строки HH:MM:SS
+      const formatTime = (date) => {
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
+        return `${hours}:${minutes}:${seconds}`;
+      };
+
       // Преобразуем данные для API
       const transformedData = {
         ...data,
@@ -364,6 +413,8 @@ export function RecurringLessonForm({
           ? parseInt(data.subject_assignment_id)
           : null,
         room_id: data.room_id ? parseInt(data.room_id) : null,
+        start_time: formatTime(startTimeDate),
+        end_time: formatTime(endTimeDate),
         days_of_week: JSON.stringify(data.days_of_week || []),
       };
 
@@ -750,19 +801,11 @@ export function RecurringLessonForm({
                   <label className="text-sm font-medium">
                     {t("lessons.form.fields.startTime")}
                   </label>
-                  <Input
-                    type="time"
-                    step="1"
-                    {...register("start_time", {
-                      required: t("lessons.form.validation.startTimeRequired"),
-                    })}
-                    className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                  <TimePicker
+                    date={startTimeDate}
+                    setDate={setStartTimeDate}
+                    showSeconds={false}
                   />
-                  {errors.start_time && (
-                    <p className="text-sm text-red-500">
-                      {errors.start_time.message}
-                    </p>
-                  )}
                 </div>
 
                 {/* End time */}
@@ -770,19 +813,11 @@ export function RecurringLessonForm({
                   <label className="text-sm font-medium">
                     {t("lessons.form.fields.endTime")}
                   </label>
-                  <Input
-                    type="time"
-                    step="1"
-                    {...register("end_time", {
-                      required: t("lessons.form.validation.endTimeRequired"),
-                    })}
-                    className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                  <TimePicker
+                    date={endTimeDate}
+                    setDate={setEndTimeDate}
+                    showSeconds={false}
                   />
-                  {errors.end_time && (
-                    <p className="text-sm text-red-500">
-                      {errors.end_time.message}
-                    </p>
-                  )}
                 </div>
               </div>
             </div>
