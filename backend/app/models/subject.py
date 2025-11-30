@@ -66,3 +66,16 @@ class Subject(Base):
     def academic_year(self):
         # Convenience: academic year via the subject's semester.
         return self.semester.academic_year
+
+    @property
+    def used_hours(self) -> float:
+        """
+        Calculate total hours used across all lessons for this subject.
+        Sums duration_minutes from all lessons in all subject_assignments,
+        converts to hours (rounded to 2 decimal places).
+        """
+        total_minutes = 0
+        for assignment in self.subject_assignments:
+            for lesson in assignment.lessons:
+                total_minutes += lesson.duration_minutes
+        return round(total_minutes / 60, 2)

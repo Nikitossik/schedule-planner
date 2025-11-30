@@ -48,10 +48,11 @@ export const useSubjectColumns = () => {
     },
     {
       accessorKey: "allocated_hours",
-      header: t("subjects.table.columns.allocatedHours"),
+      header: t("subjects.table.columns.hours"),
       cell: ({ row }) => (
         <Badge variant="secondary">
-          {row.original.allocated_hours} {t("subjects.table.hoursUnit")}
+          {row.original.used_hours || 0} / {row.original.allocated_hours}{" "}
+          {t("subjects.table.hoursUnit")}
         </Badge>
       ),
     },

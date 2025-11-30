@@ -91,6 +91,11 @@ class SubjectOut(SubjectBase):
         description="Unique identifier of the subject.",
         examples=[7],
     )
+    used_hours: float = Field(
+        ...,
+        description="Total hours used across all lessons for this subject.",
+        examples=[35.5],
+    )
     faculty: FacultyMiniOut = Field(
         ...,
         description="Mini representation of the faculty derived from the direction.",

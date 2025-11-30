@@ -396,7 +396,7 @@
         "direction": "Kierunek",
         "academicYear": "Rok Akademicki",
         "semester": "Semestr",
-        "allocatedHours": "Przydzielone godziny",
+        "hours": "Godziny",
         "color": "Kolor"
       },
       "hoursUnit": "godz.",

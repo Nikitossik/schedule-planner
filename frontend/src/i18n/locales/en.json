@@ -397,7 +397,7 @@
         "direction": "Direction",
         "academicYear": "Academic Year",
         "semester": "Semester",
-        "allocatedHours": "Allocated Hours",
+        "hours": "Hours",
         "color": "Color"
       },
       "hoursUnit": "hrs",
