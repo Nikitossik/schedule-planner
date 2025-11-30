@@ -32,7 +32,7 @@ const LESSON_TYPES = [
   },
 ];
 
-export function LessonTypeSelector({ value, onChange }) {
+export function LessonTypeSelector({ value, onChange, error }) {
   const { t } = useTranslation();
 
   return (
@@ -59,6 +59,7 @@ export function LessonTypeSelector({ value, onChange }) {
             );
           })}
         </div>
+        {error && <p className="text-sm text-red-500">{error.message}</p>}
       </CardContent>
     </Card>
   );

@@ -92,3 +92,8 @@ class RecurringLessonTemplate(Base):
     def professor(self):
         # Convenience: User associated via the contract’s professor profile.
         return self.subject_assignment.workload.contract.professor_profile.user
+
+    @property
+    def workload(self):
+        # Convenience: Workload via the subject assignment.
+        return self.subject_assignment.workload

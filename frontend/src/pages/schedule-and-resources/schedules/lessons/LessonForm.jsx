@@ -174,7 +174,9 @@ export function LessonForm({
 
             <GroupSelector
               value={watchedGroupId}
-              onChange={(value) => setValue("group_id", value)}
+              onChange={(value) =>
+                setValue("group_id", value, { shouldValidate: true })
+              }
               groups={groups}
               error={errors.group_id?.message}
             />
@@ -191,7 +193,9 @@ export function LessonForm({
 
             <ProfessorSelector
               value={watchedWorkloadId}
-              onChange={(value) => setValue("workload_id", value)}
+              onChange={(value) =>
+                setValue("workload_id", value, { shouldValidate: true })
+              }
               workloads={workloads}
               selectedGroupId={watchedGroupId}
               isProfessorAvailable={isProfessorAvailable}
@@ -200,7 +204,11 @@ export function LessonForm({
 
             <SubjectSelector
               value={watch("subject_assignment_id")}
-              onChange={(value) => setValue("subject_assignment_id", value)}
+              onChange={(value) =>
+                setValue("subject_assignment_id", value, {
+                  shouldValidate: true,
+                })
+              }
               assignments={assignments}
               selectedWorkloadId={watchedWorkloadId}
               error={errors.subject_assignment_id?.message}
@@ -211,14 +219,19 @@ export function LessonForm({
         {/* Lesson Type */}
         <LessonTypeSelector
           value={watch("lesson_type")}
-          onChange={(value) => setValue("lesson_type", value)}
+          onChange={(value) =>
+            setValue("lesson_type", value, { shouldValidate: true })
+          }
+          error={errors.lesson_type}
         />
 
         {/* Date and Time */}
         <DateTimeSection
           mode="single"
           date={watchedDate}
-          onDateChange={(value) => setValue("date", value)}
+          onDateChange={(value) =>
+            setValue("date", value, { shouldValidate: true })
+          }
           startTimeDate={startTimeDate}
           setStartTimeDate={setStartTimeDate}
           endTimeDate={endTimeDate}
@@ -230,9 +243,13 @@ export function LessonForm({
         {/* Location */}
         <LocationSection
           isOnline={watchedIsOnline}
-          onIsOnlineChange={(checked) => setValue("is_online", checked)}
+          onIsOnlineChange={(checked) =>
+            setValue("is_online", checked, { shouldValidate: true })
+          }
           roomId={watch("room_id")}
-          onRoomChange={(value) => setValue("room_id", value)}
+          onRoomChange={(value) =>
+            setValue("room_id", value, { shouldValidate: true })
+          }
           rooms={rooms}
           error={errors.room_id?.message}
           requireDateTime={true}

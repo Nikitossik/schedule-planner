@@ -1116,8 +1116,14 @@
         "unavailable": "Unavailable"
       },
       "validation": {
-        "startTimeRequired": "Specify start time",
-        "endTimeRequired": "Specify end time"
+        "groupRequired": "Group is required",
+        "workloadRequired": "Professor is required",
+        "subjectRequired": "Subject is required",
+        "lessonTypeRequired": "Lesson type is required",
+        "dateRequired": "Date is required",
+        "startTimeRequired": "Start time is required",
+        "endTimeRequired": "End time is required",
+        "locationRequired": "Select a room or mark lesson as online"
       },
       "buttons": {
         "delete": "Delete",
@@ -1192,7 +1198,11 @@
         "selectEndDate": "Select end date"
       },
       "validation": {
-        "nameRequired": "Template name is required"
+        "nameRequired": "Template name is required",
+        "daysRequired": "Select at least one day",
+        "startDateRequired": "Start date is required",
+        "endDateRequired": "End date is required",
+        "endDateBeforeStart": "End date cannot be before start date"
       },
       "messages": {
         "selectedDays": "Selected days",

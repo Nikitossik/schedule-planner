@@ -128,7 +128,14 @@ function LessonsListContent({ schedule, onUpdate }) {
         refreshTrigger={refreshTrigger}
       />
 
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+      <Dialog
+        key={
+          editingLesson?.id ||
+          (isCreateDialogOpen ? "create-open" : "create-closed")
+        }
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+      >
         <LessonForm
           lesson={editingLesson}
           schedule={schedule}

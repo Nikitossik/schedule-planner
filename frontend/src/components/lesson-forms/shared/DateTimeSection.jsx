@@ -28,6 +28,18 @@ export function DateTimeSection({
 }) {
   const { t } = useTranslation();
 
+  // When start time changes, ensure end time is not before it
+  const handleStartTimeChange = (newStartTime) => {
+    setStartTimeDate(newStartTime);
+
+    // If end time is before new start time, adjust it
+    if (newStartTime && endTimeDate && endTimeDate <= newStartTime) {
+      const adjustedEndTime = new Date(newStartTime);
+      adjustedEndTime.setMinutes(adjustedEndTime.getMinutes() + 15); // Add 15 minutes minimum
+      setEndTimeDate(adjustedEndTime);
+    }
+  };
+
   return (
     <Card>
       <CardContent className="pt-6 space-y-4">
@@ -54,7 +66,7 @@ export function DateTimeSection({
                 disabled={disabledDates}
               />
               {errors.date && (
-                <p className="text-sm text-red-500">{errors.date}</p>
+                <p className="text-sm text-red-500">{errors.date.message}</p>
               )}
             </div>
           )}
@@ -77,7 +89,9 @@ export function DateTimeSection({
                   disabled={minDate ? [(date) => date < minDate] : []}
                 />
                 {errors.start_date && (
-                  <p className="text-sm text-red-500">{errors.start_date}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.start_date.message}
+                  </p>
                 )}
               </div>
 
@@ -101,7 +115,9 @@ export function DateTimeSection({
                   ]}
                 />
                 {errors.end_date && (
-                  <p className="text-sm text-red-500">{errors.end_date}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.end_date.message}
+                  </p>
                 )}
               </div>
             </>
@@ -115,9 +131,14 @@ export function DateTimeSection({
               </label>
               <TimePicker
                 date={startTimeDate}
-                setDate={setStartTimeDate}
+                setDate={handleStartTimeChange}
                 showSeconds={false}
               />
+              {errors.start_time && (
+                <p className="text-sm text-red-500">
+                  {errors.start_time.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -129,6 +150,11 @@ export function DateTimeSection({
                 setDate={setEndTimeDate}
                 showSeconds={false}
               />
+              {errors.end_time && (
+                <p className="text-sm text-red-500">
+                  {errors.end_time.message}
+                </p>
+              )}
             </div>
           </div>
         </div>

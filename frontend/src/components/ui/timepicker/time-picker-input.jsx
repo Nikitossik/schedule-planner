@@ -16,7 +16,7 @@ const TimePickerInput = React.forwardRef(
       value,
       id,
       name,
-      date = new Date(new Date().setHours(0, 0, 0, 0)),
+      date = null,
       setDate,
       onChange,
       onKeyDown,
@@ -69,9 +69,13 @@ const TimePickerInput = React.forwardRef(
       if (e.key === "ArrowLeft") onLeftFocus?.();
       if (["ArrowUp", "ArrowDown"].includes(e.key)) {
         const step = e.key === "ArrowUp" ? 1 : -1;
-        const newValue = getArrowByType(calculatedValue, step, picker);
+        const newValue = getArrowByType(calculatedValue || "00", step, picker);
         if (flag) setFlag(false);
-        const tempDate = new Date(date);
+        const tempDate = date ? new Date(date) : new Date();
+        if (!date) {
+          // Initialize with current date but set time to parsed value
+          tempDate.setHours(0, 0, 0, 0);
+        }
         setDate(setDateByType(tempDate, newValue, picker, period));
       }
       if (e.key >= "0" && e.key <= "9") {
@@ -80,7 +84,11 @@ const TimePickerInput = React.forwardRef(
         const newValue = calculateNewValue(e.key);
         if (flag) onRightFocus?.();
         setFlag((prev) => !prev);
-        const tempDate = new Date(date);
+        const tempDate = date ? new Date(date) : new Date();
+        if (!date) {
+          // Initialize with current date but set time to 00:00:00
+          tempDate.setHours(0, 0, 0, 0);
+        }
         setDate(setDateByType(tempDate, newValue, picker, period));
       }
     };
@@ -95,6 +103,7 @@ const TimePickerInput = React.forwardRef(
           className
         )}
         value={value || calculatedValue}
+        placeholder="00"
         onChange={(e) => {
           e.preventDefault();
           onChange?.(e);

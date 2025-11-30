@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 /**
  * Хук для управления данными формы урока
@@ -12,9 +15,93 @@ export function useLessonFormData({
   schedule,
   formType = "lesson", // "lesson" | "recurring"
 }) {
-  // Состояния для TimePicker
-  const [startTimeDate, setStartTimeDate] = useState(new Date());
-  const [endTimeDate, setEndTimeDate] = useState(new Date());
+  const { t } = useTranslation();
+
+  // Validation schema
+  const validationSchema = useMemo(() => {
+    const baseSchema = {
+      group_id: z.string().min(1, t("lessons.form.validation.groupRequired")),
+      workload_id: z
+        .string()
+        .min(1, t("lessons.form.validation.workloadRequired")),
+      subject_assignment_id: z
+        .string()
+        .min(1, t("lessons.form.validation.subjectRequired")),
+      lesson_type: z
+        .string()
+        .min(1, t("lessons.form.validation.lessonTypeRequired")),
+      is_online: z.boolean(),
+    };
+
+    // Валидация location: либо room_id, либо is_online должно быть true
+    const locationSchema = z
+      .object({
+        is_online: z.boolean(),
+        room_id: z.string(),
+      })
+      .refine(
+        (data) =>
+          data.is_online === true || (data.room_id && data.room_id.length > 0),
+        {
+          message: t("lessons.form.validation.locationRequired"),
+          path: ["room_id"],
+        }
+      );
+
+    if (formType === "lesson") {
+      return z
+        .object({
+          ...baseSchema,
+          date: z.string().min(1, t("lessons.form.validation.dateRequired")),
+          start_time: z
+            .string()
+            .min(1, t("lessons.form.validation.startTimeRequired")),
+          end_time: z
+            .string()
+            .min(1, t("lessons.form.validation.endTimeRequired")),
+          room_id: z.string(),
+        })
+        .and(locationSchema);
+    } else {
+      // recurring
+      return z
+        .object({
+          ...baseSchema,
+          name: z.string().optional(),
+          days_of_week: z
+            .array(z.number())
+            .min(1, t("recurringLessons.form.validation.daysRequired")),
+          start_date: z
+            .string()
+            .min(1, t("recurringLessons.form.validation.startDateRequired")),
+          end_date: z
+            .string()
+            .min(1, t("recurringLessons.form.validation.endDateRequired")),
+          start_time: z
+            .string()
+            .min(1, t("lessons.form.validation.startTimeRequired")),
+          end_time: z
+            .string()
+            .min(1, t("lessons.form.validation.endTimeRequired")),
+          room_id: z.string(),
+        })
+        .and(locationSchema)
+        .refine(
+          (data) => {
+            if (!data.start_date || !data.end_date) return true;
+            return new Date(data.start_date) <= new Date(data.end_date);
+          },
+          {
+            message: t("recurringLessons.form.validation.endDateBeforeStart"),
+            path: ["end_date"],
+          }
+        );
+    }
+  }, [formType, t]);
+
+  // Состояния для TimePicker - null означает что время не выбрано
+  const [startTimeDate, setStartTimeDate] = useState(null);
+  const [endTimeDate, setEndTimeDate] = useState(null);
 
   // Функция для получения дефолтных значений
   const getDefaultValues = useCallback(() => {
@@ -27,7 +114,10 @@ export function useLessonFormData({
         room_id: initialData.room?.id?.toString() || "",
         is_online: initialData.is_online || false,
         lesson_type: initialData.lesson_type || "lecture",
-        workload_id: initialData.workload?.id?.toString() || "",
+        // Для recurring templates workload_id хранится напрямую, для lessons - в объекте workload
+        workload_id:
+          (initialData.workload_id || initialData.workload?.id)?.toString() ||
+          "",
       };
 
       if (formType === "lesson") {
@@ -93,16 +183,29 @@ export function useLessonFormData({
   }, [initialData, schedule, isEdit, formType]);
 
   const formMethods = useForm({
+    resolver: zodResolver(validationSchema),
     defaultValues: getDefaultValues(),
+    mode: "onChange",
+    criteriaMode: "all",
+    reValidateMode: "onChange",
   });
 
   const { reset, setValue, formState } = formMethods;
 
   // Сбрасываем форму когда меняются данные
   useEffect(() => {
-    reset(getDefaultValues());
+    reset(getDefaultValues(), {
+      keepErrors: false,
+      keepDirty: false,
+      keepValues: false,
+      keepDefaultValues: false,
+      keepIsSubmitted: false,
+      keepTouched: false,
+      keepIsValid: false,
+      keepSubmitCount: false,
+    });
 
-    // Устанавливаем время для TimePicker
+    // Устанавливаем время для TimePicker в режиме редактирования или если есть предзаполненные данные (DnD)
     if (initialData?.start_time) {
       const [hours, minutes, seconds] = initialData.start_time.split(":");
       const date = new Date();
@@ -112,6 +215,9 @@ export function useLessonFormData({
         parseInt(seconds || "0")
       );
       setStartTimeDate(date);
+    } else {
+      // При создании без предзаполнения - сбрасываем в null
+      setStartTimeDate(null);
     }
 
     if (initialData?.end_time) {
@@ -123,11 +229,15 @@ export function useLessonFormData({
         parseInt(seconds || "0")
       );
       setEndTimeDate(date);
+    } else {
+      // При создании без предзаполнения - сбрасываем в null
+      setEndTimeDate(null);
     }
   }, [initialData, getDefaultValues, reset]);
 
   // Вычисляем время в формате HH:MM:SS из Date объектов
   const watchedStartTime = useMemo(() => {
+    if (!startTimeDate) return "";
     const hours = String(startTimeDate.getHours()).padStart(2, "0");
     const minutes = String(startTimeDate.getMinutes()).padStart(2, "0");
     const seconds = String(startTimeDate.getSeconds()).padStart(2, "0");
@@ -135,11 +245,21 @@ export function useLessonFormData({
   }, [startTimeDate]);
 
   const watchedEndTime = useMemo(() => {
+    if (!endTimeDate) return "";
     const hours = String(endTimeDate.getHours()).padStart(2, "0");
     const minutes = String(endTimeDate.getMinutes()).padStart(2, "0");
     const seconds = String(endTimeDate.getSeconds()).padStart(2, "0");
     return `${hours}:${minutes}:${seconds}`;
   }, [endTimeDate]);
+
+  // Синхронизируем время с react-hook-form для валидации
+  useEffect(() => {
+    setValue("start_time", watchedStartTime, { shouldValidate: true });
+  }, [watchedStartTime, setValue]);
+
+  useEffect(() => {
+    setValue("end_time", watchedEndTime, { shouldValidate: true });
+  }, [watchedEndTime, setValue]);
 
   // Функция для форматирования времени
   const formatTime = useCallback((date) => {

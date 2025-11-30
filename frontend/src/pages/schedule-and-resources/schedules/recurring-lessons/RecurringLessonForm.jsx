@@ -120,9 +120,9 @@ export function RecurringLessonForm({
 
   // Дополнительный эффект для установки workload_id когда данные workloads загружены
   useEffect(() => {
-    if (!isEdit || !template?.workload?.id) return;
+    if (!isEdit || !template?.workload_id) return;
 
-    const templateWorkloadId = template.workload.id.toString();
+    const templateWorkloadId = template.workload_id.toString();
 
     // Если workload_id уже установлен корректно - ничего не делаем
     if (watchedWorkloadId === templateWorkloadId) return;
@@ -145,7 +145,7 @@ export function RecurringLessonForm({
         })),
       });
     }
-  }, [isEdit, template?.workload?.id, workloads, watchedWorkloadId, setValue]);
+  }, [isEdit, template?.workload_id, workloads, watchedWorkloadId, setValue]);
 
   // Очистка зависимых полей при изменении родительских (ТОЛЬКО при создании)
   useEffect(() => {
@@ -215,7 +215,7 @@ export function RecurringLessonForm({
       // Преобразуем данные для API
       const transformedData = {
         ...data,
-        schedule_id: parseInt(data.schedule_id),
+        schedule_id: schedule?.id || parseInt(data.schedule_id),
         group_id: data.group_id ? parseInt(data.group_id) : null,
         subject_assignment_id: data.subject_assignment_id
           ? parseInt(data.subject_assignment_id)
@@ -294,11 +294,7 @@ export function RecurringLessonForm({
                   {t("recurringLessons.form.fields.name")}
                 </label>
                 <Input
-                  {...register("name", {
-                    required: t(
-                      "recurringLessons.form.validation.nameRequired"
-                    ),
-                  })}
+                  {...register("name")}
                   placeholder={t(
                     "recurringLessons.form.placeholders.templateName"
                   )}
@@ -310,12 +306,6 @@ export function RecurringLessonForm({
                       setUserEditedName(false);
                     }
                     // Вызываем стандартный onChange от register
-                    const event = {
-                      target: {
-                        name: "name",
-                        value: e.target.value,
-                      },
-                    };
                     setValue("name", e.target.value);
                   }}
                 />
@@ -336,7 +326,9 @@ export function RecurringLessonForm({
 
               <GroupSelector
                 value={watchedGroupId}
-                onChange={(value) => setValue("group_id", value)}
+                onChange={(value) =>
+                  setValue("group_id", value, { shouldValidate: true })
+                }
                 groups={groups}
                 error={errors.group_id?.message}
               />
@@ -353,7 +345,9 @@ export function RecurringLessonForm({
 
               <ProfessorSelector
                 value={watchedWorkloadId}
-                onChange={(value) => setValue("workload_id", value)}
+                onChange={(value) =>
+                  setValue("workload_id", value, { shouldValidate: true })
+                }
                 workloads={workloads}
                 selectedGroupId={watchedGroupId}
                 error={errors.workload_id?.message}
@@ -361,7 +355,11 @@ export function RecurringLessonForm({
 
               <SubjectSelector
                 value={watchedSubjectAssignmentId}
-                onChange={(value) => setValue("subject_assignment_id", value)}
+                onChange={(value) =>
+                  setValue("subject_assignment_id", value, {
+                    shouldValidate: true,
+                  })
+                }
                 assignments={assignments}
                 selectedWorkloadId={watchedWorkloadId}
                 error={errors.subject_assignment_id?.message}
@@ -372,13 +370,18 @@ export function RecurringLessonForm({
           {/* Lesson Type */}
           <LessonTypeSelector
             value={watch("lesson_type")}
-            onChange={(value) => setValue("lesson_type", value)}
+            onChange={(value) =>
+              setValue("lesson_type", value, { shouldValidate: true })
+            }
+            error={errors.lesson_type}
           />
 
           {/* Days of Week */}
           <DaysOfWeekSelector
             value={watchedDaysOfWeek}
-            onChange={(value) => setValue("days_of_week", value)}
+            onChange={(value) =>
+              setValue("days_of_week", value, { shouldValidate: true })
+            }
             error={errors.days_of_week?.message}
           />
 
@@ -386,9 +389,13 @@ export function RecurringLessonForm({
           <DateTimeSection
             mode="range"
             startDate={watchedStartDate}
-            onStartDateChange={(value) => setValue("start_date", value)}
+            onStartDateChange={(value) =>
+              setValue("start_date", value, { shouldValidate: true })
+            }
             endDate={watch("end_date")}
-            onEndDateChange={(value) => setValue("end_date", value)}
+            onEndDateChange={(value) =>
+              setValue("end_date", value, { shouldValidate: true })
+            }
             startTimeDate={startTimeDate}
             setStartTimeDate={setStartTimeDate}
             endTimeDate={endTimeDate}
@@ -400,9 +407,13 @@ export function RecurringLessonForm({
           {/* Location */}
           <LocationSection
             isOnline={watchedIsOnline}
-            onIsOnlineChange={(checked) => setValue("is_online", checked)}
+            onIsOnlineChange={(checked) =>
+              setValue("is_online", checked, { shouldValidate: true })
+            }
             roomId={watch("room_id")}
-            onRoomChange={(value) => setValue("room_id", value)}
+            onRoomChange={(value) =>
+              setValue("room_id", value, { shouldValidate: true })
+            }
             rooms={rooms}
             error={errors.room_id?.message}
             requireDateTime={false}

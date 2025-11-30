@@ -1,15 +1,15 @@
 from pydantic import BaseModel, ConfigDict, Field, field_validator, field_serializer
 from datetime import date as pdate, time, datetime
 from typing import Optional, List
-import json
-from .shared import BaseQueryParams, BaseFilterParams
 from .minis import (
     GroupMiniOut,
     ProfessorMiniOut,
     SubjectAssignmentMiniOut,
     RoomMiniOut,
-    ScheduleMiniOut,
+    ProfessorWorkloadMiniOut,
 )
+
+from .shared import BaseQueryParams
 
 from ..utils.enums import LessonTypeEnum
 
@@ -155,6 +155,11 @@ class RecurringLessonTemplateOut(RecurringLessonTemplateBase):
     professor: Optional[ProfessorMiniOut] = Field(
         None,
         description="Professor associated with the subject assignment.",
+    )
+
+    workload: Optional[ProfessorWorkloadMiniOut] = Field(
+        None,
+        description="Workload associated with the subject assignment.",
     )
 
 

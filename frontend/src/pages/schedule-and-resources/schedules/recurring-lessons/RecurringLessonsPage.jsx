@@ -92,7 +92,11 @@ export const RecurringLessonsPage = ({ scheduleId }) => {
       />
 
       {/* Create Template Modal */}
-      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+      <Dialog
+        key={showCreateModal ? "create-open" : "create-closed"}
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+      >
         <RecurringLessonForm
           schedule={schedule}
           onSave={handleCreateSuccess}
@@ -102,7 +106,11 @@ export const RecurringLessonsPage = ({ scheduleId }) => {
       </Dialog>
 
       {/* Edit Template Modal */}
-      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+      <Dialog
+        key={selectedTemplate?.id || "edit-closed"}
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+      >
         <RecurringLessonForm
           template={selectedTemplate}
           schedule={schedule}

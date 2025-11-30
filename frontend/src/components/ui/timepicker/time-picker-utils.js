@@ -115,6 +115,8 @@ export function setDateByType(date, value, type, period) {
 }
 
 export function getDateByType(date, type) {
+  if (!date) return "";
+
   switch (type) {
     case "minutes":
       return getValidMinuteOrSecond(String(date.getMinutes()));

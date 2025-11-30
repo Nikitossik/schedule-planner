@@ -1114,8 +1114,14 @@
         "unavailable": "Niedostępny"
       },
       "validation": {
-        "startTimeRequired": "Określ czas rozpoczęcia",
-        "endTimeRequired": "Określ czas zakończenia"
+        "groupRequired": "Grupa jest wymagana",
+        "workloadRequired": "Wykładowca jest wymagany",
+        "subjectRequired": "Przedmiot jest wymagany",
+        "lessonTypeRequired": "Typ zajęć jest wymagany",
+        "dateRequired": "Data jest wymagana",
+        "startTimeRequired": "Czas rozpoczęcia jest wymagany",
+        "endTimeRequired": "Czas zakończenia jest wymagany",
+        "locationRequired": "Wybierz salę lub zaznacz zajęcia jako online"
       },
       "buttons": {
         "delete": "Usuń",
@@ -1190,7 +1196,11 @@
         "selectEndDate": "Wybierz datę zakończenia"
       },
       "validation": {
-        "nameRequired": "Nazwa szablonu jest wymagana"
+        "nameRequired": "Nazwa szablonu jest wymagana",
+        "daysRequired": "Wybierz przynajmniej jeden dzień",
+        "startDateRequired": "Data rozpoczęcia jest wymagana",
+        "endDateRequired": "Data zakończenia jest wymagana",
+        "endDateBeforeStart": "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia"
       },
       "messages": {
         "selectedDays": "Wybrane dni",
