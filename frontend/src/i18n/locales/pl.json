@@ -1142,6 +1142,7 @@
       "name": "Nazwa",
       "subject": "Przedmiot",
       "group": "Grupa",
+      "professor": "Wykładowca",
       "type": "Typ",
       "days": "Dni",
       "time": "Czas",

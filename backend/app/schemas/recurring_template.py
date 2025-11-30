@@ -5,6 +5,7 @@ import json
 from .shared import BaseQueryParams, BaseFilterParams
 from .minis import (
     GroupMiniOut,
+    ProfessorMiniOut,
     SubjectAssignmentMiniOut,
     RoomMiniOut,
     ScheduleMiniOut,
@@ -150,6 +151,10 @@ class RecurringLessonTemplateOut(RecurringLessonTemplateBase):
     room: Optional[RoomMiniOut] = Field(
         None,
         description="Room where lessons take place (null for online).",
+    )
+    professor: Optional[ProfessorMiniOut] = Field(
+        None,
+        description="Professor associated with the subject assignment.",
     )
 
 

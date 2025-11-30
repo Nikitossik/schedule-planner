@@ -87,3 +87,8 @@ class RecurringLessonTemplate(Base):
     lessons: Mapped[List["Lesson"]] = relationship(
         "Lesson", back_populates="recurring_template", cascade="all, delete-orphan"
     )
+
+    @property
+    def professor(self):
+        # Convenience: User associated via the contract’s professor profile.
+        return self.subject_assignment.workload.contract.professor_profile.user

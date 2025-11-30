@@ -1144,6 +1144,7 @@
       "name": "Name",
       "subject": "Subject", 
       "group": "Group",
+      "professor": "Professor",
       "type": "Type",
       "days": "Days",
       "time": "Time",

@@ -70,6 +70,22 @@ export const useRecurringLessonsColumns = () => {
       cell: ({ row }) => row.original.group?.name || "-",
     },
     {
+      accessorKey: "professor",
+      header: t("recurringLessons.table.professor"),
+      cell: ({ row }) => {
+        const professor = row.original.professor;
+        return professor ? (
+          <div className="flex flex-col">
+            <span className="font-medium">
+              {professor.name} {professor.surname}
+            </span>
+          </div>
+        ) : (
+          "-"
+        );
+      },
+    },
+    {
       accessorKey: "lesson_type",
       header: t("recurringLessons.table.type"),
       cell: ({ row }) => (
