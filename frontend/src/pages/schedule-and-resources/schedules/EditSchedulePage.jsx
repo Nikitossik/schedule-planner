@@ -11,6 +11,7 @@ import { Calendar, Repeat } from "lucide-react";
 import ScheduleForm from "./ScheduleForm";
 import { LessonsList } from "./lessons";
 import { RecurringLessonsPage } from "./recurring-lessons";
+import { ScheduleDataProvider } from "@/contexts/ScheduleDataContext";
 
 export default function EditSchedulePage() {
   const { t } = useTranslation();
@@ -75,27 +76,29 @@ export default function EditSchedulePage() {
 
       <Separator />
 
-      {/* Tabs section */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-96">
-          <TabsTrigger value="calendar" className="flex items-center gap-2">
-            <Calendar className="w-4 h-4" />
-            {t("schedules.tabs.calendar")}
-          </TabsTrigger>
-          <TabsTrigger value="recurring" className="flex items-center gap-2">
-            <Repeat className="w-4 h-4" />
-            {t("schedules.tabs.recurringLessons")}
-          </TabsTrigger>
-        </TabsList>
+      {/* Wrap tabs with ScheduleDataProvider for optimized data loading */}
+      <ScheduleDataProvider schedule={schedule}>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-96">
+            <TabsTrigger value="calendar" className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              {t("schedules.tabs.calendar")}
+            </TabsTrigger>
+            <TabsTrigger value="recurring" className="flex items-center gap-2">
+              <Repeat className="w-4 h-4" />
+              {t("schedules.tabs.recurringLessons")}
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="calendar" className="mt-6">
-          <LessonsList schedule={schedule} onUpdate={refetch} />
-        </TabsContent>
+          <TabsContent value="calendar" className="mt-6">
+            <LessonsList schedule={schedule} onUpdate={refetch} />
+          </TabsContent>
 
-        <TabsContent value="recurring" className="mt-6">
-          <RecurringLessonsPage scheduleId={scheduleId} />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="recurring" className="mt-6">
+            <RecurringLessonsPage scheduleId={scheduleId} />
+          </TabsContent>
+        </Tabs>
+      </ScheduleDataProvider>
     </div>
   );
 }

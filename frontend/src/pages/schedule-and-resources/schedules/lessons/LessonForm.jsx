@@ -1,42 +1,26 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { DatePicker } from "@/components/ui/date-picker";
-import { TimePicker } from "@/components/ui/timepicker/time-picker";
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  User,
-  BookOpen,
-  Users,
-  Laptop,
-  Building2,
-  FlaskConical,
-  MessageSquare,
-  Presentation,
-} from "lucide-react";
-import { toast } from "sonner";
-import { useEntityList } from "@/hooks/useEntityList";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { BookOpen, Users, User } from "lucide-react";
+
+// Shared components
+import { GroupSelector } from "@/components/lesson-forms/shared/GroupSelector";
+import { ProfessorSelector } from "@/components/lesson-forms/shared/ProfessorSelector";
+import { SubjectSelector } from "@/components/lesson-forms/shared/SubjectSelector";
+import { LessonTypeSelector } from "@/components/lesson-forms/shared/LessonTypeSelector";
+import { DateTimeSection } from "@/components/lesson-forms/shared/DateTimeSection";
+import { LocationSection } from "@/components/lesson-forms/shared/LocationSection";
+import { FormActions } from "@/components/lesson-forms/shared/FormActions";
+
+// Hooks
+import { useLessonFormData } from "@/components/lesson-forms/hooks/useLessonFormData";
+import { useLessonFilters } from "@/components/lesson-forms/hooks/useLessonFilters";
+import { useUnavailabilityCheck } from "@/components/lesson-forms/hooks/useUnavailabilityCheck";
 
 export function LessonForm({
   lesson,
@@ -47,270 +31,113 @@ export function LessonForm({
   isEdit = false,
 }) {
   const { t } = useTranslation();
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Состояния для TimePicker
-  const [startTimeDate, setStartTimeDate] = useState(new Date());
-  const [endTimeDate, setEndTimeDate] = useState(new Date());
-
-  // Трансформируем данные урока для формы
-  const getDefaultValues = useCallback(() => {
-    if (lesson && isEdit) {
-      return {
-        schedule_id: schedule?.id || lesson.schedule?.id,
-        group_id: lesson.group?.id?.toString() || "",
-        subject_assignment_id: lesson.subject_assignment_id?.toString() || "",
-        room_id: lesson.room?.id?.toString() || "",
-        is_online: lesson.is_online || false,
-        date: lesson.date || "",
-        start_time: lesson.start_time || "",
-        end_time: lesson.end_time || "",
-        lesson_type: lesson.lesson_type || "lecture",
-
-        workload_id: lesson.workload?.id?.toString() || "",
-      };
-    }
-
-    // Для создания урока - используем данные из lesson или дефолтные значения
-    return {
-      schedule_id: schedule?.id,
-      group_id: "",
-      subject_assignment_id: "",
-      room_id: "",
-      is_online: false,
-      date: lesson?.date || "",
-      start_time: lesson?.start_time || "",
-      end_time: lesson?.end_time || "",
-      lesson_type: "lecture",
-      workload_id: "",
-    };
-  }, [lesson, schedule, isEdit]);
+  // Управление данными формы и состоянием
   const {
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-    register,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    defaultValues: getDefaultValues(),
+    formMethods,
+    startTimeDate,
+    setStartTimeDate,
+    endTimeDate,
+    setEndTimeDate,
+    watchedStartTime,
+    watchedEndTime,
+    handleFormSubmit,
+    isSubmitting,
+  } = useLessonFormData({
+    initialData: lesson,
+    isEdit,
+    onSave,
+    schedule,
+    formType: "lesson",
   });
 
-  // Сбрасываем форму когда меняется урок
-  useEffect(() => {
-    reset(getDefaultValues());
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = formMethods;
 
-    // Устанавливаем время для TimePicker
-    if (lesson?.start_time) {
-      const [hours, minutes, seconds] = lesson.start_time.split(":");
-      const date = new Date();
-      date.setHours(
-        parseInt(hours),
-        parseInt(minutes),
-        parseInt(seconds || "0")
-      );
-      setStartTimeDate(date);
-    }
-
-    if (lesson?.end_time) {
-      const [hours, minutes, seconds] = lesson.end_time.split(":");
-      const date = new Date();
-      date.setHours(
-        parseInt(hours),
-        parseInt(minutes),
-        parseInt(seconds || "0")
-      );
-      setEndTimeDate(date);
-    }
-  }, [lesson, getDefaultValues, reset]);
-
-  // Отслеживаемые поля для каскадной фильтрации
+  // Отслеживаемые поля
   const watchedGroupId = watch("group_id");
   const watchedWorkloadId = watch("workload_id");
   const watchedIsOnline = watch("is_online");
   const watchedDate = watch("date");
 
-  // Получаем время в формате HH:MM:SS из Date объектов для фильтрации комнат
-  const watchedStartTime = useMemo(() => {
-    const hours = String(startTimeDate.getHours()).padStart(2, "0");
-    const minutes = String(startTimeDate.getMinutes()).padStart(2, "0");
-    const seconds = String(startTimeDate.getSeconds()).padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
-  }, [startTimeDate]);
-
-  const watchedEndTime = useMemo(() => {
-    const hours = String(endTimeDate.getHours()).padStart(2, "0");
-    const minutes = String(endTimeDate.getMinutes()).padStart(2, "0");
-    const seconds = String(endTimeDate.getSeconds()).padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
-  }, [endTimeDate]);
-
-  // Получаем день недели из выбранной даты (0 = Monday, 6 = Sunday)
-  const selectedDayOfWeek = useMemo(() => {
-    if (!watchedDate) return null;
-    const date = new Date(watchedDate);
-    const day = date.getDay();
-    // Преобразуем из JS формата (0=Sunday) в наш формат (0=Monday)
-    return day === 0 ? 6 : day - 1;
-  }, [watchedDate]);
-
-  // 1. Группы: фильтруем по semester_id и direction_id из schedule
-  const { data: groupsData } = useEntityList("group", {
-    filters: schedule
-      ? {
-          semester_ids: [schedule.semester.id],
-          direction_ids: [schedule.direction.id],
-        }
-      : {},
-    pagination: { loadAll: true },
-  });
-  const groups = groupsData?.items || [];
-
-  // Получаем выбранную группу для следующего фильтра
-  const selectedGroup = groups.find((g) => g.id === parseInt(watchedGroupId));
-
-  // 2. Workloads: фильтруем по семестру, направлению из schedule и study_form из группы
-  const { data: workloadsData } = useEntityList("professor_workload", {
-    filters:
-      schedule && (selectedGroup || (isEdit && lesson?.group))
-        ? {
-            semester_ids: [schedule.semester.id],
-            direction_ids: [schedule.direction.id],
-            study_forms: [
-              (selectedGroup || (isEdit && lesson?.group))?.study_form?.form,
-            ],
-          }
-        : {},
-
-    pagination: { loadAll: true },
-  });
-  const workloads = workloadsData?.items || [];
-
-  // Функция для проверки доступности профессора в выбранный день
-  const isProfessorAvailable = useCallback(
-    (workload) => {
-      if (!selectedDayOfWeek === null) return true; // Если дата не выбрана, показываем всех
-
-      const unavailableDays =
-        workload?.professor?.professor_profile?.unavailable_days;
-      if (!unavailableDays) return true; // Если нет данных о недоступности, профессор доступен
-
-      try {
-        const daysArray =
-          typeof unavailableDays === "string"
-            ? JSON.parse(unavailableDays)
-            : unavailableDays;
-        return !daysArray.includes(selectedDayOfWeek);
-      } catch {
-        return true; // В случае ошибки парсинга считаем профессора доступным
-      }
-    },
-    [selectedDayOfWeek]
-  );
-
-  // 3. Subject assignments: фильтруем по выбранному workload_id
-  const currentWorkloadId =
-    watchedWorkloadId || (isEdit && lesson?.workload?.id);
-  const { data: assignmentsData } = useEntityList("subject_assignment", {
-    filters: currentWorkloadId
-      ? {
-          workload_id: currentWorkloadId,
-        }
-      : {},
-
-    pagination: { loadAll: true },
-  });
-  const assignments = assignmentsData?.items || [];
-
-  // 4. Праздники: загружаем все праздники для блокировки в DatePicker
-  const { data: holidaysData } = useEntityList("university_holiday", {
-    pagination: { loadAll: true },
-  });
-  const holidays = holidaysData?.items || [];
-
-  // Создаем массив функций-матчеров для блокировки праздничных дней в DatePicker
-  const disabledDayMatchers = useMemo(() => {
-    if (!holidays || holidays.length === 0) return [];
-
-    const currentYear = new Date().getFullYear();
-    const matchers = [];
-
-    holidays.forEach((holiday) => {
-      const holidayDate = new Date(holiday.date);
-
-      if (holiday.is_annual) {
-        // Для ежегодных праздников создаем матчер, который проверяет день и месяц
-        matchers.push(
-          (date) =>
-            date.getMonth() === holidayDate.getMonth() &&
-            date.getDate() === holidayDate.getDate()
-        );
-      } else {
-        // Для обычных праздников создаем матчер для конкретной даты
-        matchers.push(
-          (date) =>
-            date.getFullYear() === holidayDate.getFullYear() &&
-            date.getMonth() === holidayDate.getMonth() &&
-            date.getDate() === holidayDate.getDate()
-        );
-      }
+  // Загрузка и фильтрация данных
+  const { groups, workloads, assignments, rooms, disabledDayMatchers } =
+    useLessonFilters({
+      selectedGroupId: watchedGroupId,
+      selectedWorkloadId: watchedWorkloadId,
+      selectedDate: watchedDate,
+      startTime: watchedStartTime,
+      endTime: watchedEndTime,
+      isOnline: watchedIsOnline,
+      isEdit,
+      currentLessonId: lesson?.id,
+      initialGroup: lesson?.group,
     });
 
-    return matchers;
-  }, [holidays]);
-
-  // 5. Комнаты: фильтруем по доступности в указанное время
-  const roomFilters = {};
-
-  // Если указаны дата и время, добавляем фильтры доступности
-  if (watchedDate && watchedStartTime && watchedEndTime && !watchedIsOnline) {
-    roomFilters.available_date = watchedDate;
-    roomFilters.available_start_time = watchedStartTime;
-    roomFilters.available_end_time = watchedEndTime;
-
-    // При редактировании исключаем текущий урок
-    if (isEdit && lesson?.id) {
-      roomFilters.exclude_lesson_id = lesson.id;
-    }
-  }
-
-  const { data: roomsData } = useEntityList("room", {
-    filters: roomFilters,
-    pagination: { loadAll: true },
+  // Проверка доступности профессора
+  const { isProfessorAvailable } = useUnavailabilityCheck({
+    workloads,
+    selectedWorkloadId: watchedWorkloadId,
+    selectedDate: watchedDate,
   });
-  const rooms = roomsData?.items || [];
 
-  // Сброс формы при изменении lesson (для редактирования)
+  // Дополнительный эффект для установки workload_id когда данные workloads загружены
   useEffect(() => {
-    const values = getDefaultValues();
-    reset(values);
+    // Проверяем что мы в режиме редактирования и есть данные урока
+    if (!isEdit || !lesson?.workload?.id) return;
 
-    // Принудительно устанавливаем workload_id после небольшой задержки
-    if (isEdit && lesson?.workload?.id) {
-      const timeoutId = setTimeout(() => {
-        const workloadIdString = lesson.workload.id.toString();
-        console.log("Setting workload_id via setTimeout:", workloadIdString);
-        setValue("workload_id", workloadIdString);
-      }, 200);
+    const lessonWorkloadId = lesson.workload.id.toString();
 
-      return () => clearTimeout(timeoutId);
+    // Если workload_id уже установлен корректно - ничего не делаем
+    if (watchedWorkloadId === lessonWorkloadId) return;
+
+    // Ждем пока workloads загрузятся
+    if (workloads.length === 0) return;
+
+    // Ищем workload урока в отфильтрованном списке
+    const workloadExists = workloads.find(
+      (w) => w.id.toString() === lessonWorkloadId
+    );
+
+    if (workloadExists) {
+      setValue("workload_id", lessonWorkloadId);
+    } else {
+      console.error("[LessonForm] Workload not found:", {
+        lessonWorkloadId,
+        availableWorkloads: workloads.map((w) => ({
+          id: w.id,
+          study_form: w.study_form?.form,
+        })),
+        lessonData: lesson,
+      });
     }
-  }, [lesson, isEdit, reset, getDefaultValues, setValue]);
+  }, [
+    isEdit,
+    lesson?.workload?.id,
+    workloads,
+    watchedWorkloadId,
+    setValue,
+    lesson,
+  ]);
 
-  // Очистка зависимых полей при изменении родительских
+  // Очистка зависимых полей при изменении родительских (ТОЛЬКО при создании нового урока)
   useEffect(() => {
-    if (!isEdit) {
-      // Только для создания новых уроков
-      setValue("workload_id", "");
-      setValue("subject_assignment_id", "");
-    }
+    // В режиме редактирования не очищаем поля автоматически
+    if (isEdit) return;
+
+    setValue("workload_id", "");
+    setValue("subject_assignment_id", "");
   }, [watchedGroupId, setValue, isEdit]);
 
   useEffect(() => {
-    if (!isEdit) {
-      setValue("subject_assignment_id", "");
-    }
+    // В режиме редактирования не очищаем поля автоматически
+    if (isEdit) return;
+
+    setValue("subject_assignment_id", "");
   }, [watchedWorkloadId, setValue, isEdit]);
 
   // Очистка комнаты при изменении даты/времени (если не онлайн)
@@ -326,94 +153,6 @@ export function LessonForm({
     setValue,
     isEdit,
   ]);
-
-  // Дополнительный эффект для установки workload_id когда данные workloads загружены
-  useEffect(() => {
-    if (
-      isEdit &&
-      lesson?.workload?.id &&
-      workloads.length > 0 &&
-      !watchedWorkloadId
-    ) {
-      const workloadIdString = lesson.workload.id.toString();
-      const workloadExists = workloads.find(
-        (w) => w.id.toString() === workloadIdString
-      );
-
-      if (workloadExists) {
-        console.log(
-          "Setting workload_id from workloads effect:",
-          workloadIdString
-        );
-        setValue("workload_id", workloadIdString);
-      }
-    }
-  }, [isEdit, lesson, workloads, watchedWorkloadId, setValue]);
-
-  const handleFormSubmit = async (data) => {
-    try {
-      // Форматируем время из Date объектов в строки HH:MM:SS
-      const formatTime = (date) => {
-        const hours = String(date.getHours()).padStart(2, "0");
-        const minutes = String(date.getMinutes()).padStart(2, "0");
-        const seconds = String(date.getSeconds()).padStart(2, "0");
-        return `${hours}:${minutes}:${seconds}`;
-      };
-
-      // Преобразуем строковые ID в числа для API
-      const transformedData = {
-        ...data,
-        schedule_id: parseInt(data.schedule_id),
-        group_id: data.group_id ? parseInt(data.group_id) : null,
-        subject_assignment_id: data.subject_assignment_id
-          ? parseInt(data.subject_assignment_id)
-          : null,
-        room_id: data.room_id ? parseInt(data.room_id) : null,
-        start_time: formatTime(startTimeDate),
-        end_time: formatTime(endTimeDate),
-      };
-
-      // Удаляем workload_id из данных, он нужен только для UI
-      delete transformedData.workload_id;
-
-      await onSave(transformedData);
-      toast.success(isEdit ? "Lesson updated" : "Lesson created");
-    } catch (error) {
-      toast.error(error.message || "Failed to save lesson");
-    }
-  };
-
-  const handleDeleteClick = () => {
-    setShowDeleteConfirm(true);
-  };
-
-  const handleConfirmDelete = () => {
-    onDelete(lesson.id);
-    setShowDeleteConfirm(false);
-  };
-
-  const lessonTypes = [
-    {
-      value: "lecture",
-      label: t("lessons.form.lessonType.lecture"),
-      icon: Presentation,
-    },
-    {
-      value: "practice",
-      label: t("lessons.form.lessonType.practice"),
-      icon: Laptop,
-    },
-    {
-      value: "lab",
-      label: t("lessons.form.lessonType.lab"),
-      icon: FlaskConical,
-    },
-    {
-      value: "seminar",
-      label: t("lessons.form.lessonType.seminar"),
-      icon: MessageSquare,
-    },
-  ];
 
   return (
     <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -433,45 +172,12 @@ export function LessonForm({
               {t("lessons.form.sections.groupSelection")}
             </h3>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                {t("lessons.form.fields.group")}
-              </label>
-              <Select
-                value={watch("group_id")}
-                onValueChange={(value) => setValue("group_id", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={t("lessons.form.placeholders.selectGroup")}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {groups.length === 0 ? (
-                    <div className="p-2 text-sm text-muted-foreground text-center">
-                      {t("lessons.form.messages.noGroups")}
-                    </div>
-                  ) : (
-                    groups.map((group) => (
-                      <SelectItem key={group.id} value={group.id.toString()}>
-                        {group.name}
-                        {group.study_form && (
-                          <Badge variant="outline" className="ml-2">
-                            {group.study_form.form}
-                          </Badge>
-                        )}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-              {errors.group_id && (
-                <p className="text-sm text-red-500">
-                  {errors.group_id.message}
-                </p>
-              )}
-            </div>
+            <GroupSelector
+              value={watchedGroupId}
+              onChange={(value) => setValue("group_id", value)}
+              groups={groups}
+              error={errors.group_id?.message}
+            />
           </CardContent>
         </Card>
 
@@ -483,338 +189,66 @@ export function LessonForm({
               {t("lessons.form.sections.professorSubject")}
             </h3>
 
-            {/* Workload selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium flex items-center gap-2">
-                <User className="h-4 w-4" />
-                {t("lessons.form.fields.professor")}
-              </label>
-              <Select
-                value={watch("workload_id")}
-                onValueChange={(value) => setValue("workload_id", value)}
-                disabled={!watchedGroupId}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      watchedGroupId
-                        ? t("lessons.form.placeholders.selectProfessor")
-                        : t("lessons.form.placeholders.selectGroupFirst")
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {workloads.length === 0 ? (
-                    <div className="p-2 text-sm text-muted-foreground text-center">
-                      {!watchedGroupId
-                        ? t("lessons.form.messages.selectGroupFirst")
-                        : t("lessons.form.messages.noProfessors")}
-                    </div>
-                  ) : (
-                    workloads.map((workload) => {
-                      const isAvailable = isProfessorAvailable(workload);
-                      return (
-                        <SelectItem
-                          key={workload.id}
-                          value={workload.id.toString()}
-                        >
-                          {workload?.professor.name}{" "}
-                          {workload?.professor.surname}
-                          <span className="text-sm text-gray-500 ml-2">
-                            ({workload.assigned_hours}h)
-                          </span>
-                          {!isAvailable && (
-                            <Badge variant="destructive" className="ml-2">
-                              {t("lessons.form.messages.unavailable")}
-                            </Badge>
-                          )}
-                        </SelectItem>
-                      );
-                    })
-                  )}
-                </SelectContent>
-              </Select>
-              {errors.workload_id && (
-                <p className="text-sm text-red-500">
-                  {errors.workload_id.message}
-                </p>
-              )}
-            </div>
+            <ProfessorSelector
+              value={watchedWorkloadId}
+              onChange={(value) => setValue("workload_id", value)}
+              workloads={workloads}
+              selectedGroupId={watchedGroupId}
+              isProfessorAvailable={isProfessorAvailable}
+              error={errors.workload_id?.message}
+            />
 
-            {/* Subject assignment selection */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                {t("lessons.form.fields.subject")}
-              </label>
-              <Select
-                value={watch("subject_assignment_id")}
-                onValueChange={(value) =>
-                  setValue("subject_assignment_id", value)
-                }
-                disabled={!watchedWorkloadId}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      watchedWorkloadId
-                        ? t("lessons.form.placeholders.selectSubject")
-                        : t("lessons.form.placeholders.selectProfessorFirst")
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {assignments.length === 0 ? (
-                    <div className="p-2 text-sm text-muted-foreground text-center">
-                      {!watchedWorkloadId
-                        ? t("lessons.form.messages.selectProfessorFirst")
-                        : t("lessons.form.messages.noSubjects")}
-                    </div>
-                  ) : (
-                    assignments.map((assignment) => (
-                      <SelectItem
-                        key={assignment.id}
-                        value={assignment.id.toString()}
-                      >
-                        <div className="flex items-center">
-                          <BookOpen className="h-4 w-4 mr-2" />
-                          {assignment.subject?.name} ({assignment.subject?.code}
-                          )
-                          <span className="text-sm text-gray-500 ml-2">
-                            {assignment.hours_per_subject}h
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-              {errors.subject_assignment_id && (
-                <p className="text-sm text-red-500">
-                  {errors.subject_assignment_id.message}
-                </p>
-              )}
-            </div>
+            <SubjectSelector
+              value={watch("subject_assignment_id")}
+              onChange={(value) => setValue("subject_assignment_id", value)}
+              assignments={assignments}
+              selectedWorkloadId={watchedWorkloadId}
+              error={errors.subject_assignment_id?.message}
+            />
           </CardContent>
         </Card>
 
         {/* Lesson Type */}
-        <Card>
-          <CardContent className="pt-6 space-y-4">
-            <h3 className="text-lg font-medium">
-              {t("lessons.form.sections.lessonType")}
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              {lessonTypes.map((type) => {
-                const IconComponent = type.icon;
-                return (
-                  <Button
-                    key={type.value}
-                    type="button"
-                    variant={
-                      watch("lesson_type") === type.value
-                        ? "default"
-                        : "outline"
-                    }
-                    size="sm"
-                    onClick={() => setValue("lesson_type", type.value)}
-                    className="justify-start"
-                  >
-                    <IconComponent className="h-4 w-4 mr-2" />
-                    {type.label}
-                  </Button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+        <LessonTypeSelector
+          value={watch("lesson_type")}
+          onChange={(value) => setValue("lesson_type", value)}
+        />
 
         {/* Date and Time */}
-        <Card>
-          <CardContent className="pt-6 space-y-4">
-            <h3 className="text-lg font-medium flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              {t("lessons.form.sections.dateTime")}
-            </h3>
-
-            <div className="space-y-4">
-              {/* Date */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  {t("lessons.form.fields.date")}
-                </label>
-                <DatePicker
-                  value={watch("date")}
-                  onChange={(value) => setValue("date", value)}
-                  modal={true}
-                  placeholder={t("lessons.form.placeholders.selectDate")}
-                  disabled={disabledDayMatchers}
-                />
-                {errors.date && (
-                  <p className="text-sm text-red-500">{errors.date.message}</p>
-                )}
-              </div>
-
-              {/* Time range */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Start time */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {t("lessons.form.fields.startTime")}
-                  </label>
-                  <TimePicker
-                    date={startTimeDate}
-                    setDate={setStartTimeDate}
-                    showSeconds={false}
-                  />
-                </div>
-
-                {/* End time */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {t("lessons.form.fields.endTime")}
-                  </label>
-                  <TimePicker
-                    date={endTimeDate}
-                    setDate={setEndTimeDate}
-                    showSeconds={false}
-                  />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <DateTimeSection
+          mode="single"
+          date={watchedDate}
+          onDateChange={(value) => setValue("date", value)}
+          startTimeDate={startTimeDate}
+          setStartTimeDate={setStartTimeDate}
+          endTimeDate={endTimeDate}
+          setEndTimeDate={setEndTimeDate}
+          disabledDates={disabledDayMatchers}
+          errors={errors}
+        />
 
         {/* Location */}
-        <Card>
-          <CardContent className="pt-6 space-y-4">
-            <h3 className="text-lg font-medium flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              {t("lessons.form.sections.location")}
-            </h3>
+        <LocationSection
+          isOnline={watchedIsOnline}
+          onIsOnlineChange={(checked) => setValue("is_online", checked)}
+          roomId={watch("room_id")}
+          onRoomChange={(value) => setValue("room_id", value)}
+          rooms={rooms}
+          error={errors.room_id?.message}
+          requireDateTime={true}
+          hasDateTime={!!(watchedDate && watchedStartTime && watchedEndTime)}
+        />
 
-            {/* Online toggle */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="is_online"
-                checked={watchedIsOnline}
-                onCheckedChange={(checked) => setValue("is_online", checked)}
-              />
-              <label htmlFor="is_online" className="text-sm font-medium">
-                {t("lessons.form.fields.onlineLesson")}
-              </label>
-            </div>
-
-            {/* Room (if not online) */}
-            {!watchedIsOnline && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  {t("lessons.form.fields.room")}
-                </label>
-                <Select
-                  value={watch("room_id")}
-                  onValueChange={(value) => setValue("room_id", value)}
-                  disabled={
-                    !watchedDate || !watchedStartTime || !watchedEndTime
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={
-                        !watchedDate || !watchedStartTime || !watchedEndTime
-                          ? t("lessons.form.placeholders.setDateTimeFirst")
-                          : t("lessons.form.placeholders.selectRoom")
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {rooms.length === 0 ? (
-                      <div className="p-2 text-sm text-muted-foreground text-center">
-                        {!watchedDate || !watchedStartTime || !watchedEndTime
-                          ? t("lessons.form.messages.setDateTimeForRooms")
-                          : t("lessons.form.messages.noRooms")}
-                      </div>
-                    ) : (
-                      rooms.map((room) => (
-                        <SelectItem key={room.id} value={room.id.toString()}>
-                          <div className="flex items-center">
-                            <Building2 className="h-4 w-4 mr-2" />
-                            {room.number}
-                            <span className="text-sm text-gray-500 ml-2">
-                              (capacity: {room.capacity})
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-                {errors.room_id && (
-                  <p className="text-sm text-red-500">
-                    {errors.room_id.message}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {watchedIsOnline && (
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-700 flex items-center gap-2">
-                  <Laptop className="h-4 w-4" />
-                  {t("lessons.form.messages.onlineLesson")}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <DialogFooter className="flex justify-between">
-          <div>
-            {isEdit && onDelete && (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={handleDeleteClick}
-                disabled={isSubmitting}
-              >
-                {t("lessons.form.buttons.delete")}
-              </Button>
-            )}
-          </div>
-          <div className="flex gap-2">
-            {!isEdit && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isSubmitting}
-              >
-                {t("lessons.form.buttons.cancel")}
-              </Button>
-            )}
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>{t("lessons.form.buttons.saving")}</>
-              ) : (
-                <>
-                  {lesson && isEdit
-                    ? t("lessons.form.buttons.update")
-                    : t("lessons.form.buttons.create")}
-                </>
-              )}
-            </Button>
-          </div>
-        </DialogFooter>
+        {/* Form Actions */}
+        <FormActions
+          isEdit={isEdit}
+          isSubmitting={isSubmitting}
+          onCancel={onCancel}
+          onDelete={onDelete}
+          deleteId={lesson?.id}
+          showCancelOnCreate={true}
+        />
       </form>
-
-      <ConfirmDialog
-        open={showDeleteConfirm}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setShowDeleteConfirm(false)}
-        message={t("lessons.form.confirmDelete")}
-      />
     </DialogContent>
   );
 }
