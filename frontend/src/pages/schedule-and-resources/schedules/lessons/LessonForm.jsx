@@ -86,14 +86,24 @@ export function LessonForm({
   });
 
   // Дополнительный эффект для установки workload_id когда данные workloads загружены
+  // Используем useRef чтобы отслеживать, была ли начальная инициализация
+  const [isWorkloadInitialized, setIsWorkloadInitialized] =
+    React.useState(false);
+
   useEffect(() => {
     // Проверяем что мы в режиме редактирования и есть данные урока
     if (!isEdit || !lesson?.workload?.id) return;
 
+    // Если уже инициализировали - не перезаписываем выбор пользователя
+    if (isWorkloadInitialized) return;
+
     const lessonWorkloadId = lesson.workload.id.toString();
 
-    // Если workload_id уже установлен корректно - ничего не делаем
-    if (watchedWorkloadId === lessonWorkloadId) return;
+    // Если workload_id уже установлен корректно - помечаем как инициализированный
+    if (watchedWorkloadId === lessonWorkloadId) {
+      setIsWorkloadInitialized(true);
+      return;
+    }
 
     // Ждем пока workloads загрузятся
     if (workloads.length === 0) return;
@@ -105,6 +115,7 @@ export function LessonForm({
 
     if (workloadExists) {
       setValue("workload_id", lessonWorkloadId);
+      setIsWorkloadInitialized(true);
     } else {
       console.error("[LessonForm] Workload not found:", {
         lessonWorkloadId,
@@ -122,6 +133,7 @@ export function LessonForm({
     watchedWorkloadId,
     setValue,
     lesson,
+    isWorkloadInitialized,
   ]);
 
   // Очистка зависимых полей при изменении родительских (ТОЛЬКО при создании нового урока)

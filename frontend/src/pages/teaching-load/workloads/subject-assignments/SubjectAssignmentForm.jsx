@@ -52,10 +52,7 @@ const SubjectAssignmentForm = ({
   });
 
   // Build filters for subjects based on workload info
-  const subjectFilters = {
-    page: 1,
-    pageSize: 100,
-  };
+  const subjectFilters = {};
 
   // Add semester filter if available
   if (workload?.semester?.id) {
@@ -70,6 +67,7 @@ const SubjectAssignmentForm = ({
 
   const { data: subjects = [], isLoading } = useEntityList("subject", {
     filters: subjectFilters,
+    pagination: { loadAll: true },
   });
 
   const handleSubmit = (data) => {

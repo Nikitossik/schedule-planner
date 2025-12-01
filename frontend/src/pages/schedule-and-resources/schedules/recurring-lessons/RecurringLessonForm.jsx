@@ -119,13 +119,22 @@ export function RecurringLessonForm({
   });
 
   // Дополнительный эффект для установки workload_id когда данные workloads загружены
+  // Используем useState чтобы отслеживать, была ли начальная инициализация
+  const [isWorkloadInitialized, setIsWorkloadInitialized] = useState(false);
+
   useEffect(() => {
     if (!isEdit || !template?.workload_id) return;
 
+    // Если уже инициализировали - не перезаписываем выбор пользователя
+    if (isWorkloadInitialized) return;
+
     const templateWorkloadId = template.workload_id.toString();
 
-    // Если workload_id уже установлен корректно - ничего не делаем
-    if (watchedWorkloadId === templateWorkloadId) return;
+    // Если workload_id уже установлен корректно - помечаем как инициализированный
+    if (watchedWorkloadId === templateWorkloadId) {
+      setIsWorkloadInitialized(true);
+      return;
+    }
 
     // Ждем пока workloads загрузятся
     if (workloads.length === 0) return;
@@ -136,6 +145,7 @@ export function RecurringLessonForm({
 
     if (workloadExists) {
       setValue("workload_id", templateWorkloadId);
+      setIsWorkloadInitialized(true);
     } else {
       console.error("[RecurringLessonForm] Workload not found:", {
         templateWorkloadId,
@@ -145,7 +155,14 @@ export function RecurringLessonForm({
         })),
       });
     }
-  }, [isEdit, template?.workload_id, workloads, watchedWorkloadId, setValue]);
+  }, [
+    isEdit,
+    template?.workload_id,
+    workloads,
+    watchedWorkloadId,
+    setValue,
+    isWorkloadInitialized,
+  ]);
 
   // Очистка зависимых полей при изменении родительских (ТОЛЬКО при создании)
   useEffect(() => {

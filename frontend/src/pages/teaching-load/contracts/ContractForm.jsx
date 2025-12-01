@@ -74,6 +74,9 @@ const ContractForm = ({
         page: 1,
         pageSize: 10,
       },
+      pagination: {
+        loadAll: true,
+      },
     }
   );
 

@@ -276,12 +276,14 @@ export function useLessonFormData({
         // Базовые трансформации
         const transformedData = {
           ...data,
-          schedule_id: parseInt(data.schedule_id),
+          schedule_id: schedule?.id || parseInt(data.schedule_id),
           group_id: data.group_id ? parseInt(data.group_id) : null,
           subject_assignment_id: data.subject_assignment_id
             ? parseInt(data.subject_assignment_id)
             : null,
           room_id: data.room_id ? parseInt(data.room_id) : null,
+          is_online: data.is_online || false,
+          lesson_type: data.lesson_type || "lecture",
           start_time: formatTime(startTimeDate),
           end_time: formatTime(endTimeDate),
         };
@@ -292,6 +294,9 @@ export function useLessonFormData({
             typeof data.days_of_week === "string"
               ? data.days_of_week
               : JSON.stringify(data.days_of_week || []);
+        } else {
+          // Для обычных уроков добавляем дату
+          transformedData.date = data.date;
         }
 
         // Удаляем workload_id из данных, он нужен только для UI
@@ -317,7 +322,7 @@ export function useLessonFormData({
         toast.error(errorMessage);
       }
     },
-    [startTimeDate, endTimeDate, formatTime, onSave, isEdit, formType]
+    [startTimeDate, endTimeDate, formatTime, onSave, isEdit, formType, schedule]
   );
 
   return {
