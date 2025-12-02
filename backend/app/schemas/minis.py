@@ -197,7 +197,7 @@ class SubjectAssignmentMiniOut(BaseModel):
     subject: "SubjectMiniOut" = Field(
         ...,
         description="Nested subject mini representation.",
-        examples=[{"id": 7, "name": "Algebra", "code": "MATH101", "color": "#0000FF"}],
+        examples=[{"id": 7, "name": "Algebra"}],
     )
     hours_per_subject: int = Field(
         ...,

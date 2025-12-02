@@ -435,9 +435,9 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                         if lesson_in_slot:
                             cell_text = self._format_lesson_for_pdf(lesson_in_slot)
                             # Сохраняем цвет для этой ячейки
-                            if lesson_in_slot.subject.color:
+                            if lesson_in_slot.professor.professor_profile.color:
                                 cell_colors[(table_row, col_idx + 1)] = (
-                                    lesson_in_slot.subject.color
+                                    lesson_in_slot.professor.professor_profile.color
                                 )
                         else:
                             cell_text = ""
@@ -474,9 +474,9 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                             if lesson_in_slot:
                                 cell_text = self._format_lesson_for_pdf(lesson_in_slot)
                                 # Сохраняем цвет для этой ячейки
-                                if lesson_in_slot.subject.color:
+                                if lesson_in_slot.professor.professor_profile.color:
                                     cell_colors[(table_row, col_idx + 1)] = (
-                                        lesson_in_slot.subject.color
+                                        lesson_in_slot.professor.professor_profile.color
                                     )
                             else:
                                 cell_text = ""
@@ -920,15 +920,15 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         )
         cell.font = Font(size=9, color="FFFFFF", bold=True)
 
-        # Устанавливаем цвет фона из цвета предмета
-        if lesson.subject.color:
+        # Устанавливаем цвет фона из цвета преподавателя
+        if lesson.professor.professor_profile.color:
             # Убираем # из hex цвета
-            color_hex = lesson.subject.color.replace("#", "")
+            color_hex = lesson.professor.professor_profile.color.replace("#", "")
             cell.fill = PatternFill(
                 start_color=color_hex, end_color=color_hex, fill_type="solid"
             )
         else:
-            # Цвет по умолчанию (серый)
+            # Цвет по умолчанию (черный)
             cell.fill = PatternFill(
-                start_color="6b7280", end_color="6b7280", fill_type="solid"
+                start_color="000000", end_color="000000", fill_type="solid"
             )

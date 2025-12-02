@@ -20,7 +20,6 @@ class Subject(Base):
     Fields overview:
     - id: numeric primary key.
     - name: human-readable subject name.
-    - code: unique short code for the subject.
     - semester_id: FK to the Semester when this subject is offered.
     - direction_id: FK to the owning Direction.
     - relationships: semester, direction, subject_assignments.

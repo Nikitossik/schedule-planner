@@ -136,12 +136,7 @@ class ProfessorWorkloadOut(ProfessorWorkloadBase):
                 {
                     "id": 42,
                     "hours_per_subject": 36,
-                    "subject": {
-                        "id": 7,
-                        "name": "Algebra",
-                        "code": "MATH101",
-                        "color": "#0000FF",
-                    },
+                    "subject": {"id": 7, "name": "Algebra"},
                 }
             ]
         ],
