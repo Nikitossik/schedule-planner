@@ -33,7 +33,7 @@ export const getResourceTitle = (lesson, groupBy) => {
       const professor = lesson.professor;
       const subject = lesson.subject?.name || "Unknown Subject";
       const professorName = professor
-        ? `${professor.name} ${professor.surname}`.trim()
+        ? `${professor.professor_profile?.academic_title} ${professor.name} ${professor.surname}`.trim()
         : "No Professor";
       return `${professorName} (${subject})`;
     case "room":

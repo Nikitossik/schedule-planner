@@ -15,16 +15,6 @@ export function EventComponent({ event, groupBy }) {
   // Получаем цвет предмета
   const subjectColor = resource.lesson.subject?.color;
 
-  // Функция для затемнения цвета
-  const darkenColor = (hex, factor = 0.2) => {
-    const color = hex.replace("#", "");
-    const num = parseInt(color, 16);
-    const r = Math.max(0, Math.floor((num >> 16) * (1 - factor)));
-    const g = Math.max(0, Math.floor(((num >> 8) & 0x00ff) * (1 - factor)));
-    const b = Math.max(0, Math.floor((num & 0x0000ff) * (1 - factor)));
-    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
-  };
-
   // Всегда используем цвет предмета
   const backgroundStyle = {
     backgroundColor: subjectColor,

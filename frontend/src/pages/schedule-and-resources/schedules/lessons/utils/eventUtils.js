@@ -13,7 +13,14 @@ export const transformLessonToEvent = (lesson, groupBy) => {
 
   // Формируем детальное описание урока
   const professorName = lesson.professor
-    ? `${lesson.professor.name} ${lesson.professor.surname}`.trim()
+    ? [
+        lesson.professor.professor_profile?.academic_title,
+        lesson.professor.name,
+        lesson.professor.surname,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .trim()
     : "No professor";
 
   const subjectName = lesson.subject?.name || "Unknown Subject";

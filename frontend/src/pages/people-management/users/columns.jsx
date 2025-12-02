@@ -45,6 +45,14 @@ export const useUserColumns = () => {
       },
     },
     {
+      accessorKey: "academic_title",
+      header: t("users.table.columns.academicTitle"),
+      cell: ({ row }) => {
+        const academicTitle = row.original.professor_profile?.academic_title;
+        return academicTitle || "-";
+      },
+    },
+    {
       accessorKey: "notes",
       header: t("users.table.columns.notes"),
       cell: ({ row }) => {

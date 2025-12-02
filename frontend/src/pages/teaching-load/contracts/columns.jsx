@@ -15,7 +15,7 @@ export function useContractColumns() {
       {
         header: t("contracts.table.columns.professor"),
         cell: ({ row }) =>
-          `${row.original.professor?.name} ${row.original.professor?.surname}` ??
+          `${row.original.professor?.professor_profile?.academic_title} ${row.original.professor?.name} ${row.original.professor?.surname}` ??
           "",
       },
       {

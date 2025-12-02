@@ -598,6 +598,7 @@
         "email": "Email",
         "role": "Role",
         "userType": "Type",
+        "academicTitle": "Academic Title",
         "notes": "Notes"
       },
       "viewNotes": "View notes",

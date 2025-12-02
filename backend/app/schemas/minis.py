@@ -42,6 +42,7 @@ class GroupMiniOut(BaseModel):
     id: int = Field(..., description="Unique identifier of the group.", examples=[10])
     name: str = Field(..., description="Group name/identifier.", examples=["CS-101"])
 
+
 class ProfessorProfileMiniOut(BaseModel):
     """Mini output model for ProfessorProfile used in nested responses."""
 
@@ -55,6 +56,10 @@ class ProfessorProfileMiniOut(BaseModel):
         None,
         description="JSON array of unavailable days (e.g., '[1,3,5]' for Mon,Wed,Fri).",
         examples=["[1, 3, 5]"],
+    )
+    academic_title: str = Field(
+        description="Academic title of the professor.",
+        examples=["PhD"],
     )
 
 

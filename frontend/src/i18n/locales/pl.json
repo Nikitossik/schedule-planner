@@ -597,6 +597,7 @@
         "email": "Email",
         "role": "Rola",
         "userType": "Typ",
+        "academicTitle": "Tytuł Naukowy",
         "notes": "Uwagi"
       },
       "viewNotes": "Zobacz uwagi",
