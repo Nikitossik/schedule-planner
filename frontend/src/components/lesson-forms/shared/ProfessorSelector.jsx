@@ -55,8 +55,9 @@ export function ProfessorSelector({
                 : true;
               return (
                 <SelectItem key={workload.id} value={workload.id.toString()}>
+                  {workload?.professor.professor_profile?.academic_title}{" "}
                   {workload?.professor.name} {workload?.professor.surname}
-                  <span className="text-sm text-gray-500 ml-2">
+                  <span className="text-sm text-gray-500">
                     ({workload.assigned_hours}h)
                   </span>
                   {!isAvailable && (

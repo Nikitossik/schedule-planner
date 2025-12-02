@@ -77,7 +77,8 @@ export const useRecurringLessonsColumns = () => {
         return professor ? (
           <div className="flex flex-col">
             <span className="font-medium">
-              {professor.name} {professor.surname}
+              {professor.professor_profile?.academic_title} {professor.name}{" "}
+              {professor.surname}
             </span>
           </div>
         ) : (
