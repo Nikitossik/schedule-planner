@@ -50,14 +50,7 @@ export const useRecurringLessonsColumns = () => {
         const subject = row.original.subject_assignment?.subject;
         return subject ? (
           <div className="flex items-center gap-2">
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: subject.color }}
-            />
             <span>{subject.name}</span>
-            <Badge variant="outline" className="text-xs">
-              {subject.code}
-            </Badge>
           </div>
         ) : (
           "-"
@@ -75,7 +68,11 @@ export const useRecurringLessonsColumns = () => {
       cell: ({ row }) => {
         const professor = row.original.professor;
         return professor ? (
-          <div className="flex flex-col">
+          <div className="flex flex-row items-center gap-2">
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: professor.professor_profile?.color }}
+            />
             <span className="font-medium">
               {professor.professor_profile?.academic_title} {professor.name}{" "}
               {professor.surname}

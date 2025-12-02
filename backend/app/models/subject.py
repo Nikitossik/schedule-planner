@@ -21,7 +21,6 @@ class Subject(Base):
     - id: numeric primary key.
     - name: human-readable subject name.
     - code: unique short code for the subject.
-    - color: hex color (e.g., "#000000") for UI tagging.
     - semester_id: FK to the Semester when this subject is offered.
     - direction_id: FK to the owning Direction.
     - relationships: semester, direction, subject_assignments.
@@ -32,12 +31,6 @@ class Subject(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)  # Unique identifier (primary key)
     name: Mapped[str] = mapped_column(String(100))  # Subject display name
-    code: Mapped[str] = mapped_column(
-        String(10), unique=True
-    )  # Unique subject code (DB-enforced)
-    color: Mapped[str] = mapped_column(
-        String(7), default="#000000"
-    )  # Hex color code for UI labels
     allocated_hours: Mapped[int] = mapped_column(Integer, default=0)
     semester_id: Mapped[int] = mapped_column(
         ForeignKey("semester.id")

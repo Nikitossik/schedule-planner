@@ -21,13 +21,10 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { useEntityList } from "@/hooks/useEntityList";
-import { ColorPicker } from "@/components/ui/color-picker";
-
 const createSchema = (isEdit, t) => {
   if (isEdit) {
     return z.object({
       name: z.string().min(1, t("subjects.form.validation.nameRequired")),
-      code: z.string().min(1, t("subjects.form.validation.codeRequired")),
       direction_id: z.string().optional(),
       academic_year_id: z.string().optional(),
       semester_id: z.string().optional(),
@@ -36,19 +33,11 @@ const createSchema = (isEdit, t) => {
         .int()
         .positive(t("subjects.form.validation.allocatedHoursPositive"))
         .optional(),
-      color: z
-        .string()
-        .regex(
-          /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
-          t("subjects.form.validation.colorInvalid")
-        )
-        .optional(),
     });
   }
 
   return z.object({
     name: z.string().min(1, t("subjects.form.validation.nameRequired")),
-    code: z.string().min(1, t("subjects.form.validation.codeRequired")),
     direction_id: z
       .string()
       .min(1, t("subjects.form.validation.directionRequired")),
@@ -62,13 +51,6 @@ const createSchema = (isEdit, t) => {
       .number()
       .int()
       .positive(t("subjects.form.validation.allocatedHoursPositive")),
-    color: z
-      .string()
-      .regex(
-        /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
-        t("subjects.form.validation.colorInvalid")
-      )
-      .optional(),
   });
 };
 
@@ -84,27 +66,16 @@ export default function SubjectForm({
   // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
-    code: defaultValues?.code || "",
     direction_id: String(defaultValues?.direction?.id ?? ""),
     academic_year_id: String(defaultValues?.academic_year?.id ?? ""),
     semester_id: String(defaultValues?.semester?.id ?? ""),
     allocated_hours: defaultValues?.allocated_hours || 0,
-    color: defaultValues?.color || "#3b82f6", // Используем цвет с бека или дефолтный
   };
 
   const form = useForm({
     resolver: zodResolver(createSchema(isEdit, t)),
     defaultValues: transformedDefaultValues,
   });
-
-  // Синхронизируем цвет при изменении defaultValues
-  useEffect(() => {
-    console.log("🔄 Default values changed:", defaultValues);
-    console.log("🎨 Color from backend:", defaultValues?.color);
-    if (defaultValues?.color) {
-      form.setValue("color", defaultValues.color);
-    }
-  }, [defaultValues?.color, form]);
 
   const watchedAcademicYearId = form.watch("academic_year_id");
 
@@ -130,10 +101,8 @@ export default function SubjectForm({
     form.setValue("semester_id", ""); // Очищаем семестр при смене года
   };
 
-  // Обработчик отправки формы с логированием
+  // Обработчик отправки формы
   const handleFormSubmit = (data) => {
-    console.log("📝 Form submission data:", data);
-    console.log("🎨 Color value:", data.color);
     onSubmit(data);
   };
 
@@ -161,23 +130,6 @@ export default function SubjectForm({
                 <Input
                   {...field}
                   placeholder={t("subjects.form.placeholders.name")}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="code"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("subjects.form.fields.code")}</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder={t("subjects.form.placeholders.code")}
                 />
               </FormControl>
               <FormMessage />
@@ -367,25 +319,6 @@ export default function SubjectForm({
                 />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="color"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("subjects.form.fields.color")}</FormLabel>
-              <FormControl>
-                <ColorPicker
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  name={field.name}
-                  className="max-w-xs"
-                />
-              </FormControl>
             </FormItem>
           )}
         />

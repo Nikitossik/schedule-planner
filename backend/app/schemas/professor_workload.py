@@ -305,11 +305,6 @@ class SubjectHoursWarningOut(BaseModel):
         description="Human-readable subject name.",
         examples=["Calculus II"],
     )
-    subject_code: str = Field(
-        ...,
-        description="Subject code.",
-        examples=["MATH202"],
-    )
     scheduled_hours: float = Field(
         ...,
         description="Total scheduled hours for this subject across all assignments.",

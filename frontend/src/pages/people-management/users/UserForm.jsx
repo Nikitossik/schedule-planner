@@ -27,6 +27,7 @@ import {
 
 import { useEntityList } from "@/hooks/useEntityList";
 import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
+import { ColorPicker } from "@/components/ui/color-picker";
 
 const createSchema = (t, isEdit = false) =>
   z
@@ -47,6 +48,13 @@ const createSchema = (t, isEdit = false) =>
       group_id: z.string().optional().or(z.literal("")),
       notes: z.string().optional().or(z.literal("")),
       unavailable_days: z.array(z.number()).optional(),
+      color: z
+        .string()
+        .regex(
+          /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
+          t("users.form.validation.colorInvalid")
+        )
+        .optional(),
     })
     .refine(
       (data) => {
@@ -135,6 +143,7 @@ export function UserForm({
         return [];
       }
     })(),
+    color: defaultValues?.professor_profile?.color || "#3b82f6",
   };
 
   const form = useForm({
@@ -298,6 +307,7 @@ export function UserForm({
         unavailable_days: data.unavailable_days
           ? JSON.stringify(data.unavailable_days)
           : null,
+        color: data.color || "#3b82f6",
       };
     }
 
@@ -590,68 +600,91 @@ export function UserForm({
         )}
 
         {role === "user" && userType === "professor" && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">
-              {t("users.form.sections.professorProfile")}
-            </h3>
+          <>
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">
+                {t("users.form.sections.professorProfile")}
+              </h3>
 
-            <FormField
-              control={form.control}
-              name="academic_title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("users.form.fields.academicTitle")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t("users.form.placeholders.academicTitle")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="academic_title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("users.form.fields.academicTitle")}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("users.form.placeholders.academicTitle")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("users.form.fields.notes")}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={t("users.form.placeholders.notes")}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("users.form.fields.notes")}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t("users.form.placeholders.notes")}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="space-y-3">
-              <FormLabel>{t("users.form.fields.unavailableDays")}</FormLabel>
-              <p className="text-sm text-muted-foreground">
-                {t("users.form.descriptions.unavailableDays")}
-              </p>
-              <div className="grid grid-cols-7 gap-2">
-                {daysOfWeek.map((day) => (
-                  <div
-                    key={day.value}
-                    className="flex flex-col items-center space-y-2"
-                  >
-                    <label className="text-sm font-medium">{day.label}</label>
-                    <Checkbox
-                      checked={(watchedUnavailableDays || []).includes(
-                        day.value
-                      )}
-                      onCheckedChange={() => toggleUnavailableDay(day.value)}
-                    />
-                  </div>
-                ))}
+              <div className="space-y-3">
+                <FormLabel>{t("users.form.fields.unavailableDays")}</FormLabel>
+                <p className="text-sm text-muted-foreground">
+                  {t("users.form.descriptions.unavailableDays")}
+                </p>
+                <div className="grid grid-cols-7 gap-2">
+                  {daysOfWeek.map((day) => (
+                    <div
+                      key={day.value}
+                      className="flex flex-col items-center space-y-2"
+                    >
+                      <label className="text-sm font-medium">{day.label}</label>
+                      <Checkbox
+                        checked={(watchedUnavailableDays || []).includes(
+                          day.value
+                        )}
+                        onCheckedChange={() => toggleUnavailableDay(day.value)}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("users.form.fields.color")}</FormLabel>
+                  <FormControl>
+                    <ColorPicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      className="max-w-xs"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </>
         )}
 
         {showButtons && (

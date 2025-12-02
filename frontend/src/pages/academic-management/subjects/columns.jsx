@@ -8,7 +8,7 @@ export const useSubjectColumns = () => {
   return [
     { accessorKey: "id", header: t("subjects.table.columns.id") },
     { accessorKey: "name", header: t("subjects.table.columns.name") },
-    { accessorKey: "code", header: t("subjects.table.columns.code") },
+
     {
       accessorKey: "faculty",
       header: t("subjects.table.columns.faculty"),
@@ -54,16 +54,6 @@ export const useSubjectColumns = () => {
           {row.original.used_hours || 0} / {row.original.allocated_hours}{" "}
           {t("subjects.table.hoursUnit")}
         </Badge>
-      ),
-    },
-    {
-      accessorKey: "color",
-      header: t("subjects.table.columns.color"),
-      cell: ({ row }) => (
-        <div
-          className="w-5 h-5 rounded-sm"
-          style={{ backgroundColor: row.original.color }}
-        ></div>
       ),
     },
     actionsColumn({ entity: "subject", useModal: true }),

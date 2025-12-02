@@ -22,17 +22,6 @@ class SubjectBase(BaseModel):
         description="Human-readable subject name.",
         examples=["Linear Algebra"],
     )
-    code: str = Field(
-        max_length=10,
-        description="Unique short code for the subject.",
-        examples=["MATH101"],
-    )
-    color: str | None = Field(
-        None,
-        max_length=7,
-        description='Optional hex color for UI tagging (e.g., "#RRGGBB").',
-        examples=["#1E90FF"],
-    )
     allocated_hours: int = Field(
         0,
         description="Allocated hours for the subject.",
@@ -63,18 +52,6 @@ class SubjectUpdate(BaseModel):
         max_length=100,
         description="Optional new subject name.",
         examples=["Advanced Algebra"],
-    )
-    code: str | None = Field(
-        None,
-        max_length=10,
-        description="Optional new subject code.",
-        examples=["MATH201"],
-    )
-    color: str | None = Field(
-        None,
-        max_length=7,
-        description='Optional new UI color (hex, e.g., "#RRGGBB").',
-        examples=["#FF8C00"],
     )
     allocated_hours: int | None = Field(
         None,

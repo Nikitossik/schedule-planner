@@ -24,12 +24,6 @@ class SubjectMiniOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int = Field(..., description="Unique identifier of the subject.", examples=[7])
     name: str = Field(..., description="Subject display name.", examples=["Algebra"])
-    code: str = Field(..., description="Unique subject code.", examples=["CS101"])
-    color: str = Field(
-        ...,
-        description='Hex color for UI tagging (e.g., "#RRGGBB").',
-        examples=["#FF0000"],
-    )
     allocated_hours: int = Field(
         ..., description="Allocated hours for the subject.", examples=[40]
     )
@@ -58,8 +52,14 @@ class ProfessorProfileMiniOut(BaseModel):
         examples=["[1, 3, 5]"],
     )
     academic_title: str = Field(
+        ...,
         description="Academic title of the professor.",
         examples=["PhD"],
+    )
+    color: str = Field(
+        ...,
+        description='Optional hex color for UI tagging (e.g., "#RRGGBB").',
+        examples=["#1E90FF"],
     )
 
 

@@ -29,11 +29,6 @@ export function useSubjectAssignmentColumns(onEdit, onDelete) {
           return (
             <div className="space-y-1">
               <div className="font-medium">{assignment.subject?.name}</div>
-              {assignment.subject?.code && (
-                <div className="text-xs text-gray-500">
-                  {assignment.subject.code}
-                </div>
-              )}
             </div>
           );
         },

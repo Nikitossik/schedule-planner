@@ -134,21 +134,18 @@ def seed_subjects(db):
         # INF - 3 семестр (semester_id=1, direction_id=3)
         {
             "name": "Data Structures",
-            "code": "DS-3",
             "direction_id": 3,
             "semester_id": 1,
             "allocated_hours": 200,
         },
         {
             "name": "Computer Networks",
-            "code": "CN-3",
             "direction_id": 3,
             "semester_id": 1,
             "allocated_hours": 200,
         },
         {
             "name": "Database Systems",
-            "code": "DBS-3",
             "direction_id": 3,
             "semester_id": 1,
             "allocated_hours": 200,
@@ -156,21 +153,18 @@ def seed_subjects(db):
         # AMIPI - 5 семестр (semester_id=2, direction_id=2)
         {
             "name": "Mobile Development",
-            "code": "MD-5",
             "direction_id": 2,
             "semester_id": 2,
             "allocated_hours": 200,
         },
         {
             "name": "Web Technologies",
-            "code": "WT-5",
             "direction_id": 2,
             "semester_id": 2,
             "allocated_hours": 200,
         },
         {
             "name": "Cloud Computing",
-            "code": "CC-5",
             "direction_id": 2,
             "semester_id": 2,
             "allocated_hours": 200,
@@ -178,21 +172,18 @@ def seed_subjects(db):
         # PKG - 5 семестр (semester_id=2, direction_id=1)
         {
             "name": "Game Engine Development",
-            "code": "GED-5",
             "direction_id": 1,
             "semester_id": 2,
             "allocated_hours": 200,
         },
         {
             "name": "3D Graphics Programming",
-            "code": "3DGP-5",
             "direction_id": 1,
             "semester_id": 2,
             "allocated_hours": 200,
         },
         {
             "name": "Game AI",
-            "code": "GAI-5",
             "direction_id": 1,
             "semester_id": 2,
             "allocated_hours": 200,
@@ -307,9 +298,9 @@ def seed_users(db):
 
     # 3 преподавателя
     professors = [
-        ("Dr. John", "Smith"),
-        ("Dr. Sarah", "Johnson"),
-        ("Dr. Michael", "Brown"),
+        ("John", "Smith"),
+        ("Sarah", "Johnson"),
+        ("Michael", "Brown"),
     ]
 
     for name, surname in professors:
@@ -419,8 +410,8 @@ def seed_subject_assignments(db):
 
     print(f"Found {len(workloads)} workloads and {len(subjects)} subjects")
 
-    # Создаем мапинг предметов по коду
-    subjects_by_code = {subject.code: subject for subject in subjects}
+    # Создаем мапинг предметов по имени
+    subjects_by_name = {subject.name: subject for subject in subjects}
 
     # Группируем workload по преподавателям
     workloads_by_professor = {}
@@ -439,29 +430,37 @@ def seed_subject_assignments(db):
 
     # Распределение предметов по преподавателям (используем актуальные ID)
     professor_subjects = {}
-    subject_codes = [
-        ["DS-3", "MD-5", "GED-5"],  # Первый преподаватель
-        ["CN-3", "WT-5", "3DGP-5"],  # Второй преподаватель
-        ["DBS-3", "CC-5", "GAI-5"],  # Третий преподаватель
+    subject_names = [
+        [
+            "Data Structures",
+            "Mobile Development",
+            "Game Engine Development",
+        ],  # Первый преподаватель
+        [
+            "Computer Networks",
+            "Web Technologies",
+            "3D Graphics Programming",
+        ],  # Второй преподаватель
+        ["Database Systems", "Cloud Computing", "Game AI"],  # Третий преподаватель
     ]
 
     for i, prof_id in enumerate(actual_prof_ids[:3]):  # Берем первых 3 преподавателей
-        professor_subjects[prof_id] = subject_codes[i]
+        professor_subjects[prof_id] = subject_names[i]
 
     for prof_id, assigned_subjects in professor_subjects.items():
         prof_workloads = workloads_by_professor.get(prof_id, [])
         print(
-            f"\\nProfessor {prof_id} has {len(prof_workloads)} workloads, assigned subjects: {assigned_subjects}"
+            f"\nProfessor {prof_id} has {len(prof_workloads)} workloads, assigned subjects: {assigned_subjects}"
         )
 
-        for subject_code in assigned_subjects:
-            subject = subjects_by_code.get(subject_code)
+        for subject_name in assigned_subjects:
+            subject = subjects_by_name.get(subject_name)
             if not subject:
-                print(f"❌ Subject {subject_code} not found")
+                print(f"❌ Subject {subject_name} not found")
                 continue
 
             print(
-                f"Processing subject {subject_code} (direction_id={subject.direction_id}, semester_id={subject.semester_id})"
+                f"Processing subject {subject_name} (direction_id={subject.direction_id}, semester_id={subject.semester_id})"
             )
 
             # Находим соответствующие workload для этого предмета
@@ -480,15 +479,15 @@ def seed_subject_assignments(db):
                     hours_per_subject = workload.assigned_hours // 3
 
                     # Создаем превышение для некоторых предметов (мало часов)
-                    if subject_code in [
-                        "DS-3",
-                        "WT-5",
-                        "GAI-5",
+                    if subject_name in [
+                        "Data Structures",
+                        "Web Technologies",
+                        "Game AI",
                     ]:  # По одному от каждого препода
                         hours_per_subject = 10  # Очень мало часов - создаст превышение
 
                     print(
-                        f"Creating assignment: {subject_code} - {workload.assigned_hours}h total, {hours_per_subject}h per subject"
+                        f"Creating assignment: {subject_name} - {workload.assigned_hours}h total, {hours_per_subject}h per subject"
                     )
 
                     try:
@@ -500,16 +499,16 @@ def seed_subject_assignments(db):
                             }
                         )
                         found_workload = True
-                        print(f"✅ Created assignment for {subject_code}")
+                        print(f"✅ Created assignment for {subject_name}")
                     except Exception as e:
                         print(
-                            f"❌ Failed to create assignment {subject_code} for professor {prof_id}: {e}"
+                            f"❌ Failed to create assignment {subject_name} for professor {prof_id}: {e}"
                         )
                         db.rollback()
                         continue
 
             if not found_workload:
-                print(f"❌ No matching workload found for {subject_code}")
+                print(f"❌ No matching workload found for {subject_name}")
 
 
 def seed_schedules_and_lessons(db):
@@ -597,7 +596,7 @@ def seed_schedules_and_lessons(db):
 
         print(f"Groups: {[g.name for g in schedule_groups]}")
         print(
-            f"Assignments: {[f'{a.subject.code}-{a.workload.contract.professor_profile.user.name}' for a in schedule_assignments]}"
+            f"Assignments: {[f'{a.subject.name}-{a.workload.contract.professor_profile.user.name}' for a in schedule_assignments]}"
         )
 
         for group in schedule_groups:
@@ -667,7 +666,7 @@ def seed_schedules_and_lessons(db):
                         lesson = lesson_repo.create(lesson_data)
                         created_lessons.append(lesson)
                         print(
-                            f"✅ Created lesson: {assignment.subject.code} - {group.name} - {room.number} - {start_time}"
+                            f"✅ Created lesson: {assignment.subject.name} - {group.name} - {room.number} - {start_time}"
                         )
 
                     except Exception as e:
@@ -711,7 +710,7 @@ def seed_schedules_and_lessons(db):
                 lesson = lesson_repo.create(lesson_data)
                 created_lessons.append(lesson)
                 print(
-                    f"🔥 CONFLICT 3 (Professor): {assignment.subject.code} - {group.name}"
+                    f"🔥 CONFLICT 3 (Professor): {assignment.subject.name} - {group.name}"
                 )
                 conflicts_created += 1
             except Exception as e:
@@ -751,7 +750,7 @@ def seed_schedules_and_lessons(db):
                     lesson = lesson_repo.create(lesson_data)
                     created_lessons.append(lesson)
                     print(
-                        f"🔥 CONFLICT {conflicts_created + 1} (Group): {assignment.subject.code} - {target_group.name}"
+                        f"🔥 CONFLICT {conflicts_created + 1} (Group): {assignment.subject.name} - {target_group.name}"
                     )
                     conflicts_created += 1
                 except Exception as e:
@@ -764,10 +763,10 @@ def seed_schedules_and_lessons(db):
     print(f"📚 Total lessons created: {len(created_lessons)}")
 
     # Создаем дополнительные уроки для предметов с малым количеством часов (для превышения)
-    # Это создаст превышения для DS-3, WT-5, GAI-5 (которые имеют только 10 часов)
-    excess_subjects = ["DS-3", "WT-5", "GAI-5"]
-    for subject_code in excess_subjects:
-        subject_assignments = [a for a in assignments if a.subject.code == subject_code]
+    # Это создаст превышения для Data Structures, Web Technologies, Game AI (которые имеют только 10 часов)
+    excess_subjects = ["Data Structures", "Web Technologies", "Game AI"]
+    for subject_name in excess_subjects:
+        subject_assignments = [a for a in assignments if a.subject.name == subject_name]
 
         for assignment in subject_assignments:
             # Находим подходящую группу
@@ -807,7 +806,7 @@ def seed_schedules_and_lessons(db):
 
                     try:
                         lesson = lesson_repo.create(lesson_data)
-                        print(f"⚠️ EXCESS HOURS: Extra lesson for {subject_code}")
+                        print(f"⚠️ EXCESS HOURS: Extra lesson for {subject_name}")
                     except Exception as e:
                         print(f"❌ Failed to create excess lesson: {e}")
                         db.rollback()

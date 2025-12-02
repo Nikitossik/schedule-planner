@@ -627,7 +627,8 @@
         "semester": "Semestr",
         "group": "Grupa",
         "notes": "Uwagi",
-        "unavailableDays": "Dni niedostępności"
+        "unavailableDays": "Dni niedostępności",
+        "color": "Kolor"
       },
       "descriptions": {
         "unavailableDays": "Wybierz dni tygodnia, w które ten profesor nie jest dostępny do nauczania"
@@ -651,7 +652,8 @@
         "passwordLength": "Hasło musi mieć co najmniej 6 znaków",
         "academicTitleRequired": "Tytuł naukowy jest wymagany dla profesorów",
         "emailRequired": "Email jest wymagany",
-        "passwordRequired": "Hasło jest wymagane"
+        "passwordRequired": "Hasło jest wymagane",
+        "colorInvalid": "Proszę wprowadzić prawidłowy kolor w formacie hex"
       },
       "roles": {
         "admin": "Administrator",

@@ -23,7 +23,7 @@ export function EventComponent({ event, groupBy }) {
 
   return (
     <div
-      className="rbc-event-content text-white border-l-4 transition-colors duration-200"
+      className="rbc-event-content text-white transition-colors duration-200"
       style={backgroundStyle}
     >
       <div className="rbc-event-title font-medium">

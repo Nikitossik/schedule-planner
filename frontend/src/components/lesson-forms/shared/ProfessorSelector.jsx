@@ -55,6 +55,13 @@ export function ProfessorSelector({
                 : true;
               return (
                 <SelectItem key={workload.id} value={workload.id.toString()}>
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{
+                      backgroundColor:
+                        workload.professor.professor_profile?.color,
+                    }}
+                  />
                   {workload?.professor.professor_profile?.academic_title}{" "}
                   {workload?.professor.name} {workload?.professor.surname}
                   <span className="text-sm text-gray-500">

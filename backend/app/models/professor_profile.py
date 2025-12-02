@@ -32,6 +32,9 @@ class ProfessorProfile(Base):
     notes: Mapped[str] = mapped_column(Text, nullable=True)
     unavailable_days: Mapped[str] = mapped_column(String(20), nullable=True)
     academic_title: Mapped[str] = mapped_column(String(50), nullable=False)
+    color: Mapped[str] = mapped_column(
+        String(7), default="#000000"
+    )  # Hex color code for UI labels
     # relations
     user: Mapped["User"] = relationship(
         "User", back_populates="professor_profile", lazy="selectin"

@@ -102,6 +102,12 @@ class ProfessorProfileBase(BaseModel):
         description="Academic title of the professor (e.g., Dr., Prof., Dr. hab.).",
         examples=["Dr.", "Prof.", "Dr. hab."],
     )
+    color: str | None = Field(
+        None,
+        max_length=7,
+        description='Optional hex color for UI tagging (e.g., "#RRGGBB").',
+        examples=["#1E90FF"],
+    )
 
 
 class ProfessorProfileIn(ProfessorProfileBase):
@@ -135,6 +141,13 @@ class ProfessorProfileUpdate(BaseModel):
         default=None,
         description="Academic title of the professor (e.g., Dr., Prof., Dr. hab.).",
         examples=["Dr.", "Prof.", "Dr. hab."],
+    )
+
+    color: str | None = Field(
+        None,
+        max_length=7,
+        description='Optional hex color for UI tagging (e.g., "#RRGGBB").',
+        examples=["#1E90FF"],
     )
 
 

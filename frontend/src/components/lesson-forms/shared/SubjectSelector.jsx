@@ -51,7 +51,7 @@ export function SubjectSelector({
               <SelectItem key={assignment.id} value={assignment.id.toString()}>
                 <div className="flex items-center">
                   <BookOpen className="h-4 w-4 mr-2" />
-                  {assignment.subject?.name} ({assignment.subject?.code})
+                  {assignment.subject?.name}
                   <span className="text-sm text-gray-500 ml-2">
                     {assignment.hours_per_subject}h
                   </span>

@@ -419,7 +419,6 @@ class ProfessorWorkloadService(BaseService[ProfessorWorkload, ProfessorWorkloadI
                         type="subject_exceeded",
                         subject_id=subject.id,
                         subject_name=subject.name,
-                        subject_code=subject.code,
                         scheduled_hours=scheduled_hours,
                         allocated_hours=float(subject.allocated_hours),
                         excess_hours=scheduled_hours - subject.allocated_hours,

@@ -89,6 +89,18 @@ export const useUserColumns = () => {
         );
       },
     },
+    {
+      accessorKey: "color",
+      header: t("subjects.table.columns.color"),
+      cell: ({ row }) => (
+        <div
+          className="w-5 h-5 rounded-sm"
+          style={{
+            backgroundColor: row.original.professor_profile?.color,
+          }}
+        ></div>
+      ),
+    },
     actionsColumn({ entity: "user", useModal: true }),
   ];
 };

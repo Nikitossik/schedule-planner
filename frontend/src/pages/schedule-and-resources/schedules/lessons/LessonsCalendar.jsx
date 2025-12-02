@@ -493,14 +493,14 @@ export function LessonsCalendar({
               ),
             }}
             eventPropGetter={(event) => {
-              // Стили для уроков
-              const subjectColor =
-                event.resource?.lesson?.subject?.color || "#000";
-              const borderColor = darkenColor(subjectColor, 0.2);
+              // Стили для уроков - используем цвет преподавателя
+              const professorColor =
+                event.resource?.lesson?.professor?.professor_profile?.color;
+              const borderColor = darkenColor(professorColor, 0.2);
 
               return {
                 style: {
-                  backgroundColor: subjectColor,
+                  backgroundColor: professorColor,
                   borderColor: borderColor,
                   color: "white",
                   fontSize: "12px",

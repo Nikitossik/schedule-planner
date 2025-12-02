@@ -628,7 +628,8 @@
         "semester": "Semester",
         "group": "Group",
         "notes": "Notes",
-        "unavailableDays": "Unavailable Days"
+        "unavailableDays": "Unavailable Days",
+        "color": "Color"
       },
       "descriptions": {
         "unavailableDays": "Select the days of the week when this professor is unavailable for teaching"
@@ -652,7 +653,8 @@
         "passwordLength": "Password must be at least 6 characters",
         "academicTitleRequired": "Academic title is required for professors",
         "emailRequired": "Email is required",
-        "passwordRequired": "Password is required"
+        "passwordRequired": "Password is required",
+        "colorInvalid": "Please enter a valid color in hex format"
       },
       "roles": {
         "admin": "Administrator",

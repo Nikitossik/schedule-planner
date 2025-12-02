@@ -14,9 +14,23 @@ export function useContractColumns() {
       },
       {
         header: t("contracts.table.columns.professor"),
-        cell: ({ row }) =>
-          `${row.original.professor?.professor_profile?.academic_title} ${row.original.professor?.name} ${row.original.professor?.surname}` ??
-          "",
+        cell: ({ row }) => {
+          const professor = row.original.professor;
+          return professor ? (
+            <div className="flex flex-row items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: professor.professor_profile?.color }}
+              />
+              <span className="font-medium">
+                {professor.professor_profile?.academic_title} {professor.name}{" "}
+                {professor.surname}
+              </span>
+            </div>
+          ) : (
+            "-"
+          );
+        },
       },
       {
         header: t("contracts.table.columns.academicYear"),
