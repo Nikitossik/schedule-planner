@@ -596,8 +596,11 @@
         "surname": "Nazwisko",
         "email": "Email",
         "role": "Rola",
-        "userType": "Typ"
+        "userType": "Typ",
+        "notes": "Uwagi"
       },
+      "viewNotes": "Zobacz uwagi",
+      "notesTitle": "Uwagi",
       "searchPlaceholder": "Szukaj użytkowników...",
       "addButton": "+ Utwórz Użytkownika"
     },
@@ -618,6 +621,7 @@
         "password": "Hasło",
         "role": "Rola",
         "userType": "Typ Użytkownika",
+        "academicTitle": "Tytuł Naukowy",
         "academicYear": "Rok Akademicki",
         "semester": "Semestr",
         "group": "Grupa",
@@ -634,6 +638,7 @@
         "password": "Wprowadź hasło",
         "role": "Wybierz rolę",
         "userType": "Wybierz typ",
+        "academicTitle": "Wprowadź tytuł naukowy (np. dr, prof., dr hab.)",
         "academicYear": "Wybierz rok akademicki",
         "semester": "Wybierz semestr",
         "group": "Wybierz grupę",
@@ -642,7 +647,10 @@
         "notes": "Wprowadź uwagi dotyczące dostępności lub inne informacje o profesorze"
       },
       "validation": {
-        "passwordLength": "Hasło musi mieć co najmniej 6 znaków"
+        "passwordLength": "Hasło musi mieć co najmniej 6 znaków",
+        "academicTitleRequired": "Tytuł naukowy jest wymagany dla profesorów",
+        "emailRequired": "Email jest wymagany",
+        "passwordRequired": "Hasło jest wymagane"
       },
       "roles": {
         "admin": "Administrator",

@@ -597,8 +597,11 @@
         "surname": "Surname",
         "email": "Email",
         "role": "Role",
-        "userType": "Type"
+        "userType": "Type",
+        "notes": "Notes"
       },
+      "viewNotes": "View notes",
+      "notesTitle": "Notes",
       "searchPlaceholder": "Search users...",
       "addButton": "+ Create User"
     },
@@ -619,6 +622,7 @@
         "password": "Password",
         "role": "Role",
         "userType": "User Type",
+        "academicTitle": "Academic Title",
         "academicYear": "Academic Year",
         "semester": "Semester",
         "group": "Group",
@@ -635,6 +639,7 @@
         "password": "Enter password",
         "role": "Select role",
         "userType": "Select type",
+        "academicTitle": "Enter academic title (e.g., Dr, Prof., PhD)",
         "academicYear": "Select academic year",
         "semester": "Select semester",
         "group": "Select group",
@@ -643,7 +648,10 @@
         "notes": "Enter availability notes or other information about the professor"
       },
       "validation": {
-        "passwordLength": "Password must be at least 6 characters"
+        "passwordLength": "Password must be at least 6 characters",
+        "academicTitleRequired": "Academic title is required for professors",
+        "emailRequired": "Email is required",
+        "passwordRequired": "Password is required"
       },
       "roles": {
         "admin": "Administrator",

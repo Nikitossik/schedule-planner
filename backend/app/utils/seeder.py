@@ -320,7 +320,9 @@ def seed_users(db):
             "password": name.lower().replace("dr. ", ""),
             "role": "user",
             "user_type": "professor",
-            "professor_profile": {},
+            "professor_profile": {
+                "academic_title": "dr.",
+            },
         }
         professor = sch.user.UserIn(**professor_data)
         service.create(professor)

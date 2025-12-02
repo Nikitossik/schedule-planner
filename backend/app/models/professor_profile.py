@@ -29,7 +29,9 @@ class ProfessorProfile(Base):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("user.id"), primary_key=True
     )  # One-to-one PK/FK to the owning User
-
+    notes: Mapped[str] = mapped_column(Text, nullable=True)
+    unavailable_days: Mapped[str] = mapped_column(String(20), nullable=True)
+    academic_title: Mapped[str] = mapped_column(String(50), nullable=False)
     # relations
     user: Mapped["User"] = relationship(
         "User", back_populates="professor_profile", lazy="selectin"
@@ -39,10 +41,6 @@ class ProfessorProfile(Base):
         back_populates="professor_profile",
         cascade="all, delete-orphan",
     )
-    notes: Mapped[str] = mapped_column(Text, nullable=True)
-    unavailable_days: Mapped[str] = mapped_column(
-        String(20), nullable=True
-    )  # JSON array: "[1,3,5]" for Mon,Wed,Fri
 
     # One-to-many: contracts per semester; cascades on profile deletion
     # workloads: Mapped[list["ProfessorWorkload"]] = relationship(

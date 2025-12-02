@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
-import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
 
 import {
   Dialog,
@@ -16,7 +15,6 @@ import { UserForm } from "./UserForm";
 
 export default function UserModal({ isOpen, user, onClose, onSuccess }) {
   const { t } = useTranslation();
-  const { disableStudentAccounts } = useFeatureFlags();
   const isEdit = !!user;
   const createUser = useEntityMutation("user", "create");
   const updateUser = useEntityMutation("user", "patch");
@@ -24,47 +22,11 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
 
   const handleSubmit = async (values) => {
     try {
-      // Базовые данные пользователя (без профилей)
-      const payload = {
-        email: values.email,
-        name: values.name,
-        surname: values.surname,
-        role: values.role,
-        user_type: values.user_type || null,
-      };
-
-      // Добавляем пароль только если он указан
-      if (values.password) {
-        payload.password = values.password;
-      } else if (!isEdit) {
-        // При создании пароль обязателен - используем дефолтный если не указан
-        payload.password = "password";
-      }
-
-      // Формируем профиль студента (только если флаг отключен)
-      if (
-        values.user_type === "student" &&
-        !disableStudentAccounts &&
-        values.group_id
-      ) {
-        payload.student_profile = {
-          group_id: parseInt(values.group_id),
-        };
-      }
-
-      // Формируем профиль профессора
-      if (values.user_type === "professor") {
-        payload.professor_profile = {
-          notes: values.notes || null,
-          unavailable_days: JSON.stringify(values.unavailable_days || []),
-        };
-      }
-
       if (isEdit) {
-        await updateUser.mutateAsync({ id: user.id, data: payload });
+        await updateUser.mutateAsync({ id: user.id, data: values });
         toast.success(t("users.messages.updateSuccess"));
       } else {
-        await createUser.mutateAsync(payload);
+        await createUser.mutateAsync(values);
         toast.success(t("users.messages.createSuccess"));
       }
 

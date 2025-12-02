@@ -98,6 +98,11 @@ class ProfessorProfileBase(BaseModel):
         examples=["[1,3,5]"],
     )
 
+    academic_title: str = Field(
+        description="Academic title of the professor (e.g., Dr., Prof., Dr. hab.).",
+        examples=["Dr.", "Prof.", "Dr. hab."],
+    )
+
 
 class ProfessorProfileIn(ProfessorProfileBase):
     """
@@ -107,12 +112,30 @@ class ProfessorProfileIn(ProfessorProfileBase):
     pass
 
 
-class ProfessorProfileUpdate(ProfessorProfileBase):
+class ProfessorProfileUpdate(BaseModel):
     """
     Partial update schema for professor profile; all fields are optional.
     """
 
-    pass
+    model_config = ConfigDict(from_attributes=True)
+
+    notes: str | None = Field(
+        default=None,
+        description="Optional notes about the professor.",
+        examples=["Experienced in AI and machine learning."],
+    )
+
+    unavailable_days: str | None = Field(
+        default=None,
+        description="JSON array of unavailable days (e.g., '[1,3,5]' for Mon,Wed,Fri).",
+        examples=["[1,3,5]"],
+    )
+
+    academic_title: str | None = Field(
+        default=None,
+        description="Academic title of the professor (e.g., Dr., Prof., Dr. hab.).",
+        examples=["Dr.", "Prof.", "Dr. hab."],
+    )
 
 
 class ProfessorProfileOut(ProfessorProfileBase):

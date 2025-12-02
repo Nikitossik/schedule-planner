@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,29 +28,78 @@ import {
 import { useEntityList } from "@/hooks/useEntityList";
 import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
 
-const createSchema = (t) =>
+const createSchema = (t, isEdit = false) =>
   z
     .object({
       name: z.string().min(1),
       surname: z.string().min(1),
-      email: z.string().email(),
-      password: z.string().optional(),
+      email: z.string().email().optional().or(z.literal("")),
+      password: z.string().optional().or(z.literal("")),
       role: z.enum(["admin", "coordinator", "user"]),
       user_type: z.union([
         z.literal(""),
         z.literal("student"),
         z.literal("professor"),
       ]),
-      academic_year_id: z.string().optional(),
-      semester_id: z.string().optional(),
-      group_id: z.string().optional(),
-      notes: z.string().optional(),
+      academic_title: z.string().optional().or(z.literal("")),
+      academic_year_id: z.string().optional().or(z.literal("")),
+      semester_id: z.string().optional().or(z.literal("")),
+      group_id: z.string().optional().or(z.literal("")),
+      notes: z.string().optional().or(z.literal("")),
       unavailable_days: z.array(z.number()).optional(),
     })
-    .refine((data) => !data.password || data.password.length >= 6, {
-      path: ["password"],
-      message: t("users.form.validation.passwordLength"),
-    });
+    .refine(
+      (data) => {
+        // Email обязателен для admin/coordinator
+        if (data.role === "admin" || data.role === "coordinator") {
+          return data.email && data.email.length > 0;
+        }
+        return true;
+      },
+      {
+        path: ["email"],
+        message: t("users.form.validation.emailRequired"),
+      }
+    )
+    .refine(
+      (data) => {
+        // Email должен быть валидным, если не пустой
+        if (data.email && data.email.length > 0) {
+          return z.string().email().safeParse(data.email).success;
+        }
+        return true;
+      },
+      {
+        path: ["email"],
+        message: "Invalid email format",
+      }
+    )
+    .refine(
+      (data) => {
+        // Password обязателен для admin/coordinator
+        if (data.role === "admin" || data.role === "coordinator") {
+          return data.password && data.password.length >= 6;
+        }
+        return true;
+      },
+      {
+        path: ["password"],
+        message: t("users.form.validation.passwordRequired"),
+      }
+    )
+    .refine(
+      (data) => {
+        // Academic title обязателен для professor только при создании
+        if (!isEdit && data.role === "user" && data.user_type === "professor") {
+          return data.academic_title && data.academic_title.length > 0;
+        }
+        return true;
+      },
+      {
+        path: ["academic_title"],
+        message: t("users.form.validation.academicTitleRequired"),
+      }
+    );
 
 export function UserForm({
   defaultValues,
@@ -69,6 +119,7 @@ export function UserForm({
     password: "",
     role: defaultValues?.role || "",
     user_type: defaultValues?.user_type || "",
+    academic_title: defaultValues?.professor_profile?.academic_title || "",
     academic_year_id: String(
       defaultValues?.student_profile?.academic_year?.id ?? ""
     ),
@@ -87,15 +138,24 @@ export function UserForm({
   };
 
   const form = useForm({
-    resolver: zodResolver(createSchema(t)),
+    resolver: zodResolver(createSchema(t, isEdit)),
     defaultValues: transformedDefaultValues,
   });
 
   const role = form.watch("role");
   const userType = form.watch("user_type");
+  const name = form.watch("name");
+  const surname = form.watch("surname");
   const watchedAcademicYearId = form.watch("academic_year_id");
   const watchedSemesterId = form.watch("semester_id");
   const watchedUnavailableDays = form.watch("unavailable_days");
+
+  // Автоматически устанавливаем user_type = "professor" если студенты отключены и role = "user"
+  React.useEffect(() => {
+    if (disableStudentAccounts && role === "user" && !userType) {
+      form.setValue("user_type", "professor");
+    }
+  }, [disableStudentAccounts, role, userType, form]);
 
   // Дни недели для селектора
   const daysOfWeek = useMemo(() => {
@@ -112,24 +172,43 @@ export function UserForm({
     });
   }, [i18n?.language]);
 
-  // Загружаем академические годы
+  // Загружаем академические годы (только если студенты не отключены)
   const { data: academicYearsData, isLoading: academicYearsLoading } =
-    useEntityList("academic_year");
+    useEntityList("academic_year", {
+      enabled:
+        !disableStudentAccounts && role === "user" && userType === "student",
+    });
   const academicYears = academicYearsData?.items || [];
 
-  // Загружаем семестры для выбранного академического года
+  // Загружаем семестры для выбранного академического года (только если студенты не отключены)
   const { data: semestersData, isLoading: semestersLoading } = useEntityList(
     "semester",
-    watchedAcademicYearId
-      ? { filters: { academic_year_ids: [watchedAcademicYearId] } }
-      : {}
+    {
+      ...(watchedAcademicYearId
+        ? { filters: { academic_year_ids: [watchedAcademicYearId] } }
+        : {}),
+      enabled:
+        !disableStudentAccounts &&
+        role === "user" &&
+        userType === "student" &&
+        !!watchedAcademicYearId,
+    }
   );
   const semesters = semestersData?.items || [];
 
-  // Загружаем группы для выбранного семестра
+  // Загружаем группы для выбранного семестра (только если студенты не отключены)
   const { data: groupsData, isLoading: groupsLoading } = useEntityList(
     "group",
-    watchedSemesterId ? { filters: { semester_ids: [watchedSemesterId] } } : {}
+    {
+      ...(watchedSemesterId
+        ? { filters: { semester_ids: [watchedSemesterId] } }
+        : {}),
+      enabled:
+        !disableStudentAccounts &&
+        role === "user" &&
+        userType === "student" &&
+        !!watchedSemesterId,
+    }
   );
   const groups = groupsData?.items || [];
 
@@ -154,38 +233,89 @@ export function UserForm({
     form.setValue("unavailable_days", newDays);
   };
 
+  // Генерация email и password для профессоров
+  const generateProfessorCredentials = (name, surname) => {
+    if (!name || !surname) return { email: "", password: "" };
+
+    const normalize = (str) =>
+      str
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/[^a-z0-9]/g, "");
+
+    const normalizedName = normalize(name);
+    const normalizedSurname = normalize(surname);
+
+    return {
+      email: `${normalizedName}.${normalizedSurname}${Date.now()}@gmail.com`,
+      password: `${normalizedName}_${normalizedSurname}`,
+    };
+  };
+
+  // Обработка отправки формы
+  const handleSubmit = (data) => {
+    // Для профессоров генерируем email и password только при создании
+    if (!isEdit && data.role === "user" && data.user_type === "professor") {
+      const credentials = generateProfessorCredentials(data.name, data.surname);
+      data.email = credentials.email;
+      data.password = credentials.password;
+    }
+
+    // Трансформируем данные в правильный формат для API
+    const transformedData = {
+      name: data.name,
+      surname: data.surname,
+      email: data.email,
+      role: data.role || null,
+      user_type: data.user_type || null,
+    };
+
+    // Добавляем пароль только если он заполнен или это создание нового пользователя
+    if (data.password && data.password.length > 0) {
+      transformedData.password = data.password;
+    }
+
+    // Для admin/coordinator очищаем user_type
+    if (data.role === "admin" || data.role === "coordinator") {
+      transformedData.user_type = null;
+    }
+
+    // Добавляем профили в зависимости от типа пользователя
+    if (data.role === "user" && data.user_type === "student") {
+      transformedData.student_profile = {
+        academic_year_id: data.academic_year_id
+          ? parseInt(data.academic_year_id)
+          : null,
+        semester_id: data.semester_id ? parseInt(data.semester_id) : null,
+        group_id: data.group_id ? parseInt(data.group_id) : null,
+      };
+    } else if (data.role === "user" && data.user_type === "professor") {
+      const academicTitle = data.academic_title || "";
+
+      transformedData.professor_profile = {
+        academic_title: academicTitle,
+        notes: data.notes || null,
+        unavailable_days: data.unavailable_days
+          ? JSON.stringify(data.unavailable_days)
+          : null,
+      };
+    }
+
+    onSubmit(transformedData);
+  };
+
+  // Обработчик ошибок формы
+  const handleFormError = (errors) => {
+    // Ошибки валидации уже отображаются в форме через FormMessage
+  };
+
   return (
     <Form {...form}>
       <form
         id="user-form"
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit, handleFormError)}
         className={`space-y-6 ${showButtons ? "max-w-xl" : ""}`}
       >
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">
-            {t("users.form.sections.basicInfo")}
-          </h3>
-          {["name", "surname", "email", "password"].map((field) => (
-            <FormField
-              key={field}
-              control={form.control}
-              name={field}
-              render={({ field: f }) => (
-                <FormItem>
-                  <FormLabel>{t(`users.form.fields.${field}`)}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type={field === "password" ? "password" : "text"}
-                      placeholder={t(`users.form.placeholders.${field}`)}
-                      {...f}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-        </div>
         <div className="space-y-4">
           <h3 className="text-lg font-medium">
             {t("users.form.sections.roleAndType")}
@@ -227,32 +357,93 @@ export function UserForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("users.form.fields.userType")}</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    disabled={isEdit}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue
-                        placeholder={t("users.form.placeholders.userType")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        value="student"
-                        disabled={disableStudentAccounts}
-                      >
-                        {t("users.form.userTypes.student")}
-                      </SelectItem>
-                      <SelectItem value="professor">
-                        {t("users.form.userTypes.professor")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {disableStudentAccounts ? (
+                    // Если студенты отключены, показываем только "professor" как disabled input
+                    <Input
+                      value={t("users.form.userTypes.professor")}
+                      disabled
+                      className="bg-muted"
+                    />
+                  ) : (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isEdit}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder={t("users.form.placeholders.userType")}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="student">
+                          {t("users.form.userTypes.student")}
+                        </SelectItem>
+                        <SelectItem value="professor">
+                          {t("users.form.userTypes.professor")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
             />
+          )}
+        </div>
+
+        {/* Podstawowe informacje - показываем для всех, но поля зависят от роли */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">
+            {t("users.form.sections.basicInfo")}
+          </h3>
+
+          {/* Имя и фамилия - всегда показываем */}
+          {["name", "surname"].map((field) => (
+            <FormField
+              key={field}
+              control={form.control}
+              name={field}
+              render={({ field: f }) => (
+                <FormItem>
+                  <FormLabel>{t(`users.form.fields.${field}`)}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder={t(`users.form.placeholders.${field}`)}
+                      {...f}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
+
+          {/* Email и password только для admin/coordinator */}
+          {(role === "admin" || role === "coordinator") && (
+            <>
+              {["email", "password"].map((field) => (
+                <FormField
+                  key={field}
+                  control={form.control}
+                  name={field}
+                  render={({ field: f }) => (
+                    <FormItem>
+                      <FormLabel>{t(`users.form.fields.${field}`)}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type={field === "password" ? "password" : "text"}
+                          placeholder={t(`users.form.placeholders.${field}`)}
+                          {...f}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+            </>
           )}
         </div>
 
@@ -403,6 +594,23 @@ export function UserForm({
             <h3 className="text-lg font-medium">
               {t("users.form.sections.professorProfile")}
             </h3>
+
+            <FormField
+              control={form.control}
+              name="academic_title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("users.form.fields.academicTitle")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t("users.form.placeholders.academicTitle")}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
