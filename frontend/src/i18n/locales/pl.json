@@ -1109,7 +1109,11 @@
         "selectProfessorFirst": "Najpierw wybierz profesora",
         "selectDate": "Wybierz datę",
         "setDateTimeFirst": "Najpierw ustaw datę i czas",
-        "selectRoom": "Wybierz dostępną salę"
+        "selectRoom": "Wybierz dostępną salę",
+        "noRoom": "Brak przypisanej sali"
+      },
+      "options": {
+        "noRoom": "Brak przypisanej sali"
       },
       "messages": {
         "noGroups": "Nie znaleziono grup dla tego planu",

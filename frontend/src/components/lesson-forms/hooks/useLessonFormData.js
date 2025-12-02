@@ -33,20 +33,11 @@ export function useLessonFormData({
       is_online: z.boolean(),
     };
 
-    // Валидация location: либо room_id, либо is_online должно быть true
-    const locationSchema = z
-      .object({
-        is_online: z.boolean(),
-        room_id: z.string(),
-      })
-      .refine(
-        (data) =>
-          data.is_online === true || (data.room_id && data.room_id.length > 0),
-        {
-          message: t("lessons.form.validation.locationRequired"),
-          path: ["room_id"],
-        }
-      );
+    // Валидация location: оба поля опциональны, можно не выбирать ни кабинет, ни онлайн
+    const locationSchema = z.object({
+      is_online: z.boolean(),
+      room_id: z.string(),
+    });
 
     if (formType === "lesson") {
       return z

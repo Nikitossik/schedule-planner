@@ -1111,7 +1111,11 @@
         "selectProfessorFirst": "Select professor first",
         "selectDate": "Select date",
         "setDateTimeFirst": "Set date and time first",
-        "selectRoom": "Select available room"
+        "selectRoom": "Select available room",
+        "noRoom": "No room assigned"
+      },
+      "options": {
+        "noRoom": "No room assigned"
       },
       "messages": {
         "noGroups": "No groups found for this schedule",

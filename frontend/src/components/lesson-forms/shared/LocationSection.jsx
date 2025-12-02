@@ -32,64 +32,85 @@ export function LocationSection({
           {t("lessons.form.sections.location")}
         </h3>
 
+        {/* Room selection */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            {t("lessons.form.fields.room")}
+          </label>
+          <Select
+            value={roomId || "no-room"}
+            onValueChange={(value) => {
+              if (value === "no-room") {
+                onRoomChange("");
+              } else {
+                onRoomChange(value);
+                // Если выбран кабинет, убираем онлайн
+                if (isOnline) {
+                  onIsOnlineChange(false);
+                }
+              }
+            }}
+            disabled={disabled || (requireDateTime && !hasDateTime)}
+          >
+            <SelectTrigger>
+              <SelectValue
+                placeholder={
+                  requireDateTime && !hasDateTime
+                    ? t("lessons.form.placeholders.setDateTimeFirst")
+                    : t("lessons.form.placeholders.selectRoom")
+                }
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {/* Опция "Без кабинета" */}
+              <SelectItem value="no-room">
+                <div className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-2 opacity-50" />
+                  {t("lessons.form.options.noRoom")}
+                </div>
+              </SelectItem>
+              {rooms.length === 0 ? (
+                <div className="p-2 text-sm text-muted-foreground text-center">
+                  {requireDateTime && !hasDateTime
+                    ? t("lessons.form.messages.setDateTimeForRooms")
+                    : t("lessons.form.messages.noRooms")}
+                </div>
+              ) : (
+                rooms.map((room) => (
+                  <SelectItem key={room.id} value={room.id.toString()}>
+                    <div className="flex items-center">
+                      <Building2 className="h-4 w-4 mr-2" />
+                      {room.number}
+                      <span className="text-sm text-gray-500 ml-2">
+                        (capacity: {room.capacity})
+                      </span>
+                    </div>
+                  </SelectItem>
+                ))
+              )}
+            </SelectContent>
+          </Select>
+          {error && <p className="text-sm text-red-500">{error}</p>}
+        </div>
+
         {/* Online toggle */}
         <div className="flex items-center space-x-2">
           <Checkbox
             id="is_online"
             checked={isOnline}
-            onCheckedChange={onIsOnlineChange}
+            onCheckedChange={(checked) => {
+              onIsOnlineChange(checked);
+              // Если выбран онлайн, убираем кабинет
+              if (checked && roomId) {
+                onRoomChange("");
+              }
+            }}
           />
           <label htmlFor="is_online" className="text-sm font-medium">
             {t("lessons.form.fields.onlineLesson")}
           </label>
         </div>
-
-        {/* Room (if not online) */}
-        {!isOnline && (
-          <div className="space-y-2">
-            <label className="text-sm font-medium flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              {t("lessons.form.fields.room")}
-            </label>
-            <Select
-              value={roomId}
-              onValueChange={onRoomChange}
-              disabled={disabled || (requireDateTime && !hasDateTime)}
-            >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder={
-                    requireDateTime && !hasDateTime
-                      ? t("lessons.form.placeholders.setDateTimeFirst")
-                      : t("lessons.form.placeholders.selectRoom")
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {rooms.length === 0 ? (
-                  <div className="p-2 text-sm text-muted-foreground text-center">
-                    {requireDateTime && !hasDateTime
-                      ? t("lessons.form.messages.setDateTimeForRooms")
-                      : t("lessons.form.messages.noRooms")}
-                  </div>
-                ) : (
-                  rooms.map((room) => (
-                    <SelectItem key={room.id} value={room.id.toString()}>
-                      <div className="flex items-center">
-                        <Building2 className="h-4 w-4 mr-2" />
-                        {room.number}
-                        <span className="text-sm text-gray-500 ml-2">
-                          (capacity: {room.capacity})
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-          </div>
-        )}
 
         {isOnline && (
           <div className="p-3 bg-blue-50 rounded-lg">
