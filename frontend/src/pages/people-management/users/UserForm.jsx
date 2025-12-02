@@ -263,51 +263,74 @@ export function UserForm({
 
   // Обработка отправки формы
   const handleSubmit = (data) => {
+    // Тримим все строковые поля
+    const trimmedData = {
+      ...data,
+      name: data.name?.trim() || "",
+      surname: data.surname?.trim() || "",
+      email: data.email?.trim() || "",
+      academic_title: data.academic_title?.trim() || "",
+      notes: data.notes?.trim() || "",
+    };
+
     // Для профессоров генерируем email и password только при создании
-    if (!isEdit && data.role === "user" && data.user_type === "professor") {
-      const credentials = generateProfessorCredentials(data.name, data.surname);
-      data.email = credentials.email;
-      data.password = credentials.password;
+    if (
+      !isEdit &&
+      trimmedData.role === "user" &&
+      trimmedData.user_type === "professor"
+    ) {
+      const credentials = generateProfessorCredentials(
+        trimmedData.name,
+        trimmedData.surname
+      );
+      trimmedData.email = credentials.email;
+      trimmedData.password = credentials.password;
     }
 
     // Трансформируем данные в правильный формат для API
     const transformedData = {
-      name: data.name,
-      surname: data.surname,
-      email: data.email,
-      role: data.role || null,
-      user_type: data.user_type || null,
+      name: trimmedData.name,
+      surname: trimmedData.surname,
+      email: trimmedData.email,
+      role: trimmedData.role || null,
+      user_type: trimmedData.user_type || null,
     };
 
     // Добавляем пароль только если он заполнен или это создание нового пользователя
-    if (data.password && data.password.length > 0) {
-      transformedData.password = data.password;
+    if (trimmedData.password && trimmedData.password.length > 0) {
+      transformedData.password = trimmedData.password;
     }
 
     // Для admin/coordinator очищаем user_type
-    if (data.role === "admin" || data.role === "coordinator") {
+    if (trimmedData.role === "admin" || trimmedData.role === "coordinator") {
       transformedData.user_type = null;
     }
 
     // Добавляем профили в зависимости от типа пользователя
-    if (data.role === "user" && data.user_type === "student") {
+    if (trimmedData.role === "user" && trimmedData.user_type === "student") {
       transformedData.student_profile = {
-        academic_year_id: data.academic_year_id
-          ? parseInt(data.academic_year_id)
+        academic_year_id: trimmedData.academic_year_id
+          ? parseInt(trimmedData.academic_year_id)
           : null,
-        semester_id: data.semester_id ? parseInt(data.semester_id) : null,
-        group_id: data.group_id ? parseInt(data.group_id) : null,
+        semester_id: trimmedData.semester_id
+          ? parseInt(trimmedData.semester_id)
+          : null,
+        group_id: trimmedData.group_id ? parseInt(trimmedData.group_id) : null,
       };
-    } else if (data.role === "user" && data.user_type === "professor") {
-      const academicTitle = data.academic_title || "";
+    } else if (
+      trimmedData.role === "user" &&
+      trimmedData.user_type === "professor"
+    ) {
+      const academicTitle = trimmedData.academic_title || "";
+      const notes = trimmedData.notes || "";
 
       transformedData.professor_profile = {
         academic_title: academicTitle,
-        notes: data.notes || null,
-        unavailable_days: data.unavailable_days
-          ? JSON.stringify(data.unavailable_days)
+        notes: notes.length > 0 ? notes : "",
+        unavailable_days: trimmedData.unavailable_days
+          ? JSON.stringify(trimmedData.unavailable_days)
           : null,
-        color: data.color || "#3b82f6",
+        color: trimmedData.color || "#3b82f6",
       };
     }
 

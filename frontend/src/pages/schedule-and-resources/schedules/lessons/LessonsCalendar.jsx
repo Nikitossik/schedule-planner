@@ -480,7 +480,7 @@ export function LessonsCalendar({
             showMultiDayTimes
             scrollToTime={new Date(1970, 1, 1, 8)}
             min={new Date(1970, 1, 1, 8, 0, 0)}
-            max={new Date(1970, 1, 1, 22, 0, 0)}
+            max={new Date(1970, 1, 1, 23, 0, 0)}
             onEventDrop={handleEventDrop}
             onEventResize={handleEventResize}
             resizable

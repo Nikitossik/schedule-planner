@@ -284,26 +284,12 @@ class ProfessorWorkloadService(BaseService[ProfessorWorkload, ProfessorWorkloadI
         Returns:
             float: Total hours computed as the sum of durations.
         """
-        total_minutes = 0
+        total_hours = 0.0
 
         for lesson in lessons:
-            # Парсим время начала и конца
-            start_time = lesson.start_time
-            end_time = lesson.end_time
+            # Используем точный расчет академических часов из модели урока
+            total_hours += lesson.academic_hours
 
-            # Конвертируем в datetime для расчета
-            start_dt = datetime.combine(datetime.today(), start_time)
-            end_dt = datetime.combine(datetime.today(), end_time)
-
-            # Если урок переходит через полночь
-            if end_dt < start_dt:
-                end_dt += timedelta(days=1)
-
-            duration = end_dt - start_dt
-            lesson_minutes = duration.total_seconds() / 60
-            total_minutes += lesson_minutes
-
-        total_hours = total_minutes / 60
         return total_hours
 
     def _create_local_warning(

@@ -130,7 +130,29 @@ class Lesson(Base):
 
     @property
     def duration_minutes(self) -> int:
+        """
+        Calculate lesson duration in real clock minutes.
+        """
         delta = datetime.combine(date.min, self.end_time) - datetime.combine(
             date.min, self.start_time
         )
         return int(delta.total_seconds() / 60)
+
+    @property
+    def academic_hours(self) -> float:
+        """
+        Calculate exact number of academic hours from time interval.
+
+        Academic hour = 45 minutes lesson + 5 minutes break (50 min total)
+        BUT break is not counted in the last hour if lesson ends exactly at 45 min mark.
+        """
+        real_minutes = self.duration_minutes
+
+        # Full academic blocks (45 min + 5 min break each)
+        full_blocks = real_minutes // 50
+
+        # Check if remainder is enough for another academic hour (45+ minutes)
+        remainder = real_minutes % 50
+        additional_hour = 1 if remainder >= 45 else 0
+
+        return float(full_blocks + additional_hour)

@@ -35,7 +35,7 @@ export function DateTimeSection({
     // If end time is before new start time, adjust it
     if (newStartTime && endTimeDate && endTimeDate <= newStartTime) {
       const adjustedEndTime = new Date(newStartTime);
-      adjustedEndTime.setMinutes(adjustedEndTime.getMinutes() + 15); // Add 15 minutes minimum
+      adjustedEndTime.setMinutes(adjustedEndTime.getMinutes() + 50); // Add 50 minutes (1 academic hour: 45 min lesson + 5 min break)
       setEndTimeDate(adjustedEndTime);
     }
   };

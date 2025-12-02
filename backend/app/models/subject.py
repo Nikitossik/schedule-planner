@@ -62,12 +62,11 @@ class Subject(Base):
     @property
     def used_hours(self) -> float:
         """
-        Calculate total hours used across all lessons for this subject.
-        Sums duration_minutes from all lessons in all subject_assignments,
-        converts to hours (rounded to 2 decimal places).
+        Calculate total academic hours used across all lessons for this subject.
+        Sums academic_hours from all lessons in all subject_assignments.
         """
-        total_minutes = 0
+        total_hours = 0.0
         for assignment in self.subject_assignments:
             for lesson in assignment.lessons:
-                total_minutes += lesson.duration_minutes
-        return round(total_minutes / 60, 2)
+                total_hours += lesson.academic_hours
+        return round(total_hours, 2)
