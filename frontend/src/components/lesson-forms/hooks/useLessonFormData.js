@@ -19,30 +19,44 @@ export function useLessonFormData({
 
   // Validation schema
   const validationSchema = useMemo(() => {
+    // Схема для групп - всегда множественные
+    const groupsSchema = {
+      group_ids: z
+        .array(z.number())
+        .min(1, t("lessons.form.validation.groupRequired")),
+    };
+
     const baseSchema = {
-      group_id: z.string().min(1, t("lessons.form.validation.groupRequired")),
       workload_id: z
-        .string()
-        .min(1, t("lessons.form.validation.workloadRequired")),
+        .union([z.number().min(1), z.null()])
+        .refine((val) => val !== null, {
+          message: t("lessons.form.validation.workloadRequired"),
+        }),
       subject_assignment_id: z
-        .string()
-        .min(1, t("lessons.form.validation.subjectRequired")),
+        .union([z.number().min(1), z.null()])
+        .refine((val) => val !== null, {
+          message: t("lessons.form.validation.subjectRequired"),
+        }),
       lesson_type: z
         .string()
         .min(1, t("lessons.form.validation.lessonTypeRequired")),
       is_online: z.boolean(),
     };
 
+    // Всегда используем множественные группы для обеих форм
+    const groupSchema = groupsSchema;
+
     // Валидация location: оба поля опциональны, можно не выбирать ни кабинет, ни онлайн
     const locationSchema = z.object({
       is_online: z.boolean(),
-      room_id: z.string(),
+      room_id: z.union([z.string(), z.null()]).optional(),
     });
 
     if (formType === "lesson") {
       return z
         .object({
           ...baseSchema,
+          ...groupSchema,
           date: z.string().min(1, t("lessons.form.validation.dateRequired")),
           start_time: z
             .string()
@@ -50,7 +64,7 @@ export function useLessonFormData({
           end_time: z
             .string()
             .min(1, t("lessons.form.validation.endTimeRequired")),
-          room_id: z.string(),
+          room_id: z.union([z.string(), z.null()]).optional(),
         })
         .and(locationSchema);
     } else {
@@ -58,6 +72,7 @@ export function useLessonFormData({
       return z
         .object({
           ...baseSchema,
+          ...groupSchema,
           name: z.string().optional(),
           days_of_week: z
             .array(z.number())
@@ -74,7 +89,7 @@ export function useLessonFormData({
           end_time: z
             .string()
             .min(1, t("lessons.form.validation.endTimeRequired")),
-          room_id: z.string(),
+          room_id: z.union([z.string(), z.null()]).optional(),
         })
         .and(locationSchema)
         .refine(
@@ -99,17 +114,26 @@ export function useLessonFormData({
     if (initialData && isEdit) {
       const baseValues = {
         schedule_id: schedule?.id || initialData.schedule?.id,
-        group_id: initialData.group?.id?.toString() || "",
-        subject_assignment_id:
-          initialData.subject_assignment_id?.toString() || "",
-        room_id: initialData.room?.id?.toString() || "",
+        subject_assignment_id: initialData.subject_assignment_id || null,
+        room_id: initialData.room?.id || null,
         is_online: initialData.is_online || false,
         lesson_type: initialData.lesson_type || "lecture",
         // Для recurring templates workload_id хранится напрямую, для lessons - в объекте workload
         workload_id:
-          (initialData.workload_id || initialData.workload?.id)?.toString() ||
-          "",
+          initialData.workload_id || initialData.workload?.id || null,
       };
+
+      // Всегда используем group_ids (массив групп)
+      if (initialData.groups && Array.isArray(initialData.groups)) {
+        // Новая структура: множественные группы
+        baseValues.group_ids = initialData.groups.map((g) => g.id);
+      } else if (initialData.group) {
+        // Старая структура: одна группа - преобразуем в массив
+        baseValues.group_ids = [initialData.group.id];
+      } else {
+        // По умолчанию - пустой массив
+        baseValues.group_ids = [];
+      }
 
       if (formType === "lesson") {
         return {
@@ -144,13 +168,19 @@ export function useLessonFormData({
     // Дефолтные значения для создания
     const baseValues = {
       schedule_id: schedule?.id,
-      group_id: "",
-      subject_assignment_id: "",
-      room_id: "",
+      subject_assignment_id: null,
+      room_id: null,
       is_online: false,
       lesson_type: "lecture",
-      workload_id: "",
+      workload_id: null,
     };
+
+    // Добавляем поля для групп в зависимости от формы
+    if (formType === "lesson") {
+      baseValues.group_ids = [];
+    } else {
+      baseValues.group_ids = [];
+    }
 
     if (formType === "lesson") {
       return {
@@ -246,11 +276,11 @@ export function useLessonFormData({
   // Синхронизируем время с react-hook-form для валидации
   useEffect(() => {
     setValue("start_time", watchedStartTime, { shouldValidate: true });
-  }, [watchedStartTime, setValue]);
+  }, [watchedStartTime]); // Убрали setValue из зависимостей
 
   useEffect(() => {
     setValue("end_time", watchedEndTime, { shouldValidate: true });
-  }, [watchedEndTime, setValue]);
+  }, [watchedEndTime]); // Убрали setValue из зависимостей
 
   // Функция для форматирования времени
   const formatTime = useCallback((date) => {
@@ -267,17 +297,17 @@ export function useLessonFormData({
         // Базовые трансформации
         const transformedData = {
           ...data,
-          schedule_id: schedule?.id || parseInt(data.schedule_id),
-          group_id: data.group_id ? parseInt(data.group_id) : null,
-          subject_assignment_id: data.subject_assignment_id
-            ? parseInt(data.subject_assignment_id)
-            : null,
-          room_id: data.room_id ? parseInt(data.room_id) : null,
+          schedule_id: schedule?.id || data.schedule_id,
+          subject_assignment_id: data.subject_assignment_id || null,
+          room_id: data.room_id || null,
           is_online: data.is_online || false,
           lesson_type: data.lesson_type || "lecture",
           start_time: formatTime(startTimeDate),
           end_time: formatTime(endTimeDate),
         };
+
+        // Всегда используем group_ids для обеих форм
+        transformedData.group_ids = data.group_ids || [];
 
         // Дополнительные трансформации для recurring
         if (formType === "recurring") {

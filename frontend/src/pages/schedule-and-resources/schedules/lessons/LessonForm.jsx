@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import {
   DialogContent,
@@ -55,11 +55,11 @@ export function LessonForm({
     watch,
     setValue,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty, isValid },
   } = formMethods;
 
   // Отслеживаемые поля
-  const watchedGroupId = watch("group_id");
+  const watchedGroupIds = watch("group_ids");
   const watchedWorkloadId = watch("workload_id");
   const watchedIsOnline = watch("is_online");
   const watchedDate = watch("date");
@@ -67,7 +67,7 @@ export function LessonForm({
   // Загрузка и фильтрация данных
   const { groups, workloads, assignments, rooms, disabledDayMatchers } =
     useLessonFilters({
-      selectedGroupId: watchedGroupId,
+      selectedGroupIds: watchedGroupIds,
       selectedWorkloadId: watchedWorkloadId,
       selectedDate: watchedDate,
       startTime: watchedStartTime,
@@ -75,7 +75,7 @@ export function LessonForm({
       isOnline: watchedIsOnline,
       isEdit,
       currentLessonId: lesson?.id,
-      initialGroup: lesson?.group,
+      initialGroup: lesson?.groups?.[0] || lesson?.group,
     });
 
   // Проверка доступности профессора
@@ -84,87 +84,6 @@ export function LessonForm({
     selectedWorkloadId: watchedWorkloadId,
     selectedDate: watchedDate,
   });
-
-  // Дополнительный эффект для установки workload_id когда данные workloads загружены
-  // Используем useRef чтобы отслеживать, была ли начальная инициализация
-  const [isWorkloadInitialized, setIsWorkloadInitialized] =
-    React.useState(false);
-
-  useEffect(() => {
-    // Проверяем что мы в режиме редактирования и есть данные урока
-    if (!isEdit || !lesson?.workload?.id) return;
-
-    // Если уже инициализировали - не перезаписываем выбор пользователя
-    if (isWorkloadInitialized) return;
-
-    const lessonWorkloadId = lesson.workload.id.toString();
-
-    // Если workload_id уже установлен корректно - помечаем как инициализированный
-    if (watchedWorkloadId === lessonWorkloadId) {
-      setIsWorkloadInitialized(true);
-      return;
-    }
-
-    // Ждем пока workloads загрузятся
-    if (workloads.length === 0) return;
-
-    // Ищем workload урока в отфильтрованном списке
-    const workloadExists = workloads.find(
-      (w) => w.id.toString() === lessonWorkloadId
-    );
-
-    if (workloadExists) {
-      setValue("workload_id", lessonWorkloadId);
-      setIsWorkloadInitialized(true);
-    } else {
-      console.error("[LessonForm] Workload not found:", {
-        lessonWorkloadId,
-        availableWorkloads: workloads.map((w) => ({
-          id: w.id,
-          study_form: w.study_form?.form,
-        })),
-        lessonData: lesson,
-      });
-    }
-  }, [
-    isEdit,
-    lesson?.workload?.id,
-    workloads,
-    watchedWorkloadId,
-    setValue,
-    lesson,
-    isWorkloadInitialized,
-  ]);
-
-  // Очистка зависимых полей при изменении родительских (ТОЛЬКО при создании нового урока)
-  useEffect(() => {
-    // В режиме редактирования не очищаем поля автоматически
-    if (isEdit) return;
-
-    setValue("workload_id", "");
-    setValue("subject_assignment_id", "");
-  }, [watchedGroupId, setValue, isEdit]);
-
-  useEffect(() => {
-    // В режиме редактирования не очищаем поля автоматически
-    if (isEdit) return;
-
-    setValue("subject_assignment_id", "");
-  }, [watchedWorkloadId, setValue, isEdit]);
-
-  // Очистка комнаты при изменении даты/времени (если не онлайн)
-  useEffect(() => {
-    if (!isEdit && !watchedIsOnline) {
-      setValue("room_id", "");
-    }
-  }, [
-    watchedDate,
-    watchedStartTime,
-    watchedEndTime,
-    watchedIsOnline,
-    setValue,
-    isEdit,
-  ]);
 
   return (
     <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -185,12 +104,12 @@ export function LessonForm({
             </h3>
 
             <GroupSelector
-              value={watchedGroupId}
+              value={watchedGroupIds}
               onChange={(value) =>
-                setValue("group_id", value, { shouldValidate: true })
+                setValue("group_ids", value, { shouldValidate: true })
               }
               groups={groups}
-              error={errors.group_id?.message}
+              error={errors.group_ids?.message}
             />
           </CardContent>
         </Card>
@@ -204,22 +123,32 @@ export function LessonForm({
             </h3>
 
             <ProfessorSelector
-              value={watchedWorkloadId}
+              value={watchedWorkloadId ? watchedWorkloadId.toString() : ""}
               onChange={(value) =>
-                setValue("workload_id", value, { shouldValidate: true })
+                setValue("workload_id", value ? parseInt(value) : null, {
+                  shouldValidate: true,
+                })
               }
               workloads={workloads}
-              selectedGroupId={watchedGroupId}
+              selectedGroupIds={watchedGroupIds}
               isProfessorAvailable={isProfessorAvailable}
               error={errors.workload_id?.message}
             />
 
             <SubjectSelector
-              value={watch("subject_assignment_id")}
+              value={
+                watch("subject_assignment_id")
+                  ? watch("subject_assignment_id").toString()
+                  : ""
+              }
               onChange={(value) =>
-                setValue("subject_assignment_id", value, {
-                  shouldValidate: true,
-                })
+                setValue(
+                  "subject_assignment_id",
+                  value ? parseInt(value) : null,
+                  {
+                    shouldValidate: true,
+                  }
+                )
               }
               assignments={assignments}
               selectedWorkloadId={watchedWorkloadId}

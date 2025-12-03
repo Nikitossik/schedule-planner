@@ -1095,6 +1095,7 @@
       },
       "fields": {
         "group": "Group",
+        "groups": "Groups",
         "professor": "Professor (Workload)",
         "subject": "Subject",
         "date": "Date",
@@ -1105,6 +1106,7 @@
       },
       "placeholders": {
         "selectGroup": "Select group",
+        "selectGroups": "Select groups",
         "selectProfessor": "Select professor",
         "selectGroupFirst": "Select group first",
         "selectSubject": "Select subject",
@@ -1163,6 +1165,7 @@
       "name": "Name",
       "subject": "Subject", 
       "group": "Group",
+      "groups": "Groups",
       "professor": "Professor",
       "type": "Type",
       "days": "Days",

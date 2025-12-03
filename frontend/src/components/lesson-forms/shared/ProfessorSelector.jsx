@@ -14,12 +14,15 @@ export function ProfessorSelector({
   value,
   onChange,
   workloads = [],
-  selectedGroupId,
+  selectedGroupIds, // Массив выбранных групп
   isProfessorAvailable,
   error,
   disabled = false,
 }) {
   const { t } = useTranslation();
+
+  // Проверяем, есть ли выбранные группы
+  const hasSelectedGroups = selectedGroupIds && selectedGroupIds.length > 0;
 
   return (
     <div className="space-y-2">
@@ -30,12 +33,12 @@ export function ProfessorSelector({
       <Select
         value={value}
         onValueChange={onChange}
-        disabled={!selectedGroupId || disabled}
+        disabled={!hasSelectedGroups || disabled}
       >
         <SelectTrigger>
           <SelectValue
             placeholder={
-              selectedGroupId
+              hasSelectedGroups
                 ? t("lessons.form.placeholders.selectProfessor")
                 : t("lessons.form.placeholders.selectGroupFirst")
             }
@@ -44,7 +47,7 @@ export function ProfessorSelector({
         <SelectContent>
           {workloads.length === 0 ? (
             <div className="p-2 text-sm text-muted-foreground text-center">
-              {!selectedGroupId
+              {!hasSelectedGroups
                 ? t("lessons.form.messages.selectGroupFirst")
                 : t("lessons.form.messages.noProfessors")}
             </div>

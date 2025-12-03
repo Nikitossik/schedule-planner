@@ -55,7 +55,8 @@ export const buildFullLessonData = (lesson, schedule, updates = {}) => {
 
   return {
     schedule_id: lesson.schedule_id || schedule?.id,
-    group_id: lesson.group_id || lesson.group?.id,
+    group_ids:
+      lesson.group_ids || lesson.groups?.map((group) => group.id) || [],
     subject_assignment_id:
       lesson.subject_assignment_id || lesson.subject_assignment?.id,
     room_id: lesson.room_id || lesson.room?.id,
@@ -95,7 +96,8 @@ export const createEventDropHandler = (
       switch (groupBy) {
         case "group":
           if (resourceId !== "no-group") {
-            timeUpdates.group_id = parseInt(resourceId);
+            // При перетаскивании в другую группу, заменяем все группы на одну целевую
+            timeUpdates.group_ids = [parseInt(resourceId)];
           }
           break;
         case "professor":

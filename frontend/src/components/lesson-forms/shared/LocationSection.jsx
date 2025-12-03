@@ -42,7 +42,7 @@ export function LocationSection({
             value={roomId || "no-room"}
             onValueChange={(value) => {
               if (value === "no-room") {
-                onRoomChange("");
+                onRoomChange(null);
               } else {
                 onRoomChange(value);
                 // Если выбран кабинет, убираем онлайн
@@ -103,7 +103,7 @@ export function LocationSection({
               onIsOnlineChange(checked);
               // Если выбран онлайн, убираем кабинет
               if (checked && roomId) {
-                onRoomChange("");
+                onRoomChange(null);
               }
             }}
           />

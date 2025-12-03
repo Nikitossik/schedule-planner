@@ -1,7 +1,7 @@
 from __future__ import annotations
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Date, Time, ForeignKey, Index, Enum
+from sqlalchemy import Column, Date, Table, Time, ForeignKey, Index, Enum
 from datetime import datetime, date, time
 from typing import TYPE_CHECKING
 from ..utils.enums import LessonTypeEnum
@@ -12,6 +12,15 @@ if TYPE_CHECKING:
     from .group import Group
     from .room import Room
     from .recurring_template import RecurringLessonTemplate
+
+
+# Ассоциативная таблица для связи many-to-many между Lesson и Group
+lesson_groups = Table(
+    "lesson_groups",
+    Base.metadata,
+    Column("lesson_id", ForeignKey("lesson.id"), primary_key=True),
+    Column("group_id", ForeignKey("group.id"), primary_key=True),
+)
 
 
 class Lesson(Base):
@@ -42,9 +51,6 @@ class Lesson(Base):
     schedule_id: Mapped[int] = mapped_column(
         ForeignKey("schedule.id")
     )  # FK to the owning schedule
-    group_id: Mapped[int] = mapped_column(
-        ForeignKey("group.id")
-    )  # FK to the attending group
     subject_assignment_id: Mapped[int] = mapped_column(
         ForeignKey("subject_assignment.id")
     )  # FK to subject assignment (links subject + professor/workload)
@@ -74,9 +80,7 @@ class Lesson(Base):
     schedule: Mapped["Schedule"] = relationship(
         "Schedule", back_populates="lessons"
     )  # Many-to-one: this lesson belongs to a schedule
-    group: Mapped["Group"] = relationship(
-        "Group"
-    )  # Many-to-one: the group attending this lesson
+    groups: Mapped[list["Group"]] = relationship("Group", secondary=lesson_groups)
     subject_assignment: Mapped["SubjectAssignment"] = relationship(
         "SubjectAssignment", back_populates="lessons"
     )  # Many-to-one: assignment that ties subject and professor
@@ -111,12 +115,10 @@ class Lesson(Base):
     __table_args__ = (
         # Room-time conflict: a room cannot host multiple lessons at the same time
         Index("idx_room_time_conflict", "room_id", "date", "start_time", "end_time"),
-        # Group-time conflict: a group cannot attend multiple lessons at the same time
-        Index("idx_group_time_conflict", "group_id", "date", "start_time", "end_time"),
         # Calendar filtering: by schedule and start time
         Index("idx_lesson_calendar", "schedule_id", "date", "start_time"),
-        # Filtering by subject assignment and group
-        Index("idx_lesson_subject_group", "subject_assignment_id", "group_id"),
+        # Filtering by subject assignment
+        Index("idx_lesson_subject", "subject_assignment_id"),
     )
 
     # Computed properties for convenience

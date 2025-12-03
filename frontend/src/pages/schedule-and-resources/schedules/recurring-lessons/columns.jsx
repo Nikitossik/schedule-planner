@@ -34,13 +34,7 @@ export const useRecurringLessonsColumns = () => {
       accessorKey: "name",
       header: t("recurringLessons.table.name"),
       cell: ({ row }) => {
-        const name = row.original.name;
-        return (
-          <div className="font-medium">
-            {name ||
-              `${row.original.subject_assignment?.subject?.name} - ${row.original.group?.name}`}
-          </div>
-        );
+        return <div className="font-medium">{row.original.name}</div>;
       },
     },
     {
@@ -58,9 +52,22 @@ export const useRecurringLessonsColumns = () => {
       },
     },
     {
-      accessorKey: "group.name",
-      header: t("recurringLessons.table.group"),
-      cell: ({ row }) => row.original.group?.name || "-",
+      accessorKey: "groups",
+      header: t("recurringLessons.table.groups"),
+      cell: ({ row }) => {
+        const groups = row.original.groups;
+        if (!groups || groups.length === 0) return "-";
+
+        return (
+          <div className="flex flex-wrap gap-1">
+            {groups.map((group) => (
+              <Badge key={group.id} variant="outline" className="text-xs">
+                {group.name}
+              </Badge>
+            ))}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "professor",

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import List
 
 from ..repositories import RecurringLessonTemplateRepository
@@ -8,6 +8,7 @@ from ..schemas.recurring_template import (
     RecurringLessonTemplateIn,
     RecurringLessonTemplateUpdate,
 )
+from ..schemas.lesson import LessonIn
 from .base import BaseService
 from .lesson import LessonService
 from .university_holiday import UniversityHolidayService
@@ -56,9 +57,14 @@ class RecurringLessonTemplateService(
     def create(self, data: RecurringLessonTemplateIn) -> RecurringLessonTemplate:
         """Переопределенный метод создания - создаем шаблон и генерируем уроки"""
 
-        template_data = data.model_dump()
+        template_data = data.model_dump(exclude={"group_ids"})
+        group_ids = data.group_ids
 
+        # Создаем шаблон
         template = super().create(template_data)
+
+        # Привязываем группы к шаблону
+        self._assign_groups_to_template(template, group_ids)
 
         # Генерируем уроки
         self._generate_lessons_from_template(template)
@@ -71,8 +77,12 @@ class RecurringLessonTemplateService(
         """Переопределенный метод обновления - обновляем шаблон и пересоздаем уроки"""
 
         # Обновляем шаблон
-        template_data = data.model_dump(exclude_unset=True)
+        template_data = data.model_dump(exclude_unset=True, exclude={"group_ids"})
         template = super().update(id, template_data)
+
+        # Обновляем группы если они переданы
+        if hasattr(data, "group_ids") and data.group_ids is not None:
+            self._assign_groups_to_template(template, data.group_ids)
 
         # Удаляем старые будущие уроки
         self._delete_future_lessons_by_template(id)
@@ -93,31 +103,46 @@ class RecurringLessonTemplateService(
     def _generate_lessons_from_template(
         self, template: RecurringLessonTemplate
     ) -> List[Lesson]:
-        """Генерируем уроки по шаблону"""
+        """Генерируем уроки по шаблону - ОДИН урок на дату со ВСЕМИ группами"""
 
         # Вычисляем даты уроков
         lesson_dates = self._calculate_lesson_dates(template)
 
-        # Создаем уроки
+        # Создаем ОДИН урок на каждую дату для ВСЕХ групп сразу
         lessons = []
         for lesson_date in lesson_dates:
-            lesson_data = {
-                "schedule_id": template.schedule_id,
-                "group_id": template.group_id,
-                "subject_assignment_id": template.subject_assignment_id,
-                "room_id": template.room_id,
-                "lesson_type": template.lesson_type,
-                "is_online": template.is_online,
-                "date": lesson_date,
-                "start_time": template.start_time,
-                "end_time": template.end_time,
-                "recurring_template_id": template.id,
-            }
+            lesson_data = LessonIn(
+                schedule_id=template.schedule_id,
+                group_ids=[group.id for group in template.groups],
+                subject_assignment_id=template.subject_assignment_id,
+                room_id=template.room_id,
+                lesson_type=template.lesson_type,
+                is_online=template.is_online,
+                date=lesson_date,
+                start_time=template.start_time,
+                end_time=template.end_time,
+                recurring_template_id=template.id,
+            )
 
             lesson = self.lesson_service.create(lesson_data)
             lessons.append(lesson)
 
         return lessons
+
+    def _assign_groups_to_template(
+        self, template: RecurringLessonTemplate, group_ids: List[int]
+    ) -> None:
+        """Привязываем группы к шаблону"""
+        from ..models.group import Group
+
+        # Получаем группы по их ID
+        groups = self.db.query(Group).filter(Group.id.in_(group_ids)).all()
+
+        # Привязываем группы к шаблону
+        template.groups = groups
+
+        # Сохраняем изменения
+        self.db.commit()
 
     def _calculate_lesson_dates(self, template: RecurringLessonTemplate) -> List[date]:
         """Вычисляем все даты уроков с учетом праздников и недоступных дней профессора"""

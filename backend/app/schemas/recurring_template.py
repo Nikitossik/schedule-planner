@@ -33,10 +33,6 @@ class RecurringLessonTemplateBase(BaseModel):
         description="Identifier of the schedule this template belongs to.",
         examples=[5],
     )
-    group_id: int = Field(
-        description="Identifier of the group that will attend these lessons.",
-        examples=[10],
-    )
     subject_assignment_id: int = Field(
         description="Identifier of the subject assignment (subject + professor/workload).",
         examples=[42],
@@ -84,7 +80,10 @@ class RecurringLessonTemplateBase(BaseModel):
 class RecurringLessonTemplateIn(RecurringLessonTemplateBase):
     """Input schema for creating a RecurringLessonTemplate."""
 
-    pass
+    group_ids: List[int] = Field(
+        description="List of group identifiers that will attend these lessons.",
+        examples=[[10, 11, 12]],
+    )
 
 
 class RecurringLessonTemplateUpdate(BaseModel):
@@ -96,6 +95,10 @@ class RecurringLessonTemplateUpdate(BaseModel):
         None,
         max_length=200,
         description="Optional name for the template.",
+    )
+    group_ids: Optional[List[int]] = Field(
+        None,
+        description="List of group identifiers that will attend these lessons.",
     )
     room_id: Optional[int] = Field(
         None,
@@ -142,8 +145,8 @@ class RecurringLessonTemplateOut(RecurringLessonTemplateBase):
 
     # Relationships
 
-    group: GroupMiniOut = Field(
-        description="Group that attends these lessons.",
+    groups: List[GroupMiniOut] = Field(
+        description="Groups that attend these lessons.",
     )
     subject_assignment: SubjectAssignmentMiniOut = Field(
         description="Subject assignment (subject + professor + workload).",

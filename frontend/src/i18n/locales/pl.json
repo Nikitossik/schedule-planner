@@ -1093,6 +1093,7 @@
       },
       "fields": {
         "group": "Grupa",
+        "groups": "Grupy",
         "professor": "Profesor (Obciążenie)",
         "subject": "Przedmiot",
         "date": "Data",
@@ -1103,6 +1104,7 @@
       },
       "placeholders": {
         "selectGroup": "Wybierz grupę",
+        "selectGroups": "Wybierz grupy",
         "selectProfessor": "Wybierz profesora",
         "selectGroupFirst": "Najpierw wybierz grupę",
         "selectSubject": "Wybierz przedmiot",
@@ -1161,6 +1163,7 @@
       "name": "Nazwa",
       "subject": "Przedmiot",
       "group": "Grupa",
+      "groups": "Grupy",
       "professor": "Wykładowca",
       "type": "Typ",
       "days": "Dni",

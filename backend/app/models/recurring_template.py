@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Enum, Date, Time, DateTime, ForeignKey, Boolean, func
-from datetime import datetime, date, time
+from sqlalchemy import String, Enum, Date, Time, ForeignKey, Boolean, Table, Column
+from datetime import date, time
 from typing import TYPE_CHECKING, List
 from ..utils.enums import LessonTypeEnum
 
@@ -14,6 +14,18 @@ if TYPE_CHECKING:
     from .subject_assignment import SubjectAssignment
     from .room import Room
     from .lesson import Lesson
+
+
+recurring_template_groups = Table(
+    "recurring_template_groups",
+    Base.metadata,
+    Column(
+        "recurring_template_id",
+        ForeignKey("recurring_lesson_template.id"),
+        primary_key=True,
+    ),
+    Column("group_id", ForeignKey("group.id"), primary_key=True),
+)
 
 
 class RecurringLessonTemplate(Base):
@@ -49,7 +61,6 @@ class RecurringLessonTemplate(Base):
 
     # Foreign keys to related entities
     schedule_id: Mapped[int] = mapped_column(ForeignKey("schedule.id"))
-    group_id: Mapped[int] = mapped_column(ForeignKey("group.id"))
     subject_assignment_id: Mapped[int] = mapped_column(
         ForeignKey("subject_assignment.id")
     )
@@ -81,7 +92,9 @@ class RecurringLessonTemplate(Base):
 
     # Relationships
     schedule: Mapped["Schedule"] = relationship("Schedule")
-    group: Mapped["Group"] = relationship("Group")
+    groups: Mapped[List["Group"]] = relationship(
+        "Group", secondary=recurring_template_groups
+    )
     subject_assignment: Mapped["SubjectAssignment"] = relationship("SubjectAssignment")
     room: Mapped["Room"] = relationship("Room")
     lessons: Mapped[List["Lesson"]] = relationship(

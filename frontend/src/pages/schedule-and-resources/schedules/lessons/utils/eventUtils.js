@@ -24,7 +24,8 @@ export const transformLessonToEvent = (lesson, groupBy) => {
     : "No professor";
 
   const subjectName = lesson.subject?.name || "Unknown Subject";
-  const groupName = lesson.group?.name || "Unknown Group";
+  const groupNames =
+    lesson.groups?.map((group) => group.name).join(", ") || "Unknown Group";
   const location = lesson.is_online
     ? "Online"
     : lesson.room?.number || "No room";
@@ -34,7 +35,7 @@ export const transformLessonToEvent = (lesson, groupBy) => {
   )}`;
 
   // Заголовок для разных представлений
-  const title = `${subjectName} - ${groupName}`;
+  const title = `${subjectName} - ${groupNames}`;
 
   // Детальная информация для отображения в событии
   const details = `👨‍🏫 ${professorName}\n🏢 ${location}\n🕐 ${timeStr}`;
@@ -52,7 +53,7 @@ export const transformLessonToEvent = (lesson, groupBy) => {
       room: location,
       professor: professorName,
       subject: subjectName,
-      group: groupName,
+      groups: groupNames,
       timeStr: timeStr,
       details: details,
     },

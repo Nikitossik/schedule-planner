@@ -88,7 +88,7 @@ export function RecurringLessonForm({
   } = formMethods;
 
   // Отслеживаемые поля
-  const watchedGroupId = watch("group_id");
+  const watchedGroupIds = watch("group_ids");
   const watchedWorkloadId = watch("workload_id");
   const watchedIsOnline = watch("is_online");
   const watchedStartDate = watch("start_date");
@@ -97,10 +97,10 @@ export function RecurringLessonForm({
 
   // Загрузка и фильтрация данных (без фильтрации комнат по времени для recurring)
   const { groups, workloads, assignments, rooms } = useLessonFilters({
-    selectedGroupId: watchedGroupId,
+    selectedGroupIds: watchedGroupIds,
     selectedWorkloadId: watchedWorkloadId,
     isEdit,
-    initialGroup: template?.group,
+    initialGroup: template?.groups?.[0] || template?.group,
     // Для recurring templates не фильтруем комнаты по времени
     selectedDate: null,
     startTime: null,
@@ -164,22 +164,6 @@ export function RecurringLessonForm({
     isWorkloadInitialized,
   ]);
 
-  // Очистка зависимых полей при изменении родительских (ТОЛЬКО при создании)
-  useEffect(() => {
-    // В режиме редактирования не очищаем поля автоматически
-    if (isEdit) return;
-
-    setValue("workload_id", "");
-    setValue("subject_assignment_id", "");
-  }, [watchedGroupId, setValue, isEdit]);
-
-  useEffect(() => {
-    // В режиме редактирования не очищаем поля автоматически
-    if (isEdit) return;
-
-    setValue("subject_assignment_id", "");
-  }, [watchedWorkloadId, setValue, isEdit]);
-
   // Автоматическое обновление названия шаблона (только если пользователь не вводил свое)
   useEffect(() => {
     // Не генерируем автоматически если:
@@ -188,27 +172,35 @@ export function RecurringLessonForm({
     // - Не выбраны все необходимые поля
     if (isEdit || userEditedName) return;
 
-    if (watchedWorkloadId && watchedGroupId && watchedSubjectAssignmentId) {
+    const hasRequiredFields =
+      watchedWorkloadId &&
+      watchedSubjectAssignmentId &&
+      watchedGroupIds &&
+      watchedGroupIds.length > 0;
+
+    if (hasRequiredFields) {
       const selectedWorkload = workloads.find(
         (w) => w.id.toString() === watchedWorkloadId
-      );
-      const selectedGroup = groups.find(
-        (g) => g.id.toString() === watchedGroupId
       );
       const selectedAssignment = assignments.find(
         (a) => a.id.toString() === watchedSubjectAssignmentId
       );
 
-      if (selectedWorkload && selectedGroup && selectedAssignment) {
+      // Всегда используем watchedGroupIds для recurring lessons
+      const selectedGroups = groups.filter((g) =>
+        watchedGroupIds.includes(g.id)
+      );
+
+      if (selectedWorkload && selectedGroups.length > 0 && selectedAssignment) {
         const subjectName = selectedAssignment.subject?.name || "Subject";
-        const groupName = selectedGroup.name || "Group";
-        const generatedName = `${subjectName} - ${groupName}`;
+        const groupNames = selectedGroups.map((g) => g.name).join(", ");
+        const generatedName = `${subjectName} - ${groupNames}`;
         setValue("name", generatedName);
       }
     }
   }, [
     watchedWorkloadId,
-    watchedGroupId,
+    watchedGroupIds,
     watchedSubjectAssignmentId,
     workloads,
     groups,
@@ -233,7 +225,7 @@ export function RecurringLessonForm({
       const transformedData = {
         ...data,
         schedule_id: schedule?.id || parseInt(data.schedule_id),
-        group_id: data.group_id ? parseInt(data.group_id) : null,
+        group_ids: data.group_ids || [],
         subject_assignment_id: data.subject_assignment_id
           ? parseInt(data.subject_assignment_id)
           : null,
@@ -342,12 +334,12 @@ export function RecurringLessonForm({
               </h3>
 
               <GroupSelector
-                value={watchedGroupId}
+                value={watchedGroupIds}
                 onChange={(value) =>
-                  setValue("group_id", value, { shouldValidate: true })
+                  setValue("group_ids", value, { shouldValidate: true })
                 }
                 groups={groups}
-                error={errors.group_id?.message}
+                error={errors.group_ids?.message}
               />
             </CardContent>
           </Card>
@@ -361,21 +353,31 @@ export function RecurringLessonForm({
               </h3>
 
               <ProfessorSelector
-                value={watchedWorkloadId}
-                onChange={(value) =>
-                  setValue("workload_id", value, { shouldValidate: true })
-                }
+                value={watchedWorkloadId ? watchedWorkloadId.toString() : ""}
+                onChange={(value) => {
+                  setValue("workload_id", value ? parseInt(value) : null, {
+                    shouldValidate: true,
+                  });
+                }}
                 workloads={workloads}
-                selectedGroupId={watchedGroupId}
+                selectedGroupIds={watchedGroupIds}
                 error={errors.workload_id?.message}
               />
 
               <SubjectSelector
-                value={watchedSubjectAssignmentId}
+                value={
+                  watchedSubjectAssignmentId
+                    ? watchedSubjectAssignmentId.toString()
+                    : ""
+                }
                 onChange={(value) =>
-                  setValue("subject_assignment_id", value, {
-                    shouldValidate: true,
-                  })
+                  setValue(
+                    "subject_assignment_id",
+                    value ? parseInt(value) : null,
+                    {
+                      shouldValidate: true,
+                    }
+                  )
                 }
                 assignments={assignments}
                 selectedWorkloadId={watchedWorkloadId}

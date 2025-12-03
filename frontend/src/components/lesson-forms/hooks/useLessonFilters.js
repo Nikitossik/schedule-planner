@@ -8,7 +8,7 @@ import { useScheduleData } from "@/contexts/ScheduleDataContext";
  * и фильтрует их на клиенте в зависимости от выбора пользователя
  */
 export function useLessonFilters({
-  selectedGroupId,
+  selectedGroupIds, // Массив выбранных групп
   selectedWorkloadId,
   selectedDate,
   startTime,
@@ -32,27 +32,54 @@ export function useLessonFilters({
   // Группы уже отфильтрованы по semester и direction в контексте
   const groups = allGroups;
 
-  // Получаем выбранную группу для фильтрации workloads
-  const selectedGroup = useMemo(
-    () => groups.find((g) => g.id === parseInt(selectedGroupId)),
-    [groups, selectedGroupId]
-  );
+  // Получаем выбранные группы для фильтрации workloads
+  const selectedGroups = useMemo(() => {
+    // Используем selectedGroupIds (всегда массив)
+    if (
+      selectedGroupIds &&
+      Array.isArray(selectedGroupIds) &&
+      selectedGroupIds.length > 0
+    ) {
+      return groups.filter((g) => selectedGroupIds.includes(g.id));
+    }
 
-  // Фильтруем workloads по study_form выбранной группы
+    // При редактировании используем initialGroup если нет выбранных групп
+    if (
+      isEdit &&
+      initialGroup &&
+      (!selectedGroupIds || selectedGroupIds.length === 0)
+    ) {
+      return [initialGroup];
+    }
+
+    return [];
+  }, [groups, selectedGroupIds, isEdit, initialGroup]);
+
+  // Фильтруем workloads по study_form выбранных групп
   const workloads = useMemo(() => {
-    // При редактировании используем группу урока, при создании - выбранную пользователем
-    const targetGroup = selectedGroup || (isEdit && initialGroup);
-
-    // Если нет группы - возвращаем все workloads
-    if (!targetGroup?.study_form?.form) {
+    // Если нет выбранных групп - возвращаем все workloads
+    if (selectedGroups.length === 0) {
       return allWorkloads;
     }
 
-    // Фильтруем по study_form
+    // Собираем уникальные формы обучения из выбранных групп
+    const studyForms = new Set();
+    selectedGroups.forEach((group) => {
+      if (group.study_form?.form) {
+        studyForms.add(group.study_form.form);
+      }
+    });
+
+    // Если нет форм обучения - возвращаем все workloads
+    if (studyForms.size === 0) {
+      return allWorkloads;
+    }
+
+    // Фильтруем workloads по формам обучения
     return allWorkloads.filter(
-      (w) => w.study_form?.form === targetGroup.study_form.form
+      (w) => w.study_form?.form && studyForms.has(w.study_form.form)
     );
-  }, [allWorkloads, selectedGroup, isEdit, initialGroup]);
+  }, [allWorkloads, selectedGroups]);
 
   // Subject assignments: извлекаем из выбранного workload (уже включены в response)
   const assignments = useMemo(() => {
@@ -145,7 +172,7 @@ export function useLessonFilters({
     rooms,
     holidays,
     disabledDayMatchers,
-    selectedGroup,
+    selectedGroups, // Заменяем selectedGroup на selectedGroups (массив)
     isLoadingGroups,
     isLoadingWorkloads,
     isLoadingAssignments: isLoadingWorkloads, // Assignments загружаются вместе с workloads

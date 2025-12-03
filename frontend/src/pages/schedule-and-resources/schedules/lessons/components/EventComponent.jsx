@@ -36,7 +36,7 @@ export function EventComponent({ event, groupBy }) {
         {!isGroupedByGroup && (
           <div className="flex items-center gap-1 group-info">
             <Users className="h-3 w-3 flex-shrink-0" />
-            <span className="truncate">{resource.group}</span>
+            <span className="truncate">{resource.groups}</span>
           </div>
         )}
         {!isGroupedByProfessor && (

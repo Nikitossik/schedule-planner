@@ -46,6 +46,55 @@ class LessonService(BaseService[Lesson, LessonIn]):
         """
         super().__init__(db, Lesson, LessonRepository(db))
 
+    def create(self, data: LessonIn) -> Lesson:
+        """Переопределенный метод создания - создаем урок и привязываем группы"""
+
+        lesson_data = data.model_dump(exclude={"group_ids"})
+        group_ids = data.group_ids
+
+        # Создаем урок
+        lesson = super().create(lesson_data)
+
+        # Привязываем группы к уроку
+        if group_ids:
+            self._assign_groups_to_lesson(lesson, group_ids)
+
+        return lesson
+
+    def update(self, id: int, data) -> Lesson:
+        """Переопределенный метод обновления - обновляем урок и группы"""
+
+        # Исключаем group_ids из основных данных
+        lesson_data = (
+            data.model_dump(exclude_unset=True, exclude={"group_ids"})
+            if hasattr(data, "model_dump")
+            else {k: v for k, v in data.items() if k != "group_ids"}
+        )
+
+        # Обновляем урок
+        lesson = super().update(id, lesson_data)
+
+        # Обновляем группы если они переданы
+        if hasattr(data, "group_ids") and data.group_ids is not None:
+            self._assign_groups_to_lesson(lesson, data.group_ids)
+        elif isinstance(data, dict) and "group_ids" in data:
+            self._assign_groups_to_lesson(lesson, data["group_ids"])
+
+        return lesson
+
+    def _assign_groups_to_lesson(self, lesson: Lesson, group_ids: List[int]) -> None:
+        """Привязываем группы к уроку"""
+        from ..models.group import Group
+
+        # Получаем группы по их ID
+        groups = self.db.query(Group).filter(Group.id.in_(group_ids)).all()
+
+        # Привязываем группы к уроку
+        lesson.groups = groups
+
+        # Сохраняем изменения
+        self.db.commit()
+
     def apply_filters(self, query, params):
         """
         Apply common filters to the lessons query.
@@ -89,7 +138,7 @@ class LessonService(BaseService[Lesson, LessonIn]):
         query = (
             self.db.query(Lesson)
             .options(
-                selectinload(Lesson.group).selectinload(Group.semester),
+                selectinload(Lesson.groups).selectinload(Group.semester),
                 selectinload(Lesson.room),
                 selectinload(Lesson.schedule),
                 selectinload(Lesson.subject_assignment).selectinload(
@@ -136,7 +185,7 @@ class LessonService(BaseService[Lesson, LessonIn]):
         """
         # Load all lessons with necessary relationships to analyze conflicts
         query = self.db.query(Lesson).options(
-            selectinload(Lesson.group).selectinload(Group.semester),
+            selectinload(Lesson.groups).selectinload(Group.semester),
             selectinload(Lesson.room),
             selectinload(Lesson.schedule),
             selectinload(Lesson.subject_assignment).selectinload(
@@ -420,7 +469,7 @@ class LessonService(BaseService[Lesson, LessonIn]):
         Detect group conflicts for a single day.
 
         Logic:
-        - Group lessons by group.
+        - Group lessons by group (through many-to-many relationship).
         - For each group, find overlapping time groups and mark conflicts.
 
         Args:
@@ -432,20 +481,27 @@ class LessonService(BaseService[Lesson, LessonIn]):
         conflicts = []
         group_lessons: Dict[int, List[Lesson]] = {}
 
+        # Собираем уроки по группам через many-to-many связь
         for lesson in lessons:
-            if lesson.group_id not in group_lessons:
-                group_lessons[lesson.group_id] = []
-            group_lessons[lesson.group_id].append(lesson)
+            for group in lesson.groups:
+                if group.id not in group_lessons:
+                    group_lessons[group.id] = []
+                group_lessons[group.id].append(lesson)
 
         for group_id, group_lesson_list in group_lessons.items():
             overlapping_groups = self._find_time_overlaps(group_lesson_list)
             for overlap_group in overlapping_groups:
                 if len(overlap_group) > 1:
-                    group_name = (
-                        overlap_group[0].group.name
-                        if overlap_group[0].group
-                        else f"Group {group_id}"
-                    )
+                    # Находим группу для отображения имени
+                    group_name = f"Group {group_id}"
+                    for lesson in overlap_group:
+                        for group in lesson.groups:
+                            if group.id == group_id:
+                                group_name = group.name
+                                break
+                        if group_name != f"Group {group_id}":
+                            break
+
                     conflicts.append(
                         {
                             "type": "group",
@@ -587,8 +643,11 @@ class LessonService(BaseService[Lesson, LessonIn]):
         Returns:
             list[dict]: Each item contains id, name, and a nested study_form mini object (if available).
         """
+        from ..models.lesson import lesson_groups
+
         groups_query = (
             self.db.query(Group)
+            .join(lesson_groups)
             .join(Lesson)
             .filter(Lesson.schedule_id == schedule_id)
             .distinct()

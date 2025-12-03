@@ -84,10 +84,10 @@ async def get_lesson_by_id(*, lesson_id: int, db: Session = Depends(get_db)):
     response_model=LessonOut,
     status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(admin_coordinator_only)],
-    summary="Create a lesson",
-    description="Create a new lesson. Only Admin/Coordinator roles are allowed.",
+    summary="Create lessons",
+    description="Create new lessons. Only Admin/Coordinator roles are allowed.",
 )
-async def create_lesson(lesson: LessonIn, db: Session = Depends(get_db)):
+async def create_lessons(lesson: LessonIn, db: Session = Depends(get_db)):
     return LessonService(db).create(lesson)
 
 

@@ -1,7 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 from datetime import date as pdate, time
 from typing import Optional, List
-from .shared import BaseQueryParams, BaseFilterParams
 from .minis import (
     GroupMiniOut,
     SubjectMiniOut,
@@ -26,9 +25,9 @@ class LessonBase(BaseModel):
         description="Identifier of the schedule this lesson belongs to.",
         examples=[5],
     )
-    group_id: int = Field(
-        description="Identifier of the attending group.",
-        examples=[10],
+    group_ids: List[int] = Field(
+        description="Identifiers of the attending groups.",
+        examples=[[1, 2]],
     )
     subject_assignment_id: int = Field(
         description="Identifier of the subject assignment (subject + professor/workload).",
@@ -38,6 +37,11 @@ class LessonBase(BaseModel):
         default=None,
         description="Identifier of the room if on-site; null for online or TBA.",
         examples=[101],
+    )
+    recurring_template_id: int | None = Field(
+        default=None,
+        description="Identifier of the recurring lesson template if applicable.",
+        examples=[10],
     )
     is_online: bool = Field(
         default=False,
@@ -81,10 +85,10 @@ class LessonUpdate(BaseModel):
         description="Optional new schedule identifier.",
         examples=[6],
     )
-    group_id: Optional[int] = Field(
+    group_ids: Optional[list[int]] = Field(
         default=None,
-        description="Optional new group identifier.",
-        examples=[11],
+        description="Optional new group identifiers.",
+        examples=[[11, 12]],
     )
     subject_assignment_id: Optional[int] = Field(
         default=None,
@@ -174,7 +178,7 @@ class LessonOut(BaseModel):
         description="Subject mini representation associated with this lesson.",
         examples=[{"id": 7, "name": "Algebra"}],
     )
-    group: Optional[GroupMiniOut] = Field(
+    groups: Optional[list[GroupMiniOut]] = Field(
         default=None,
         description="Group mini representation attending this lesson.",
         examples=[{"id": 10, "name": "CS-101"}],
@@ -201,7 +205,7 @@ class LessonOut(BaseModel):
     )
 
 
-class LessonFilterParams(BaseFilterParams):
+class LessonFilterParams(BaseModel):
     """
     Filtering parameters for listing lessons.
     Combine different filters to narrow down results.

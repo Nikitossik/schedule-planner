@@ -8,7 +8,8 @@
 export const getResourceId = (lesson, groupBy) => {
   switch (groupBy) {
     case "group":
-      return lesson.group?.id?.toString() || "no-group";
+      // Для множественных групп берем первую группу как основной ресурс
+      return lesson.groups?.[0]?.id?.toString() || "no-group";
     case "professor":
       // Используем subject_assignment_id как ресурс, так как преподаватель привязан через него
       const assignmentId =
@@ -28,7 +29,8 @@ export const getResourceId = (lesson, groupBy) => {
 export const getResourceTitle = (lesson, groupBy) => {
   switch (groupBy) {
     case "group":
-      return lesson.group?.name || "No Group";
+      // Для множественных групп показываем все имена групп
+      return lesson.groups?.map((group) => group.name).join(", ") || "No Group";
     case "professor":
       const professor = lesson.professor;
       const subject = lesson.subject?.name || "Unknown Subject";
