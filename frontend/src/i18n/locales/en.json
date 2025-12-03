@@ -1114,7 +1114,8 @@
         "selectDate": "Select date",
         "setDateTimeFirst": "Set date and time first",
         "selectRoom": "Select available room",
-        "noRoom": "No room assigned"
+        "noRoom": "No room assigned",
+        "selectLessonType": "Select lesson type"
       },
       "options": {
         "noRoom": "No room assigned"
@@ -1152,7 +1153,8 @@
         "lecture": "Lecture",
         "practice": "Practice",
         "lab": "Laboratory",
-        "seminar": "Seminar"
+        "seminar": "Seminar",
+        "project": "Project"
       }
     }
   },

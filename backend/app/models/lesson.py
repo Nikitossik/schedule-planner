@@ -63,7 +63,7 @@ class Lesson(Base):
     )  # True if the lesson is online
 
     recurring_template_id: Mapped[int] = mapped_column(
-        ForeignKey("recurring_lesson_template.id"), nullable=True
+        ForeignKey("recurring_lesson_template.id", ondelete="CASCADE"), nullable=True
     )
 
     # Time window (date and start/end times)

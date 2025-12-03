@@ -1,9 +1,30 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Users, User, MapPin, Clock } from "lucide-react";
+import {
+  Users,
+  User,
+  MapPin,
+  Clock,
+  Laptop,
+  FlaskConical,
+  MessageSquare,
+  Presentation,
+} from "lucide-react";
 
 export function EventComponent({ event, groupBy }) {
   const { t } = useTranslation();
+
+  // Иконки для типов занятий
+  const getLessonTypeIcon = (type) => {
+    const iconMap = {
+      lecture: Presentation,
+      practice: Laptop,
+      lab: FlaskConical,
+      seminar: MessageSquare,
+      project: Presentation,
+    };
+    return iconMap[type] || Presentation;
+  };
 
   // Праздники теперь отображаются в заголовках дней календаря
 
@@ -26,12 +47,7 @@ export function EventComponent({ event, groupBy }) {
       className="rbc-event-content text-white transition-colors duration-200"
       style={backgroundStyle}
     >
-      <div className="rbc-event-title font-medium">
-        {resource.subject}
-        <span className="lesson-type-badge ml-1 px-1.5 py-0.5 text-xs rounded bg-opacity-20 font-normal">
-          {t(`lessons.form.lessonType.${resource.type}`)}
-        </span>
-      </div>
+      <div className="rbc-event-title font-medium">{resource.subject}</div>
       <div className="rbc-event-details text-xs space-y-0.5 mt-1">
         {!isGroupedByGroup && (
           <div className="flex items-center gap-1 group-info">
@@ -39,6 +55,15 @@ export function EventComponent({ event, groupBy }) {
             <span className="truncate">{resource.groups}</span>
           </div>
         )}
+        <div className="flex items-center gap-1">
+          {(() => {
+            const LessonTypeIcon = getLessonTypeIcon(resource.type);
+            return <LessonTypeIcon className="h-3 w-3 flex-shrink-0" />;
+          })()}
+          <span className="truncate">
+            {t(`lessons.form.lessonType.${resource.type}`)}
+          </span>
+        </div>
         {!isGroupedByProfessor && (
           <div className="flex items-center gap-1 professor-info">
             <User className="h-3 w-3 flex-shrink-0" />

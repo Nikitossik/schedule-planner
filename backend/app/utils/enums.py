@@ -22,6 +22,7 @@ class LessonTypeEnum(str, enum.Enum):
     seminar = "seminar"
     lab = "lab"
     practice = "practice"
+    project = "project"
 
 
 class SemesterPeriodEnum(str, enum.Enum):

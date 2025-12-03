@@ -1112,7 +1112,8 @@
         "selectDate": "Wybierz datę",
         "setDateTimeFirst": "Najpierw ustaw datę i czas",
         "selectRoom": "Wybierz dostępną salę",
-        "noRoom": "Brak przypisanej sali"
+        "noRoom": "Brak przypisanej sali",
+        "selectLessonType": "Wybierz typ zajęć"
       },
       "options": {
         "noRoom": "Brak przypisanej sali"
@@ -1150,7 +1151,8 @@
         "lecture": "Wykład",
         "practice": "Ćwiczenia",
         "lab": "Laboratorium",
-        "seminar": "Seminarium"
+        "seminar": "Seminarium",
+        "project": "Projekt"
       }
     }
   },
