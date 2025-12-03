@@ -8,7 +8,6 @@ export const useSubjectColumns = () => {
   return [
     { accessorKey: "id", header: t("subjects.table.columns.id") },
     { accessorKey: "name", header: t("subjects.table.columns.name") },
-
     {
       accessorKey: "faculty",
       header: t("subjects.table.columns.faculty"),

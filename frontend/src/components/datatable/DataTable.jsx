@@ -50,12 +50,34 @@ export function DataTable({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  React.useEffect(() => {
-    const selectedIds = table
-      .getSelectedRowModel()
-      .rows.map((row) => row.original.id);
-    onSelectedIdsChange?.(selectedIds);
-  }, [rowSelection]);
+  const [elementWidth, setElementWidth] = React.useState(0);
+
+  React.useLayoutEffect(() => {
+    const element = document.getElementsByTagName("main")[0];
+
+    const updateWidth = () => {
+      if (element) {
+        console.log(element.clientWidth);
+        setElementWidth(element.clientWidth - 32);
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateWidth(); // Call updateWidth when the div is resized
+    });
+
+    if (element) {
+      resizeObserver.observe(element);
+    }
+
+    updateWidth();
+
+    return () => {
+      if (element) {
+        resizeObserver.unobserve(element);
+      }
+    };
+  }, []);
 
   if (isLoading)
     return (
@@ -70,8 +92,11 @@ export function DataTable({
 
   return (
     <>
-      <div className="rounded-md border">
-        <Table>
+      <div
+        className="rounded-md border overflow-x-auto"
+        style={{ maxWidth: elementWidth }}
+      >
+        <Table className="max-w-full w-full relative">
           <TableHeader>
             {table.getHeaderGroups().map((group) => (
               <TableRow key={group.id}>
@@ -119,6 +144,7 @@ export function DataTable({
           </TableBody>
         </Table>
       </div>
+
       <DataTablePagination table={table} />
     </>
   );

@@ -63,21 +63,11 @@ function ActionsCell({
   const { canManageUsers, isAdmin } = useAuth();
   const queryClient = useQueryClient();
 
-  // Автоматически переводим название сущности
   const entityDisplayName = displayName
     ? translateEntity(displayName)
     : translateEntity(entity);
 
-  // ВСЕ HOOKS ДОЛЖНЫ БЫТЬ ВЫЗВАНЫ ДО ЛЮБЫХ УСЛОВНЫХ RETURN!
   const deleteMutation = useEntityMutation(entity, "delete");
-
-  // Логгирование для диагностики
-  console.log("🔍 ActionsCell Debug:", {
-    entity,
-    isAdmin: isAdmin(),
-    canManageUsers: canManageUsers(),
-    itemId,
-  });
 
   // Проверяем разрешения
   const canEdit = entity === "user" ? canManageUsers() : true;
@@ -85,7 +75,6 @@ function ActionsCell({
 
   // Если нет разрешений на редактирование и удаление, не показываем колонку
   if (!canEdit && !canDelete) {
-    console.log("❌ ActionsCell: No permissions, hiding actions");
     return null;
   }
 
@@ -98,10 +87,6 @@ function ActionsCell({
   };
 
   const handleDelete = () => {
-    console.log("🗑️ actionsColumn: Delete clicked", {
-      useModal,
-      hasOnDelete: !!onDelete,
-    });
     if (useModal && onDelete) {
       onDelete(row.original);
       setOpen(false);
@@ -110,9 +95,6 @@ function ActionsCell({
         { id: itemId },
         {
           onSuccess: () => {
-            console.log(
-              "✅ actionsColumn: Delete success, calling invalidateQueries and onRefresh"
-            );
             toast.success(
               t("datatable.deleteSuccess", { item: entityDisplayName })
             );
@@ -123,7 +105,6 @@ function ActionsCell({
             }
           },
           onError: (err) => {
-            console.error("❌ actionsColumn: Delete failed", err);
             toast.error(err.message || t("datatable.deleteFailed"));
           },
         }
