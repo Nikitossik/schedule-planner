@@ -109,7 +109,6 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
 
         {!hasConflicts ? (
           <div className="p-4 text-center">
-            <div className="text-green-600 mb-2">✅</div>
             <p className="text-sm text-muted-foreground">
               {t("lessons.conflicts.noConflictsMessage")}
             </p>
