@@ -260,16 +260,6 @@ export function LessonsCalendar({
     return (args) => {
       // Проверяем, не пытаемся ли мы сбросить событие на праздничный день
       if (args.start && isHolidayDate(args.start)) {
-        console.log("Blocked event drop on holiday:", args.start);
-        // Показываем уведомление пользователю
-        if (t) {
-          alert(
-            t(
-              "lessons.holidayBlockedMessage",
-              "На праздничный день нельзя назначать занятия"
-            )
-          );
-        }
         return false;
       }
 
@@ -303,16 +293,6 @@ export function LessonsCalendar({
         (args.start && isHolidayDate(args.start)) ||
         (args.end && isHolidayDate(args.end))
       ) {
-        console.log("Blocked event resize on holiday:", args.start || args.end);
-        // Показываем уведомление пользователю
-        if (t) {
-          alert(
-            t(
-              "lessons.holidayBlockedMessage",
-              "На праздничный день нельзя назначать занятия"
-            )
-          );
-        }
         return false;
       }
 
@@ -496,10 +476,6 @@ export function LessonsCalendar({
               if (isHolidayDate(date)) {
                 return {
                   className: "holiday-day",
-                  style: {
-                    cursor: "not-allowed",
-                    pointerEvents: "none",
-                  },
                 };
               }
               return {};
@@ -508,10 +484,6 @@ export function LessonsCalendar({
               if (isHolidayDate(date)) {
                 return {
                   className: "holiday-slot",
-                  style: {
-                    cursor: "not-allowed",
-                    pointerEvents: "none",
-                  },
                 };
               }
               return {};
