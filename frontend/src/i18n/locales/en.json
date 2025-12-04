@@ -458,20 +458,29 @@
       "fields": {
         "name": "Name",
         "date": "Date",
-        "isAnnual": "Repeat annually"
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "isAnnual": "Repeat annually",
+        "isDateRange": "Date Range"
       },
       "placeholders": {
         "name": "Enter holiday name (optional)",
-        "date": "Select date"
+        "date": "Select date",
+        "startDate": "Select start date",
+        "endDate": "Select end date",
+        "selectDateRange": "Select date range"
       },
       "descriptions": {
         "isAnnual": "This holiday will repeat every year on the same date",
-        "isAnnualDisabled": "Holiday type cannot be changed after creation"
+        "isDateRange": "Select this for holiday periods (e.g., winter break)",
+        "isDateRangeDisabled": "Holiday type cannot be changed"
       },
       "validation": {
-        "dateRequired": "Date is required"
+        "dateRequired": "Date is required",
+        "startDateRequired": "Start date is required",
+        "endDateRequired": "End date is required"
       },
-      "editNote": "Note: Only the name can be changed when editing a holiday."
+      "editNote": "Note: Holiday details can be updated when editing."
     },
     "messages": {
       "createSuccess": "Holiday created successfully",
@@ -487,8 +496,9 @@
         "date": "Date"
       },
       "types": {
-        "annual": "Annual",
-        "manual": "Manual"
+        "annual": "Every year",
+        "dateRange": "Date Range",
+        "singleDay": "Single Day"
       },
       "addButton": "+ Add Holiday"
     }

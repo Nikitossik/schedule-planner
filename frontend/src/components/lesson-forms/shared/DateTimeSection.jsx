@@ -86,7 +86,10 @@ export function DateTimeSection({
                   placeholder={t(
                     "recurringLessons.form.placeholders.selectStartDate"
                   )}
-                  disabled={minDate ? [(date) => date < minDate] : []}
+                  disabled={[
+                    ...(minDate ? [(date) => date < minDate] : []),
+                    ...disabledDates,
+                  ]}
                 />
                 {errors.start_date && (
                   <p className="text-sm text-red-500">
@@ -112,6 +115,7 @@ export function DateTimeSection({
                     ...(startDate
                       ? [(date) => date <= new Date(startDate)]
                       : []),
+                    ...disabledDates,
                   ]}
                 />
                 {errors.end_date && (

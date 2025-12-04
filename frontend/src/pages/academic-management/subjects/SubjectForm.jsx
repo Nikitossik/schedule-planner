@@ -311,11 +311,11 @@ export default function SubjectForm({
               <FormControl>
                 <Input
                   type="number"
+                  min={0}
+                  step={1}
                   placeholder={t("subjects.form.placeholders.allocatedHours")}
                   {...field}
-                  onChange={(e) =>
-                    field.onChange(parseFloat(e.target.value) || 0)
-                  }
+                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
                 />
               </FormControl>
               <FormMessage />

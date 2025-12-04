@@ -4,7 +4,7 @@ import { useScheduleData } from "@/contexts/ScheduleDataContext";
 
 /**
  * Хук для фильтрации предзагруженных данных для форм уроков
- * Использует данные из ScheduleDataContext (groups, workloads, rooms, holidays)
+ * Использует данные из ScheduleDataContext (groups, workloads, rooms, expandedHolidays)
  * и фильтрует их на клиенте в зависимости от выбора пользователя
  */
 export function useLessonFilters({
@@ -23,7 +23,7 @@ export function useLessonFilters({
     groups: allGroups,
     workloads: allWorkloads,
     rooms: allRooms,
-    holidays,
+    expandedHolidays,
     isLoadingGroups,
     isLoadingWorkloads,
     isLoadingRooms,
@@ -94,33 +94,25 @@ export function useLessonFilters({
 
   // Создаем массив функций-матчеров для блокировки праздничных дней в DatePicker
   const disabledDayMatchers = useMemo(() => {
-    if (!holidays || holidays.length === 0) return [];
+    if (!expandedHolidays || expandedHolidays.length === 0) return [];
 
     const matchers = [];
 
-    holidays.forEach((holiday) => {
+    expandedHolidays.forEach((holiday) => {
       const holidayDate = new Date(holiday.date);
 
-      if (holiday.is_annual) {
-        // Для ежегодных праздников создаем матчер, который проверяет день и месяц
-        matchers.push(
-          (date) =>
-            date.getMonth() === holidayDate.getMonth() &&
-            date.getDate() === holidayDate.getDate()
-        );
-      } else {
-        // Для обычных праздников создаем матчер для конкретной даты
-        matchers.push(
-          (date) =>
-            date.getFullYear() === holidayDate.getFullYear() &&
-            date.getMonth() === holidayDate.getMonth() &&
-            date.getDate() === holidayDate.getDate()
-        );
-      }
+      // Для всех праздников создаем матчер для конкретной даты
+      // (expanded holidays уже содержат развернутые даты)
+      matchers.push(
+        (date) =>
+          date.getFullYear() === holidayDate.getFullYear() &&
+          date.getMonth() === holidayDate.getMonth() &&
+          date.getDate() === holidayDate.getDate()
+      );
     });
 
     return matchers;
-  }, [holidays]);
+  }, [expandedHolidays]);
 
   // Комнаты: фильтруем по доступности
   // Если указаны дата и время - делаем запрос с фильтрами, иначе используем все из контекста
@@ -170,7 +162,7 @@ export function useLessonFilters({
     workloads,
     assignments,
     rooms,
-    holidays,
+    expandedHolidays,
     disabledDayMatchers,
     selectedGroups, // Заменяем selectedGroup на selectedGroups (массив)
     isLoadingGroups,

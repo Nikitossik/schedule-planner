@@ -1,5 +1,6 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useMemo } from "react";
 import { useEntityList } from "@/hooks/useEntityList";
+import { format } from "date-fns";
 
 /**
  * Контекст для предзагруженных данных расписания
@@ -9,7 +10,7 @@ import { useEntityList } from "@/hooks/useEntityList";
  * - Комнаты (все)
  * - Праздники (все)
  */
-const ScheduleDataContext = createContext(null);
+export const ScheduleDataContext = createContext(null);
 
 export function ScheduleDataProvider({ schedule, children }) {
   // 1. Группы - фильтруем по semester и direction из расписания
@@ -56,17 +57,55 @@ export function ScheduleDataProvider({ schedule, children }) {
     cacheTime: 10 * 60 * 1000,
   });
 
-  // 4. Праздники - загружаем все
-  // Используются для блокировки дат в DatePicker
-  const { data: holidaysData, isLoading: isLoadingHolidays } = useEntityList(
-    "university_holiday",
-    {
+  // 4. Праздники - загружаем развернутые даты для периода семестра
+  // Используем новый expanded endpoint для получения всех дат с именами
+  const semesterStart = schedule?.semester?.start_date;
+  const semesterEnd = schedule?.semester?.end_date;
+
+  const { data: expandedHolidaysData, isLoading: isLoadingHolidays } =
+    useEntityList("university_holiday/expanded", {
+      enabled: !!(semesterStart && semesterEnd),
+      filters:
+        semesterStart && semesterEnd
+          ? {
+              start_date: semesterStart,
+              end_date: semesterEnd,
+            }
+          : {},
       pagination: { loadAll: true },
-      // Кешируем на 10 минут - праздники меняются очень редко
-      staleTime: 10 * 60 * 1000,
-      cacheTime: 30 * 60 * 1000,
-    }
+    });
+
+  // Отладочная информация для праздников
+  console.log("DEBUG ScheduleDataContext holidays:", {
+    semesterStart,
+    semesterEnd,
+    expandedHolidaysData,
+    isLoadingHolidays,
+    enabled: !!(semesterStart && semesterEnd),
+  });
+  console.log("🎉 Type check - isArray:", Array.isArray(expandedHolidaysData));
+  console.log(
+    "🎉 Final expandedHolidays:",
+    Array.isArray(expandedHolidaysData)
+      ? expandedHolidaysData
+      : expandedHolidaysData?.items || []
   );
+
+  // Создаем удобную функцию для фильтрации праздников по дате
+  const filterHolidaysByDateRange = useMemo(() => {
+    return (startDate, endDate) => {
+      const holidays = expandedHolidaysData?.items || [];
+      if (!holidays.length || !startDate || !endDate) return [];
+
+      const startStr = format(new Date(startDate), "yyyy-MM-dd");
+      const endStr = format(new Date(endDate), "yyyy-MM-dd");
+
+      return holidays.filter((holiday) => {
+        const holidayDate = holiday.date;
+        return holidayDate >= startStr && holidayDate <= endStr;
+      });
+    };
+  }, [expandedHolidaysData]);
 
   const value = {
     // Данные расписания
@@ -84,8 +123,10 @@ export function ScheduleDataProvider({ schedule, children }) {
     rooms: roomsData?.items || [],
     isLoadingRooms,
 
-    // Праздники
-    holidays: holidaysData?.items || [],
+    // Праздники (развернутые даты с именами)
+    // expanded endpoint возвращает пагинированный ответ с items
+    expandedHolidays: expandedHolidaysData?.items || [],
+    filterHolidaysByDateRange,
     isLoadingHolidays,
 
     // Общий статус загрузки

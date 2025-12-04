@@ -22,34 +22,46 @@ export const useHolidayColumns = () => {
       },
     },
     {
-      accessorKey: "is_annual",
-      header: t("holidays.table.columns.type"),
-      cell: ({ row }) => {
-        const isAnnual = row.getValue("is_annual");
-        return (
-          <Badge variant={isAnnual ? "default" : "secondary"}>
-            {isAnnual
-              ? t("holidays.table.types.annual")
-              : t("holidays.table.types.manual")}
-          </Badge>
-        );
-      },
-    },
-    {
       accessorKey: "date",
       header: t("holidays.table.columns.date"),
       cell: ({ row }) => {
         const holiday = row.original;
-        const date = new Date(holiday.date);
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const isDateRange = holiday.is_date_range;
+        const isAnnual = holiday.is_annual;
 
-        if (holiday.is_annual) {
-          return `${day}.${month}`;
+        const formatDate = (dateStr, showYear = true) => {
+          if (!dateStr) return "";
+          const date = new Date(dateStr);
+          const day = String(date.getDate()).padStart(2, "0");
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+
+          if (showYear) {
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+          } else {
+            return `${day}.${month}`;
+          }
+        };
+
+        let dateDisplay;
+        if (isDateRange) {
+          const startDate = formatDate(holiday.start_date, !isAnnual);
+          const endDate = formatDate(holiday.end_date, !isAnnual);
+          dateDisplay = `${startDate} - ${endDate}`;
         } else {
-          const year = date.getFullYear();
-          return `${day}.${month}.${year}`;
+          dateDisplay = formatDate(holiday.date, !isAnnual);
         }
+
+        return (
+          <div className="flex items-center gap-2">
+            <span>{dateDisplay}</span>
+            {isAnnual && (
+              <Badge variant="secondary" className="text-xs">
+                {t("holidays.table.types.annual")}
+              </Badge>
+            )}
+          </div>
+        );
       },
     },
     actionsColumn({ entity: "university_holiday", useModal: true }),

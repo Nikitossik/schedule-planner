@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from datetime import date as Date
 from typing import Optional
 from .shared import BaseQueryParams
@@ -18,11 +18,38 @@ class UniversityHolidayBase(BaseModel):
         description="True for recurring holidays (same date every year), False for specific one-time dates",
         examples=[True, False],
     )
-    date: Date = Field(
-        ...,
+    is_date_range: bool = Field(
+        default=False,
+        description="True for holidays spanning a date range, False for single-day holidays",
+        examples=[True, False],
+    )
+
+    date: Date | None = Field(
+        None,
         description="Date of holiday. For annual holidays, year is ignored (can use any year like 1900)",
         examples=["1900-05-01", "2025-03-15"],
     )
+
+    start_date: Optional[Date] = None
+    end_date: Optional[Date] = None
+
+    @model_validator(mode="after")
+    def validate_dates(self):
+        if not self.is_date_range:
+            if not self.date:
+                raise ValueError("Date is required for single day holidays")
+
+            self.start_date = None
+            self.end_date = None
+
+        elif self.is_date_range:
+            if not self.start_date or not self.end_date:
+                raise ValueError("Start and end dates are required for date ranges")
+            if self.end_date <= self.start_date:
+                raise ValueError("End date must be after start date")
+            self.date = None
+
+        return self
 
 
 class UniversityHolidayIn(UniversityHolidayBase):
@@ -42,6 +69,32 @@ class UniversityHolidayUpdate(BaseModel):
         description="Optional new holiday name",
     )
 
+    is_date_range: Optional[bool] = None
+    is_annual: Optional[bool] = None
+    date: Optional[Date] = None
+    start_date: Optional[Date] = None
+    end_date: Optional[Date] = None
+
+    @model_validator(mode="after")
+    def validate_update_dates(self):
+        """Валидация при обновлении - если указан тип, проверяем соответствующие поля"""
+        if not self.is_date_range:
+            # Для одиночного дня очищаем поля отрезка если они переданы
+            if self.start_date is not None or self.end_date is not None:
+                self.start_date = None
+                self.end_date = None
+
+        elif self.is_date_range:
+            # Для отрезка очищаем поле одиночной даты если оно передано
+            if self.date is not None:
+                self.date = None
+
+            # Если указан тип отрезка, проверяем что есть обе даты
+            if self.start_date and self.end_date and self.end_date <= self.start_date:
+                raise ValueError("End date must be after start date")
+
+        return self
+
 
 class UniversityHolidayOut(UniversityHolidayBase):
     """Schema for returning university holiday data"""
@@ -52,31 +105,28 @@ class UniversityHolidayOut(UniversityHolidayBase):
         examples=[1, 42],
     )
 
-    # @computed_field
-    # @property
-    # def display_date(self) -> str:
-    #     """Computed field for displaying the holiday date"""
-    #     if self.is_annual:
-    #         return f"{self.date.day:02d}.{self.date.month:02d} (every year)"
-    #     else:
-    #         return self.date.strftime("%d.%m.%Y")
 
-    # @computed_field
-    # @property
-    # def display_name(self) -> str:
-    #     """Computed field for displaying the holiday name"""
-    #     if self.name:
-    #         return self.name
-    #     elif self.is_annual:
-    #         return "Holiday"
-    #     else:
-    #         return "Free day"
+class UniversityHolidayExpandedDate(BaseModel):
+    """Schema for expanded holiday date with names"""
+
+    date: Date = Field(
+        ...,
+        description="Date of the holiday",
+        examples=["2024-12-25", "2024-01-01"],
+    )
+    names: list[str] = Field(
+        ...,
+        description="List of holiday names for this date",
+        examples=[["Christmas Day"], ["New Year", "Day Off"]],
+    )
 
 
-class UniversityHolidayQueryParams(BaseQueryParams):
-    # """Schema for querying university holidays with filters"""
-
+class UniversityHolidayFilters(BaseModel):
     date_from: Optional[Date] = Field(
         None, description="Filter holidays from this date"
     )
     date_to: Optional[Date] = Field(None, description="Filter holidays to this date")
+
+
+class UniversityHolidayQueryParams(UniversityHolidayFilters, BaseQueryParams):
+    pass

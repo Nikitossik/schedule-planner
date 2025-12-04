@@ -8,10 +8,12 @@ from ..schemas.university_holiday import (
     UniversityHolidayUpdate,
     UniversityHolidayOut,
     UniversityHolidayQueryParams,
+    UniversityHolidayExpandedDate,
 )
 from ..services import UniversityHolidayService
 from ..utils.enums import UserRoleEnum
-from typing import Annotated
+from typing import Annotated, List
+from datetime import date
 
 # Router: UniversityHolidays CRUD and listing
 university_holiday_router = APIRouter(
@@ -33,6 +35,21 @@ async def get_university_holidays(
     query_params: Annotated[UniversityHolidayQueryParams, Query()],
 ):
     return UniversityHolidayService(db).get_paginated(query_params)
+
+
+@university_holiday_router.get(
+    "/expanded",
+    response_model=PaginatedResponse[UniversityHolidayExpandedDate],
+    summary="Get expanded holiday dates",
+    description="Get all holiday dates expanded within the given date range with consolidated names for overlapping holidays. Supports the same filters as the regular GET endpoint.",
+)
+async def get_expanded_holiday_dates(
+    *,
+    db: Session = Depends(get_db),
+    start_date: date = Query(..., description="Start date for the range"),
+    end_date: date = Query(..., description="End date for the range"),
+):
+    return UniversityHolidayService(db).get_expanded_holiday_dates_paginated(start_date, end_date)
 
 
 @university_holiday_router.get(

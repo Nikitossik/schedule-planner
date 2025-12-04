@@ -3,7 +3,7 @@ import { useProtectedFetch } from "@/hooks/useProtectedFetch";
 
 export function useEntityList(
   entity,
-  { filters = {}, pagination, sorting, refetchTrigger = 0 } = {}
+  { filters = {}, pagination, sorting, refetchTrigger = 0, enabled = true } = {}
 ) {
   const protectedFetch = useProtectedFetch();
 
@@ -62,5 +62,6 @@ export function useEntityList(
     queryKey,
     queryFn,
     keepPreviousData: true,
+    enabled,
   });
 }

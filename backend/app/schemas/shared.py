@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
-from typing import Generic, TypeVar, List, Optional, Literal
+from typing import Generic, TypeVar, List, Optional
 
 
 class BasePaginationParams(BaseModel):

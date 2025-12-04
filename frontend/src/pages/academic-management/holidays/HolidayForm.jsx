@@ -1,3 +1,4 @@
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,18 +17,39 @@ import {
 } from "@/components/ui/form";
 import { DatePicker } from "@/components/ui/date-picker";
 
-const createSchema = (isEdit, t) => {
+const createSchema = (isEdit, isDateRange, t) => {
+  const baseSchema = {
+    name: z.string().optional(),
+    is_annual: z.boolean().default(false),
+    is_date_range: z.boolean().default(false),
+  };
+
   if (isEdit) {
     return z.object({
-      name: z.string().optional(),
+      ...baseSchema,
+      date: z.string().optional(),
+      start_date: z.string().optional(),
+      end_date: z.string().optional(),
     });
   }
 
-  return z.object({
-    name: z.string().optional(),
-    is_annual: z.boolean().default(false),
-    date: z.string().min(1, t("holidays.form.validation.dateRequired")),
-  });
+  // Валидация для создания
+  if (isDateRange) {
+    return z.object({
+      ...baseSchema,
+      start_date: z
+        .string()
+        .min(1, t("holidays.form.validation.startDateRequired")),
+      end_date: z
+        .string()
+        .min(1, t("holidays.form.validation.endDateRequired")),
+    });
+  } else {
+    return z.object({
+      ...baseSchema,
+      date: z.string().min(1, t("holidays.form.validation.dateRequired")),
+    });
+  }
 };
 
 export default function HolidayForm({
@@ -43,27 +65,69 @@ export default function HolidayForm({
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
     is_annual: defaultValues?.is_annual || false,
+    is_date_range: defaultValues?.is_date_range || false,
     date: defaultValues?.date || "",
+    start_date: defaultValues?.start_date || "",
+    end_date: defaultValues?.end_date || "",
   };
 
   const form = useForm({
-    resolver: zodResolver(createSchema(isEdit, t)),
+    resolver: zodResolver(
+      createSchema(isEdit, transformedDefaultValues.is_date_range, t)
+    ),
     defaultValues: transformedDefaultValues,
   });
 
-  // Отслеживаем значение is_annual для условного рендеринга
+  // Отслеживаем значения для условного рендеринга
   const watchedIsAnnual = form.watch("is_annual");
+  const watchedIsDateRange = form.watch("is_date_range");
+
+  // Создаем динамическую схему валидации
+  const currentSchema = React.useMemo(() => {
+    return createSchema(isEdit, watchedIsDateRange, t);
+  }, [isEdit, watchedIsDateRange, t]);
+
+  // Выполняем валидацию перед отправкой формы с актуальной схемой
+  const validateFormData = (data) => {
+    try {
+      const validData = currentSchema.parse(data);
+      return { success: true, data: validData };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Устанавливаем ошибки в форму
+        error.errors.forEach((err) => {
+          const fieldName = err.path[0];
+          form.setError(fieldName, {
+            type: "validation",
+            message: err.message,
+          });
+        });
+      }
+      return { success: false, error };
+    }
+  };
 
   // Обработчик отправки формы
   const handleFormSubmit = (data) => {
+    // Сначала выполняем кастомную валидацию с актуальной схемой
+    const validation = validateFormData(data);
+
+    if (!validation.success) {
+      return; // Ошибки уже установлены в форму
+    }
+
     const submitData = {
       name: data.name || undefined,
+      is_annual: data.is_annual,
+      is_date_range: data.is_date_range,
     };
 
-    if (!isEdit && data.date) {
-      // Для создания добавляем дату и is_annual
-      submitData.date = data.date; // Уже в YYYY-MM-DD формате от DatePicker
-      submitData.is_annual = data.is_annual;
+    // Добавляем поля дат в зависимости от типа
+    if (data.is_date_range) {
+      submitData.start_date = data.start_date;
+      submitData.end_date = data.end_date;
+    } else {
+      submitData.date = data.date;
     }
 
     console.log("📝 Holiday form submission data:", submitData);
@@ -74,7 +138,11 @@ export default function HolidayForm({
     <Form {...form}>
       <form
         id="holiday-form"
-        onSubmit={form.handleSubmit(handleFormSubmit)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = form.getValues();
+          handleFormSubmit(formData);
+        }}
         className={`space-y-6 ${showButtons ? "max-w-xl" : ""}`}
       >
         {isEdit && (
@@ -104,30 +172,19 @@ export default function HolidayForm({
 
         <FormField
           control={form.control}
-          name="is_annual"
+          name="is_date_range"
           render={({ field }) => (
-            <FormItem
-              className={`flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 ${
-                isEdit ? "bg-gray-50" : ""
-              }`}
-            >
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
                 <Checkbox
-                  checked={
-                    isEdit ? defaultValues?.is_annual || false : field.value
-                  }
-                  onCheckedChange={isEdit ? undefined : field.onChange}
-                  disabled={isEdit}
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel className={isEdit ? "text-muted-foreground" : ""}>
-                  {t("holidays.form.fields.isAnnual")}
-                </FormLabel>
+                <FormLabel>{t("holidays.form.fields.isDateRange")}</FormLabel>
                 <FormDescription>
-                  {isEdit
-                    ? t("holidays.form.descriptions.isAnnualDisabled")
-                    : t("holidays.form.descriptions.isAnnual")}
+                  {t("holidays.form.descriptions.isDateRange")}
                 </FormDescription>
               </div>
             </FormItem>
@@ -136,21 +193,90 @@ export default function HolidayForm({
 
         <FormField
           control={form.control}
-          name="date"
+          name="is_annual"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className={isEdit ? "text-muted-foreground" : ""}>
-                {t("holidays.form.fields.date")}
-              </FormLabel>
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
-                {isEdit ? (
-                  <DatePicker
-                    modal={true}
-                    value={defaultValues?.date || ""}
-                    disabled={true}
-                    placeholder={t("holidays.form.placeholders.date")}
-                  />
-                ) : (
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>{t("holidays.form.fields.isAnnual")}</FormLabel>
+                <FormDescription>
+                  {t("holidays.form.descriptions.isAnnual")}
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+
+        {watchedIsDateRange ? (
+          // Отрезок дат - два календаря в ряду
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="start_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("holidays.form.fields.startDate")}</FormLabel>
+                  <FormControl>
+                    <DatePicker
+                      modal={true}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder={t("holidays.form.placeholders.startDate")}
+                      captionLayout={
+                        watchedIsAnnual ? "dropdown-months" : "dropdown"
+                      }
+                      hideYear={watchedIsAnnual}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="end_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("holidays.form.fields.endDate")}</FormLabel>
+                  <FormControl>
+                    <DatePicker
+                      modal={true}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder={t("holidays.form.placeholders.endDate")}
+                      captionLayout={
+                        watchedIsAnnual ? "dropdown-months" : "dropdown"
+                      }
+                      hideYear={watchedIsAnnual}
+                      disabled={
+                        form.watch("start_date")
+                          ? [
+                              (date) =>
+                                date <= new Date(form.watch("start_date")),
+                            ]
+                          : []
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        ) : (
+          // Одиночная дата
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("holidays.form.fields.date")}</FormLabel>
+                <FormControl>
                   <DatePicker
                     modal={true}
                     value={field.value}
@@ -161,12 +287,12 @@ export default function HolidayForm({
                     }
                     hideYear={watchedIsAnnual}
                   />
-                )}
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         {showButtons && (
           <Button type="submit" disabled={isLoading}>

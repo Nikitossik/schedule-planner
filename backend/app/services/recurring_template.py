@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import List
 
 from ..repositories import RecurringLessonTemplateRepository
-from ..models import RecurringLessonTemplate, Lesson, UniversityHoliday
+from ..models import RecurringLessonTemplate, Lesson
 from ..schemas.recurring_template import (
     RecurringLessonTemplateIn,
     RecurringLessonTemplateUpdate,
@@ -149,10 +149,14 @@ class RecurringLessonTemplateService(
 
         dates = []
         current_date = template.start_date
-        end_date = template.end_date or self._get_semester_end_date(template)
+        end_date = template.end_date or template.schedule.semester.end_date
 
         # Получаем праздники для исключения
-        holiday_dates = self._get_holiday_dates(current_date, end_date)
+        expanded_holidays = self.holiday_service.get_expanded_holiday_dates(
+            current_date, end_date
+        )
+        # Конвертируем строки дат в объекты date для корректного сравнения
+        holiday_dates = set(holiday["date"] for holiday in expanded_holidays)
 
         # Получаем недоступные дни профессора
         unavailable_days = self._get_professor_unavailable_days(template)
@@ -176,34 +180,6 @@ class RecurringLessonTemplateService(
             current_date += timedelta(days=1)
 
         return dates
-
-    def _get_holiday_dates(self, start_date: date, end_date: date) -> set[date]:
-        """Получаем множество праздничных дат в диапазоне"""
-
-        holiday_dates = set()
-
-        # Получаем все праздники
-        holidays = self.db.query(UniversityHoliday).all()
-
-        for holiday in holidays:
-            holiday_date = holiday.date
-
-            if holiday.is_annual:
-                # Для ежегодных праздников создаем даты для каждого года в диапазоне
-                for year in range(start_date.year, end_date.year + 1):
-                    annual_date = date(year, holiday_date.month, holiday_date.day)
-                    if start_date <= annual_date <= end_date:
-                        holiday_dates.add(annual_date)
-            else:
-                # Для обычных праздников используем указанную дату
-                if start_date <= holiday_date <= end_date:
-                    holiday_dates.add(holiday_date)
-
-        return holiday_dates
-
-    def _get_semester_end_date(self, template: RecurringLessonTemplate) -> date:
-        """Получаем дату окончания семестра"""
-        return template.schedule.semester.end_date
 
     def _get_professor_unavailable_days(
         self, template: RecurringLessonTemplate

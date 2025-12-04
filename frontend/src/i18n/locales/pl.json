@@ -457,20 +457,29 @@
       "fields": {
         "name": "Nazwa",
         "date": "Data",
-        "isAnnual": "Powtarzaj rocznie"
+        "startDate": "Data początkowa",
+        "endDate": "Data końcowa",
+        "isAnnual": "Powtarzaj rocznie",
+        "isDateRange": "Zakres dat"
       },
       "placeholders": {
         "name": "Wprowadź nazwę dnia wolnego (opcjonalnie)",
-        "date": "Wybierz datę"
+        "date": "Wybierz datę",
+        "startDate": "Wybierz datę początkową",
+        "endDate": "Wybierz datę końcową",
+        "selectDateRange": "Wybierz zakres dat"
       },
       "descriptions": {
         "isAnnual": "Ten dzień wolny będzie się powtarzać co roku w tej samej dacie",
-        "isAnnualDisabled": "Typ dnia wolnego nie może być zmieniony po utworzeniu"
+        "isDateRange": "Wybierz to dla okresów wolnych (np. ferie zimowe)",
+        "isDateRangeDisabled": "Typ dnia wolnego nie może być zmieniony"
       },
       "validation": {
-        "dateRequired": "Data jest wymagana"
+        "dateRequired": "Data jest wymagana",
+        "startDateRequired": "Data początkowa jest wymagana",
+        "endDateRequired": "Data końcowa jest wymagana"
       },
-      "editNote": "Uwaga: Podczas edycji dnia wolnego można zmienić tylko nazwę."
+      "editNote": "Uwaga: Szczegóły dnia wolnego można aktualizować podczas edycji."
     },
     "messages": {
       "createSuccess": "Dzień wolny został utworzony pomyślnie",
@@ -486,8 +495,9 @@
         "date": "Data"
       },
       "types": {
-        "annual": "Roczne",
-        "manual": "Ręczne"
+        "annual": "Każdego roku",
+        "dateRange": "Zakres dat",
+        "singleDay": "Pojedynczy dzień"
       },
       "addButton": "+ Dodaj dzień wolny"
     }

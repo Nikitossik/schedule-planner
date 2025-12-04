@@ -96,17 +96,18 @@ export function RecurringLessonForm({
   const watchedSubjectAssignmentId = watch("subject_assignment_id");
 
   // Загрузка и фильтрация данных (без фильтрации комнат по времени для recurring)
-  const { groups, workloads, assignments, rooms } = useLessonFilters({
-    selectedGroupIds: watchedGroupIds,
-    selectedWorkloadId: watchedWorkloadId,
-    isEdit,
-    initialGroup: template?.groups?.[0] || template?.group,
-    // Для recurring templates не фильтруем комнаты по времени
-    selectedDate: null,
-    startTime: null,
-    endTime: null,
-    isOnline: watchedIsOnline,
-  });
+  const { groups, workloads, assignments, rooms, disabledDayMatchers } =
+    useLessonFilters({
+      selectedGroupIds: watchedGroupIds,
+      selectedWorkloadId: watchedWorkloadId,
+      isEdit,
+      initialGroup: template?.groups?.[0] || template?.group,
+      // Для recurring templates не фильтруем комнаты по времени
+      selectedDate: null,
+      startTime: null,
+      endTime: null,
+      isOnline: watchedIsOnline,
+    });
 
   // Получаем дни недели
   const daysOfWeek = useDaysOfWeek();
@@ -420,6 +421,7 @@ export function RecurringLessonForm({
             endTimeDate={endTimeDate}
             setEndTimeDate={setEndTimeDate}
             minDate={today}
+            disabledDates={disabledDayMatchers}
             errors={errors}
           />
 

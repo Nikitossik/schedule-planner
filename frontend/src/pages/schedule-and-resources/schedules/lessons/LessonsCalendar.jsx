@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -17,8 +17,8 @@ moment.updateLocale("en", {
 });
 
 import { useCalendarLessons } from "@/hooks/useCalendarLessons";
-import { useEntityList } from "@/hooks/useEntityList";
 import { useQueryClient } from "@tanstack/react-query";
+import { ScheduleDataContext } from "@/contexts/ScheduleDataContext";
 import { useMemo } from "react";
 import { format } from "date-fns";
 import {
@@ -122,6 +122,18 @@ export function LessonsCalendar({
   // Вычисляем период для загрузки уроков
   const dateRange = getDateRange(currentDate, currentView);
 
+  // Получаем данные из контекста (с защитой от отсутствия провайдера)
+  const scheduleDataContext = useContext(ScheduleDataContext);
+  const scheduleData = scheduleDataContext || {
+    expandedHolidays: [],
+    filterHolidaysByDateRange: () => [],
+  };
+  const { expandedHolidays, filterHolidaysByDateRange } = scheduleData;
+
+  // Получаем даты начала и конца семестра для ограничения календаря
+  const semesterStart = schedule?.semester?.start_date;
+  const semesterEnd = schedule?.semester?.end_date;
+
   // Загружаем уроки для данного расписания и периода
   const {
     data: lessonsData,
@@ -129,86 +141,39 @@ export function LessonsCalendar({
     refetch,
   } = useCalendarLessons(schedule?.id, dateRange.date_from, dateRange.date_to);
 
-  // Загружаем праздники для того же периода
-  const { data: holidaysData, isLoading: holidaysLoading } = useEntityList(
-    "university_holiday",
-    {
-      pagination: {
-        loadAll: true,
-      },
-      filters: {
-        date_from: dateRange.date_from,
-        date_to: dateRange.date_to,
-      },
-    }
-  );
-
-  const holidays = holidaysData?.items || [];
-
   const lessons = lessonsData?.items || [];
 
-  // Отладочная информация для праздников
-  console.log("Holidays data:", holidays);
-  console.log("Date range:", dateRange);
+  // Фильтруем праздники для текущего периода календаря
+  const holidaysForPeriod = useMemo(() => {
+    return (
+      filterHolidaysByDateRange(dateRange.date_from, dateRange.date_to) || []
+    );
+  }, [filterHolidaysByDateRange, dateRange.date_from, dateRange.date_to]);
 
   // Создаем Set для быстрой проверки праздничных дат и мапу с информацией о праздниках
   const holidayDatesSet = useMemo(() => {
     const dates = new Set();
-    const currentYear = new Date().getFullYear();
-
-    holidays.forEach((h) => {
-      const holidayDate = new Date(h.date);
-
-      if (h.is_annual) {
-        // Для ежегодных праздников создаем даты для текущего года и соседних лет
-        for (let year = currentYear - 1; year <= currentYear + 1; year++) {
-          const annualDate = new Date(
-            year,
-            holidayDate.getMonth(),
-            holidayDate.getDate()
-          );
-          dates.add(format(annualDate, "yyyy-MM-dd"));
+    if (holidaysForPeriod && Array.isArray(holidaysForPeriod)) {
+      holidaysForPeriod.forEach((holiday) => {
+        if (holiday && holiday.date) {
+          dates.add(holiday.date);
         }
-      } else {
-        // Для обычных праздников используем указанную дату
-        dates.add(format(holidayDate, "yyyy-MM-dd"));
-      }
-    });
-
-    console.log("Holiday dates set:", Array.from(dates));
+      });
+    }
     return dates;
-  }, [holidays]);
+  }, [holidaysForPeriod]);
 
   const holidayInfoMap = useMemo(() => {
     const map = new Map();
-    const currentYear = new Date().getFullYear();
-
-    holidays.forEach((h) => {
-      const holidayDate = new Date(h.date);
-
-      if (h.is_annual) {
-        // Для ежегодных праздников создаем записи для текущего года и соседних лет
-        for (let year = currentYear - 1; year <= currentYear + 1; year++) {
-          const annualDate = new Date(
-            year,
-            holidayDate.getMonth(),
-            holidayDate.getDate()
-          );
-          const dateKey = format(annualDate, "yyyy-MM-dd");
-          map.set(dateKey, {
-            ...h,
-            date: format(annualDate, "yyyy-MM-dd"),
-          });
+    if (holidaysForPeriod && Array.isArray(holidaysForPeriod)) {
+      holidaysForPeriod.forEach((holiday) => {
+        if (holiday && holiday.date) {
+          map.set(holiday.date, holiday);
         }
-      } else {
-        // Для обычных праздников используем указанную дату
-        map.set(format(holidayDate, "yyyy-MM-dd"), h);
-      }
-    });
-
-    console.log("Holiday info map:", map);
+      });
+    }
     return map;
-  }, [holidays]);
+  }, [holidaysForPeriod]);
 
   // Функция проверки праздника
   const isHolidayDate = useMemo(
@@ -240,7 +205,9 @@ export function LessonsCalendar({
         const holiday = getHolidayInfo(date);
         if (holiday) {
           const holidayName =
-            holiday.name || t("holidays.defaultName", "Выходной день");
+            holiday.names && holiday.names.length > 0
+              ? holiday.names.join(", ")
+              : "Dzień wolny";
           return `${dayNumber} (${holidayName})`;
         }
         return dayNumber;
@@ -250,7 +217,9 @@ export function LessonsCalendar({
         const holiday = getHolidayInfo(date);
         if (holiday) {
           const holidayName =
-            holiday.name || t("holidays.defaultName", "Выходной день");
+            holiday.names && holiday.names.length > 0
+              ? holiday.names.join(", ")
+              : "Dzień wolny";
           return `${dayHeader} (${holidayName})`;
         }
         return dayHeader;
@@ -479,8 +448,24 @@ export function LessonsCalendar({
             popup
             showMultiDayTimes
             scrollToTime={new Date(1970, 1, 1, 8)}
-            min={new Date(1970, 1, 1, 8, 0, 0)}
-            max={new Date(1970, 1, 1, 23, 0, 0)}
+            min={
+              semesterStart
+                ? (() => {
+                    const startDate = new Date(semesterStart);
+                    startDate.setHours(8, 0, 0, 0);
+                    return startDate;
+                  })()
+                : new Date(1970, 1, 1, 8, 0, 0)
+            }
+            max={
+              semesterEnd
+                ? (() => {
+                    const endDate = new Date(semesterEnd);
+                    endDate.setHours(23, 0, 0, 0);
+                    return endDate;
+                  })()
+                : new Date(1970, 1, 1, 23, 0, 0)
+            }
             onEventDrop={handleEventDrop}
             onEventResize={handleEventResize}
             resizable

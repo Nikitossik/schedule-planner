@@ -13,6 +13,8 @@ import { toast } from "sonner";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function LessonsList({ schedule, onUpdate }) {
+  // SchedulePageProvider предоставляет данные о конфликтах и предупреждениях
+  // Он используется внутри ScheduleDataProvider для дополнительной функциональности
   return (
     <SchedulePageProvider schedule={schedule}>
       <LessonsListContent schedule={schedule} onUpdate={onUpdate} />
