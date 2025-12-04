@@ -114,8 +114,36 @@ export function LessonsCalendar({
     queryClient.invalidateQueries(["combined-warnings", schedule?.id]);
   };
 
+  // Получаем даты начала и конца семестра для ограничения календаря
+  const semesterStart = schedule?.semester?.start_date;
+  const semesterEnd = schedule?.semester?.end_date;
+
   // Состояние для навигации и вида календаря
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(() => {
+    const today = new Date();
+
+    // Если есть данные семестра - проверяем границы
+    if (semesterStart && semesterEnd) {
+      const semesterStartDate = new Date(semesterStart);
+      const semesterEndDate = new Date(semesterEnd);
+
+      // Если сегодня в пределах семестра - используем сегодня
+      if (today >= semesterStartDate && today <= semesterEndDate) {
+        return today;
+      }
+      // Если сегодня до начала семестра - используем начало семестра
+      else if (today < semesterStartDate) {
+        return semesterStartDate;
+      }
+      // Если сегодня после конца семестра - используем конец семестра
+      else {
+        return semesterEndDate;
+      }
+    }
+
+    // Если нет данных семестра - используем сегодня
+    return today;
+  });
   const [currentView, setCurrentView] = useState("week");
   const [groupBy, setGroupBy] = useState("none");
 
@@ -129,10 +157,6 @@ export function LessonsCalendar({
     filterHolidaysByDateRange: () => [],
   };
   const { expandedHolidays, filterHolidaysByDateRange } = scheduleData;
-
-  // Получаем даты начала и конца семестра для ограничения календаря
-  const semesterStart = schedule?.semester?.start_date;
-  const semesterEnd = schedule?.semester?.end_date;
 
   // Загружаем уроки для данного расписания и периода
   const {
@@ -253,7 +277,28 @@ export function LessonsCalendar({
       )(slotInfo);
     };
   }, [onCreateLesson, isHolidayDate, t]);
-  const handleNavigate = createNavigateHandler(setCurrentDate);
+  const handleNavigate = useMemo(() => {
+    return (newDate) => {
+      // Если нет данных о семестре - используем обычную навигацию
+      if (!semesterStart || !semesterEnd) {
+        return createNavigateHandler(setCurrentDate)(newDate);
+      }
+
+      const semesterStartDate = new Date(semesterStart);
+      const semesterEndDate = new Date(semesterEnd);
+
+      // Проверяем, находится ли новая дата в пределах семестра
+      if (newDate >= semesterStartDate && newDate <= semesterEndDate) {
+        setCurrentDate(newDate);
+      }
+      // Если дата выходит за пределы - устанавливаем граничную дату
+      else if (newDate < semesterStartDate) {
+        setCurrentDate(semesterStartDate);
+      } else if (newDate > semesterEndDate) {
+        setCurrentDate(semesterEndDate);
+      }
+    };
+  }, [semesterStart, semesterEnd]);
   const handleViewChange = createViewChangeHandler(setCurrentView);
 
   const handleEventDrop = useMemo(() => {
@@ -321,6 +366,22 @@ export function LessonsCalendar({
       refetch();
     }
   }, [refreshTrigger, refetch]);
+
+  // Обновляем currentDate когда загружаются данные семестра
+  useEffect(() => {
+    if (semesterStart && semesterEnd) {
+      const today = new Date();
+      const semesterStartDate = new Date(semesterStart);
+      const semesterEndDate = new Date(semesterEnd);
+
+      // Если текущая дата вне семестра - корректируем её
+      if (currentDate < semesterStartDate) {
+        setCurrentDate(semesterStartDate);
+      } else if (currentDate > semesterEndDate) {
+        setCurrentDate(semesterEndDate);
+      }
+    }
+  }, [semesterStart, semesterEnd, currentDate]);
 
   // Рефетч при изменении даты или вида календаря
   useEffect(() => {
