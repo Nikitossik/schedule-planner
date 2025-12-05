@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
     from .semester import Semester
     from .lesson import Lesson
-    from .direction import Direction
+    from .study_form import StudyForm
 
 
 class Schedule(Base):
@@ -28,25 +28,25 @@ class Schedule(Base):
 
     __tablename__ = "schedule"
 
-    id: Mapped[int] = mapped_column(primary_key=True)  # Unique identifier (primary key)
-    name: Mapped[str] = mapped_column(String(100))  # Display name for the schedule
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(100))
+
     semester_id: Mapped[int] = mapped_column(
         ForeignKey("semester.id")
     )  # FK to the related semester
-    direction_id: Mapped[int] = mapped_column(
-        ForeignKey("direction.id")
-    )  # FK to the related direction
-
+    study_form_id: Mapped[int] = mapped_column(
+        ForeignKey("study_form.id")
+    )  # FK to the related direction/program
     # Relationships
+
     semester: Mapped["Semester"] = relationship(
         "Semester", back_populates="schedules"
     )  # Many-to-one: this schedule belongs to one semester
-    direction: Mapped["Direction"] = relationship(
-        "Direction", back_populates="schedules"
-    )  # Many-to-one: this schedule is for one direction
+
     lessons: Mapped[List["Lesson"]] = relationship(
         "Lesson", back_populates="schedule"
     )  # One-to-many: lessons contained in this schedule
+    study_form: Mapped["StudyForm"] = relationship("StudyForm", lazy="selectin")
 
     @property
     def academic_year(self):
@@ -55,5 +55,19 @@ class Schedule(Base):
 
     @property
     def faculty(self):
-        # Convenience: faculty derived via the related direction.
-        return self.direction.faculty
+        # Convenience: faculty derived via the related study form.
+        return self.study_form.direction.faculty
+
+    @property
+    def direction(self):
+        # Convenience: direction derived via the related study form.
+        return self.study_form.direction
+
+    @property
+    def workloads(self):
+        # Convenience: workloads derived via the related study form.
+        return self.study_form.workloads
+
+    @property
+    def groups(self):
+        return self.study_form.groups

@@ -1,55 +1,35 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { useEntityList } from "@/hooks/useEntityList";
+import { useEntityQuery } from "@/hooks/useEntityQuery";
 import { format } from "date-fns";
 
 /**
  * Контекст для предзагруженных данных расписания
  * Загружает один раз при монтировании страницы редактирования расписания:
- * - Группы (по semester и direction из schedule)
- * - Workloads (все для данного semester, direction)
+ * - Расписание со всеми связанными данными (groups, workloads с assignments)
  * - Комнаты (все)
  * - Праздники (все)
  */
 export const ScheduleDataContext = createContext(null);
 
 export function ScheduleDataProvider({ schedule, children }) {
-  // 1. Группы - фильтруем по semester и direction из расписания
-  const { data: groupsData, isLoading: isLoadingGroups } = useEntityList(
-    "group",
+  // 1. Загружаем полные данные расписания со всеми связанными данными
+  const { data: fullSchedule, isLoading: isLoadingSchedule } = useEntityQuery(
+    "schedule",
+    schedule?.id,
+    !!schedule?.id,
     {
-      filters: schedule
-        ? {
-            semester_ids: [schedule.semester.id],
-            direction_ids: [schedule.direction.id],
-          }
-        : {},
-      pagination: { loadAll: true },
-      // Кешируем на 5 минут - группы редко меняются
-      staleTime: 5 * 60 * 1000,
-      cacheTime: 10 * 60 * 1000,
-    }
-  );
-
-  // 2. Workloads - загружаем все для semester и direction
-  // Будем фильтровать по study_form на клиенте
-  const { data: workloadsData, isLoading: isLoadingWorkloads } = useEntityList(
-    "professor_workload",
-    {
-      filters: schedule
-        ? {
-            semester_ids: [schedule.semester.id],
-            direction_ids: [schedule.direction.id],
-          }
-        : {},
-      pagination: { loadAll: true },
-      // Кешируем на 3 минуты - могут обновляться при добавлении assignments
+      // Кешируем на 3 минуты - данные могут обновляться
       staleTime: 3 * 60 * 1000,
       cacheTime: 10 * 60 * 1000,
     }
   );
 
-  // 3. Комнаты - загружаем все
-  // Будем фильтровать по доступности на клиенте или делать отдельный запрос
+  // Извлекаем данные из полного ответа расписания
+  const groups = fullSchedule?.groups || [];
+  const workloads = fullSchedule?.workloads || [];
+
+  // 2. Комнаты - загружаем все отдельно
   const { data: roomsData, isLoading: isLoadingRooms } = useEntityList("room", {
     pagination: { loadAll: true },
     // Кешируем на 5 минут - комнаты редко меняются
@@ -57,10 +37,12 @@ export function ScheduleDataProvider({ schedule, children }) {
     cacheTime: 10 * 60 * 1000,
   });
 
-  // 4. Праздники - загружаем развернутые даты для периода семестра
+  // 3. Праздники - загружаем развернутые даты для периода семестра
   // Используем новый expanded endpoint для получения всех дат с именами
-  const semesterStart = schedule?.semester?.start_date;
-  const semesterEnd = schedule?.semester?.end_date;
+  const semesterStart =
+    fullSchedule?.semester?.start_date || schedule?.semester?.start_date;
+  const semesterEnd =
+    fullSchedule?.semester?.end_date || schedule?.semester?.end_date;
 
   const { data: expandedHolidaysData, isLoading: isLoadingHolidays } =
     useEntityList("university_holiday/expanded", {
@@ -109,32 +91,25 @@ export function ScheduleDataProvider({ schedule, children }) {
 
   const value = {
     // Данные расписания
-    schedule,
+    schedule: fullSchedule || schedule,
 
-    // Группы
-    groups: groupsData?.items || [],
-    isLoadingGroups,
-
-    // Workloads со всеми subject_assignments
-    workloads: workloadsData?.items || [],
-    isLoadingWorkloads,
+    // Группы и workloads уже отфильтрованы по study_form на бэкенде
+    groups,
+    workloads,
+    isLoadingGroups: isLoadingSchedule,
+    isLoadingWorkloads: isLoadingSchedule,
 
     // Комнаты
     rooms: roomsData?.items || [],
     isLoadingRooms,
 
     // Праздники (развернутые даты с именами)
-    // expanded endpoint возвращает пагинированный ответ с items
     expandedHolidays: expandedHolidaysData?.items || [],
     filterHolidaysByDateRange,
     isLoadingHolidays,
 
     // Общий статус загрузки
-    isLoading:
-      isLoadingGroups ||
-      isLoadingWorkloads ||
-      isLoadingRooms ||
-      isLoadingHolidays,
+    isLoading: isLoadingSchedule || isLoadingRooms || isLoadingHolidays,
   };
 
   return (

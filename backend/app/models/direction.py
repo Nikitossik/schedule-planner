@@ -53,12 +53,6 @@ class Direction(Base):
         back_populates="direction",
         cascade="all, delete-orphan",
     )  # One-to-many: study formats under this direction; cascades on direction deletion
-    # workloads: Mapped[list["ProfessorWorkload"]] = relationship(
-    #     "ProfessorWorkload", secondary="study_form", back_populates="direction"
-    # )
     subjects: Mapped[list["Subject"]] = relationship(
         "Subject", back_populates="direction"
     )  # One-to-many: subjects associated with this direction
-    schedules: Mapped[list["Schedule"]] = relationship(
-        "Schedule", back_populates="direction"
-    )  # One-to-many: schedules created for this direction

@@ -1,12 +1,16 @@
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
-from datetime import datetime
 from .shared import BaseQueryParams
 from .minis import (
     SemesterMiniOut,
     AcademicYearMiniOut,
     DirectionMiniOut,
     FacultyMiniOut,
+    ProfessorWorkloadMiniOut,
+    ProfessorMiniOut,
+    SubjectAssignmentMiniOut,
+    GroupMiniOut,
+    StudyFormMiniOut,
 )
 from ..utils.enums import ExportFormat
 
@@ -28,9 +32,9 @@ class ScheduleBase(BaseModel):
         description="Identifier of the semester this schedule belongs to.",
         examples=[2],
     )
-    direction_id: int = Field(
+    study_form_id: int = Field(
         ...,
-        description="Identifier of the direction/program this schedule is for.",
+        description="Identifier of the study form this schedule is for.",
         examples=[3],
     )
 
@@ -52,6 +56,20 @@ class ScheduleUpdate(BaseModel):
         max_length=100,
         description="Optional new schedule name.",
         examples=["CS Spring 2025"],
+    )
+
+
+class ScheduleWorkloadOut(ProfessorWorkloadMiniOut):
+    model_config = ConfigDict(from_attributes=True)
+
+    professor: ProfessorMiniOut = Field(
+        ...,
+        description="Mini representation of the professor associated with this workload.",
+    )
+
+    subject_assignments: list[SubjectAssignmentMiniOut] = Field(
+        ...,
+        description="List of mini representations of subject assignments associated with this workload.",
     )
 
 
@@ -79,6 +97,10 @@ class ScheduleOut(BaseModel):
         description="Mini representation of the semester this schedule belongs to.",
         examples=[{"id": 2, "name": "Fall 2024"}],
     )
+    study_form: StudyFormMiniOut = Field(
+        ...,
+        description="Mini representation of the study form this schedule is for.",
+    )
     faculty: FacultyMiniOut = Field(
         ...,
         description="Mini representation of the faculty derived from the direction.",
@@ -88,6 +110,14 @@ class ScheduleOut(BaseModel):
         ...,
         description="Mini representation of the direction this schedule is for.",
         examples=[{"id": 3, "name": "Computer Science", "code": "CS-01"}],
+    )
+    workloads: list[ScheduleWorkloadOut] = Field(
+        ...,
+        description="List of mini representations of professor workloads associated with this schedule.",
+    )
+    groups: list[GroupMiniOut] = Field(
+        ...,
+        description="List of mini representations of student groups associated with this schedule.",
     )
 
 

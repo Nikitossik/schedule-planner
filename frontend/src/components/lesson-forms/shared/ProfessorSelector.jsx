@@ -14,15 +14,12 @@ export function ProfessorSelector({
   value,
   onChange,
   workloads = [],
-  selectedGroupIds, // Массив выбранных групп
+  selectedGroupIds, // Массив выбранных групп (для справки, не блокирует селект)
   isProfessorAvailable,
   error,
   disabled = false,
 }) {
   const { t } = useTranslation();
-
-  // Проверяем, есть ли выбранные группы
-  const hasSelectedGroups = selectedGroupIds && selectedGroupIds.length > 0;
 
   return (
     <div className="space-y-2">
@@ -30,26 +27,16 @@ export function ProfessorSelector({
         <User className="h-4 w-4" />
         {t("lessons.form.fields.professor")}
       </label>
-      <Select
-        value={value}
-        onValueChange={onChange}
-        disabled={!hasSelectedGroups || disabled}
-      >
+      <Select value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger>
           <SelectValue
-            placeholder={
-              hasSelectedGroups
-                ? t("lessons.form.placeholders.selectProfessor")
-                : t("lessons.form.placeholders.selectGroupFirst")
-            }
+            placeholder={t("lessons.form.placeholders.selectProfessor")}
           />
         </SelectTrigger>
         <SelectContent>
           {workloads.length === 0 ? (
             <div className="p-2 text-sm text-muted-foreground text-center">
-              {!hasSelectedGroups
-                ? t("lessons.form.messages.selectGroupFirst")
-                : t("lessons.form.messages.noProfessors")}
+              {t("lessons.form.messages.noProfessors")}
             </div>
           ) : (
             workloads.map((workload) => {
@@ -69,9 +56,6 @@ export function ProfessorSelector({
                   {workload?.professor.name} {workload?.professor.surname}
                   <span className="text-sm text-gray-500">
                     ({workload?.assigned_hours}h)
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    ({workload?.study_form?.form})
                   </span>
                   {!isAvailable && (
                     <Badge variant="destructive" className="ml-2">

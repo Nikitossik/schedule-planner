@@ -582,7 +582,7 @@ def seed_schedules_and_lessons(db):
         schedule_groups = [
             g
             for g in groups
-            if g.study_form.direction_id == schedule.direction_id
+            if g.study_form_id == schedule.study_form_id
             and g.semester_id == schedule.semester_id
         ]
 
@@ -590,7 +590,7 @@ def seed_schedules_and_lessons(db):
         schedule_assignments = [
             a
             for a in assignments
-            if a.subject.direction_id == schedule.direction_id
+            if a.subject.direction_id == schedule.study_form.direction_id
             and a.subject.semester_id == schedule.semester_id
         ]
 

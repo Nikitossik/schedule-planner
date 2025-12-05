@@ -947,21 +947,21 @@
           "placeholder": "Select semester",
           "placeholderDisabled": "Select academic year first"
         },
-        "direction": {
-          "label": "Direction",
-          "placeholder": "Select direction"
+        "studyForm": {
+          "label": "Study Form",
+          "placeholder": "Select study form"
         }
       },
       "validation": {
         "nameRequired": "Schedule name is required",
         "academicYearRequired": "Academic year is required",
         "semesterRequired": "Semester is required",
-        "directionRequired": "Direction is required"
+        "studyFormRequired": "Study form is required"
       },
       "noData": {
         "noAcademicYears": "No academic years found",
         "noSemesters": "No semesters for selected year",
-        "noDirections": "No directions found"
+        "noStudyForms": "No study forms found"
       },
       "buttons": {
         "create": "Create Schedule",

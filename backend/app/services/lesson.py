@@ -252,7 +252,6 @@ class LessonService(BaseService[Lesson, LessonIn]):
                 conflicts.extend(self._find_professor_conflicts_in_day(date_lessons))
             if not conflict_types or "group" in conflict_types:
                 conflicts.extend(self._find_group_conflicts_in_day(date_lessons))
-
         return conflicts
 
     def _group_conflicts_by_scope_and_type(
@@ -375,31 +374,46 @@ class LessonService(BaseService[Lesson, LessonIn]):
             overlapping_groups = self._find_time_overlaps(room_lesson_list)
             for overlap_group in overlapping_groups:
                 if len(overlap_group) > 1:
-                    # Проверяем, ведет ли один преподаватель все уроки в группе
+                    # Получаем расписания для отладки
+                    schedules = set()
                     professors = set()
                     for lesson in overlap_group:
+                        schedules.add(lesson.schedule_id)
                         professor_id = self._get_professor_id(lesson)
                         if professor_id:
                             professors.add(professor_id)
 
-                    # Если один преподаватель ведет все уроки в одной комнате - это многогрупповое занятие, не конфликт
-                    if len(professors) == 1:
-                        continue
+                    # Межрасписанийный конфликт комнат - всегда конфликт
+                    if len(schedules) > 1:
+                        room_name = (
+                            overlap_group[0].room.number
+                            if overlap_group[0].room
+                            else f"Room {room_id}"
+                        )
+                        conflicts.append({
+                            "type": "room",
+                            "message": f"Room '{room_name}' is double-booked across schedules at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
+                            "severity": "error",
+                            "lessons": overlap_group,
+                        })
+                    else:
+                        # Внутрирасписанийный конфликт - применяем логику с преподавателями
+                        # Если один преподаватель ведет все уроки в одной комнате - это многогрупповое занятие, не конфликт
+                        if len(professors) == 1:
+                            continue
 
-                    # Если разные преподаватели в одной комнате - это конфликт
-                    room_name = (
-                        overlap_group[0].room.number
-                        if overlap_group[0].room
-                        else f"Room {room_id}"
-                    )
-                    conflicts.append(
-                        {
+                        # Если разные преподаватели в одной комнате - это конфликт
+                        room_name = (
+                            overlap_group[0].room.number
+                            if overlap_group[0].room
+                            else f"Room {room_id}"
+                        )
+                        conflicts.append({
                             "type": "room",
                             "message": f"Room '{room_name}' is double-booked by different professors at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
                             "severity": "error",
                             "lessons": overlap_group,
-                        }
-                    )
+                        })
         return conflicts
 
     def _find_professor_conflicts_in_day(self, lessons: List[Lesson]) -> List[Dict]:
@@ -430,8 +444,14 @@ class LessonService(BaseService[Lesson, LessonIn]):
 
         for professor_id, prof_lesson_list in professor_lessons.items():
             overlapping_groups = self._find_time_overlaps(prof_lesson_list)
+            
             for overlap_group in overlapping_groups:
                 if len(overlap_group) > 1:
+                    # Получаем расписания для определения типа конфликта
+                    schedules = set()
+                    for lesson in overlap_group:
+                        schedules.add(lesson.schedule_id)
+                    
                     # Проверяем, в одной ли комнате все уроки преподавателя
                     rooms = set()
                     online_lessons = 0
@@ -442,26 +462,39 @@ class LessonService(BaseService[Lesson, LessonIn]):
                         elif lesson.room_id:
                             rooms.add(lesson.room_id)
 
-                    # Если все уроки в одной комнате ИЛИ все онлайн - это многогрупповое занятие, не конфликт
-                    if len(rooms) <= 1 and (len(rooms) == 0 or online_lessons == 0):
-                        continue
+                    # ИСПРАВЛЕНИЕ: Убираем строгую проверку комнат для межрасписанийных конфликтов
+                    # Если уроки из разных расписаний - это всегда конфликт независимо от комнаты
+                    if len(schedules) > 1:
+                        # Межрасписанийный конфликт - всегда является конфликтом
+                        first_lesson = overlap_group[0]
+                        professor = self._get_professor_object(first_lesson)
 
-                    # Если преподаватель в разных комнатах одновременно - это конфликт
-                    first_lesson = overlap_group[0]
-                    professor = self._get_professor_object(first_lesson)
+                        if professor and professor.user:
+                            professor_name = f"{professor.user.name} {professor.user.surname}"
+                            conflicts.append({
+                                "type": "professor",
+                                "message": f"Professor {professor_name} has conflicting lessons across schedules at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
+                                "severity": "error",
+                                "lessons": overlap_group,
+                            })
+                    else:
+                        # Внутрирасписанийный конфликт - применяем логику с комнатами
+                        # Если все уроки в одной комнате ИЛИ все онлайн - это многогрупповое занятие, не конфликт
+                        if len(rooms) <= 1 and (len(rooms) == 0 or online_lessons == 0):
+                            continue
 
-                    if professor and professor.user:
-                        professor_name = (
-                            f"{professor.user.name} {professor.user.surname}"
-                        )
-                        conflicts.append(
-                            {
+                        # Если преподаватель в разных комнатах одновременно - это конфликт
+                        first_lesson = overlap_group[0]
+                        professor = self._get_professor_object(first_lesson)
+
+                        if professor and professor.user:
+                            professor_name = f"{professor.user.name} {professor.user.surname}"
+                            conflicts.append({
                                 "type": "professor",
                                 "message": f"Professor {professor_name} teaching in multiple locations simultaneously at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
                                 "severity": "error",
                                 "lessons": overlap_group,
-                            }
-                        )
+                            })
         return conflicts
 
     def _find_group_conflicts_in_day(self, lessons: List[Lesson]) -> List[Dict]:
@@ -492,6 +525,11 @@ class LessonService(BaseService[Lesson, LessonIn]):
             overlapping_groups = self._find_time_overlaps(group_lesson_list)
             for overlap_group in overlapping_groups:
                 if len(overlap_group) > 1:
+                    # Получаем расписания для определения типа конфликта
+                    schedules = set()
+                    for lesson in overlap_group:
+                        schedules.add(lesson.schedule_id)
+
                     # Находим группу для отображения имени
                     group_name = f"Group {group_id}"
                     for lesson in overlap_group:
@@ -502,14 +540,18 @@ class LessonService(BaseService[Lesson, LessonIn]):
                         if group_name != f"Group {group_id}":
                             break
 
-                    conflicts.append(
-                        {
-                            "type": "group",
-                            "message": f"Group '{group_name}' has multiple lessons at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
-                            "severity": "error",
-                            "lessons": overlap_group,
-                        }
-                    )
+                    # Формируем сообщение в зависимости от типа конфликта
+                    if len(schedules) > 1:
+                        message = f"Group '{group_name}' has conflicting lessons across schedules at {overlap_group[0].start_time}-{overlap_group[0].end_time}"
+                    else:
+                        message = f"Group '{group_name}' has multiple lessons at {overlap_group[0].start_time}-{overlap_group[0].end_time}"
+
+                    conflicts.append({
+                        "type": "group",
+                        "message": message,
+                        "severity": "error",
+                        "lessons": overlap_group,
+                    })
         return conflicts
 
     def _find_time_overlaps(self, lessons: List[Lesson]) -> List[List[Lesson]]:
@@ -530,8 +572,6 @@ class LessonService(BaseService[Lesson, LessonIn]):
         overlapping_groups = []
         processed = set()
 
-        print(f"Checking time overlaps for {len(lessons)} lessons")
-
         for i, lesson1 in enumerate(lessons):
             if lesson1.id in processed:
                 continue
@@ -549,16 +589,10 @@ class LessonService(BaseService[Lesson, LessonIn]):
                     and lesson1.start_time < lesson2.end_time
                     and lesson1.end_time > lesson2.start_time
                 ):
-                    print(
-                        f"Time overlap found: Lesson {lesson1.id} ({lesson1.start_time}-{lesson1.end_time}) overlaps with Lesson {lesson2.id} ({lesson2.start_time}-{lesson2.end_time})"
-                    )
                     overlap_group.append(lesson2)
                     processed.add(lesson2.id)
 
             if len(overlap_group) > 1:
-                print(
-                    f"Overlap group formed: {[lesson.id for lesson in overlap_group]}"
-                )
                 overlapping_groups.append(overlap_group)
 
         return overlapping_groups

@@ -24,10 +24,11 @@ export function useScheduleColumns() {
         ),
       },
       {
-        accessorKey: "direction",
         header: t("schedules.table.columns.direction"),
         cell: ({ row }) => (
-          <Badge variant="outline">{row.original.direction?.code}</Badge>
+          <Badge variant="outline">
+            {row.original.direction?.code} - {row.original.study_form?.form}
+          </Badge>
         ),
       },
       {

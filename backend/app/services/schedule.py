@@ -65,7 +65,7 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
             self.db.query(Schedule)
             .filter(
                 Schedule.semester_id == schedule.semester_id,
-                Schedule.direction_id == schedule.direction_id,
+                Schedule.study_form_id == schedule.study_form_id,
             )
             .first()
         )
@@ -73,7 +73,7 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         if found_schedule:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Schedule for this semester already exists.",
+                detail="Schedule for this semester and study form already exists.",
             )
 
         return super().create(schedule)
@@ -859,7 +859,7 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
             .join(StudyForm)
             .filter(
                 and_(
-                    StudyForm.direction_id == schedule.direction_id,
+                    StudyForm.id == schedule.study_form_id,
                     Group.semester_id == schedule.semester_id,
                 )
             )

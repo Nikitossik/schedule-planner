@@ -29,7 +29,7 @@ const createSchema = (t, isEdit) => {
       name: z.string().min(1, t("schedules.form.validation.nameRequired")),
       academic_year_id: z.string().optional(),
       semester_id: z.string().optional(),
-      direction_id: z.string().optional(),
+      study_form_id: z.string().optional(),
     });
   }
 
@@ -42,9 +42,9 @@ const createSchema = (t, isEdit) => {
     semester_id: z
       .string()
       .min(1, t("schedules.form.validation.semesterRequired")),
-    direction_id: z
+    study_form_id: z
       .string()
-      .min(1, t("schedules.form.validation.directionRequired")),
+      .min(1, t("schedules.form.validation.studyFormRequired")),
   });
 };
 
@@ -62,7 +62,7 @@ export default function ScheduleForm({
     name: defaultValues?.name || "",
     academic_year_id: String(defaultValues?.semester?.academic_year?.id ?? ""),
     semester_id: String(defaultValues?.semester?.id ?? ""),
-    direction_id: String(defaultValues?.direction?.id ?? ""),
+    study_form_id: String(defaultValues?.study_form?.id ?? ""),
   };
 
   const form = useForm({
@@ -87,10 +87,17 @@ export default function ScheduleForm({
   );
   const semesters = semestersData?.items || [];
 
-  // Загружаем направления
-  const { data: directionsData, isLoading: isDirectionsLoading } =
-    useEntityList("direction");
-  const directions = directionsData?.items || [];
+  // Загружаем формы обучения
+  const { data: studyFormsData, isLoading: isStudyFormsLoading } =
+    useEntityList("study_form", {
+      filters: {
+        sort_by: "direction_name",
+        desc: false,
+        page: 1,
+        pageSize: 100,
+      },
+    });
+  const studyForms = studyFormsData?.items || [];
 
   // Очищаем семестр при смене академического года
   useEffect(() => {
@@ -106,7 +113,7 @@ export default function ScheduleForm({
         name: defaultValues.name || "",
         academic_year_id: String(defaultValues.academic_year?.id ?? ""),
         semester_id: String(defaultValues.semester?.id ?? ""),
-        direction_id: String(defaultValues.direction?.id ?? ""),
+        study_form_id: String(defaultValues.study_form?.id ?? ""),
       };
       form.reset(newValues);
     }
@@ -257,16 +264,20 @@ export default function ScheduleForm({
 
         <FormField
           control={form.control}
-          name="direction_id"
+          name="study_form_id"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                {t("schedules.form.fields.direction.label")}
+                {t("schedules.form.fields.studyForm.label")}
               </FormLabel>
               {isEdit ? (
                 <FormControl>
                   <Input
-                    value={defaultValues?.direction?.name || ""}
+                    value={
+                      defaultValues?.study_form
+                        ? `${defaultValues.direction?.name} (${defaultValues.study_form.form})`
+                        : ""
+                    }
                     disabled={true}
                     className="bg-gray-50"
                     readOnly
@@ -277,24 +288,24 @@ export default function ScheduleForm({
                   <SelectTrigger className="w-full">
                     <SelectValue
                       placeholder={t(
-                        "schedules.form.fields.direction.placeholder"
+                        "schedules.form.fields.studyForm.placeholder"
                       )}
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {isDirectionsLoading ? (
+                    {isStudyFormsLoading ? (
                       <div className="p-2 text-sm">{t("common.loading")}</div>
-                    ) : directions.length === 0 ? (
+                    ) : studyForms.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground">
-                        {t("schedules.form.noData.noDirections")}
+                        {t("schedules.form.noData.noStudyForms")}
                       </div>
                     ) : (
-                      directions.map((direction) => (
+                      studyForms.map((studyForm) => (
                         <SelectItem
-                          key={direction.id}
-                          value={String(direction.id)}
+                          key={studyForm.id}
+                          value={String(studyForm.id)}
                         >
-                          {direction.name}
+                          {studyForm.direction?.name} ({studyForm.form})
                         </SelectItem>
                       ))
                     )}

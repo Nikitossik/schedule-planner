@@ -66,11 +66,6 @@ export function GroupSelector({
                 >
                   <div className="flex items-center gap-2">
                     <span>{group.name}</span>
-                    {group.study_form && (
-                      <Badge variant="outline" className="text-xs">
-                        {group.study_form.form}
-                      </Badge>
-                    )}
                   </div>
                 </MultiSelectItem>
               ))

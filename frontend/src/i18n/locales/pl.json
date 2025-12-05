@@ -946,21 +946,21 @@
           "placeholder": "Wybierz semestr",
           "placeholderDisabled": "Najpierw wybierz rok akademicki"
         },
-        "direction": {
-          "label": "Kierunek",
-          "placeholder": "Wybierz kierunek"
+        "studyForm": {
+          "label": "Forma studiów",
+          "placeholder": "Wybierz formę studiów"
         }
       },
       "validation": {
         "nameRequired": "Nazwa planu zajęć jest wymagana",
         "academicYearRequired": "Rok akademicki jest wymagany",
         "semesterRequired": "Semestr jest wymagany",
-        "directionRequired": "Kierunek jest wymagany"
+        "studyFormRequired": "Forma studiów jest wymagana"
       },
       "noData": {
         "noAcademicYears": "Nie znaleziono lat akademickich",
         "noSemesters": "Brak semestrów dla wybranego roku",
-        "noDirections": "Nie znaleziono kierunków"
+        "noStudyForms": "Nie znaleziono form studiów"
       },
       "buttons": {
         "create": "Utwórz plan zajęć",

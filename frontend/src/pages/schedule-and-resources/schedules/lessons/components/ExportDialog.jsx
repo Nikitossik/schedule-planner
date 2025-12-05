@@ -47,7 +47,7 @@ export function ExportDialog({ children }) {
 
   useEffect(() => {
     if (schedule && !filename) {
-      const defaultName = `schedule_${schedule.direction?.name}_${schedule.semester?.number}`;
+      const defaultName = `schedule_${schedule.study_form?.direction?.name}_${schedule.semester?.number}`;
       setFilename(defaultName.replace(/[^a-zA-Z0-9_-]/g, "_"));
     }
   }, [schedule]);
@@ -210,8 +210,8 @@ export function ExportDialog({ children }) {
                       >
                         {group.name}
                         {group.study_form && (
-                          <span className="text-xs text-muted-foreground ml-1">
-                            ({group.study_form.name})
+                          <span className="text-muted-foreground ml-1">
+                            ({group.study_form.form})
                           </span>
                         )}
                       </Label>
