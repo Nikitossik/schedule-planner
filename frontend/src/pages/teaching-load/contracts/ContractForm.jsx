@@ -182,7 +182,18 @@ const ContractForm = ({
                     ) : (
                       professors.map((p) => (
                         <SelectItem key={p.id} value={String(p.id)}>
-                          {p.name + " " + p.surname}
+                          <div className="flex flex-row items-center gap-2">
+                            <div
+                              className="w-3 h-3 rounded-full"
+                              style={{
+                                backgroundColor: p.professor_profile?.color,
+                              }}
+                            />
+                            <span>
+                              {p.professor_profile?.academic_title} {p.name}{" "}
+                              {p.surname}
+                            </span>
+                          </div>
                         </SelectItem>
                       ))
                     )}

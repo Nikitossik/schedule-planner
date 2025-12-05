@@ -450,6 +450,8 @@
   },
   "holidays": {
     "defaultName": "Holiday",
+    "defaultNameSingle": "Free day",
+    "defaultNameRange": "Free days",
     "form": {
       "title": {
         "create": "Create Holiday",

@@ -11,14 +11,20 @@ export const useHolidayColumns = () => {
       accessorKey: "name",
       header: t("holidays.table.columns.name"),
       cell: ({ row }) => {
+        const holiday = row.original;
         const name = row.getValue("name");
-        return (
-          name || (
-            <span className="text-muted-foreground">
-              {t("holidays.defaultName")}
-            </span>
-          )
-        );
+
+        if (name) {
+          return name;
+        }
+
+        // Если нет названия, показываем дефолтное в зависимости от типа
+        const isDateRange = holiday.is_date_range;
+        const defaultKey = isDateRange
+          ? "holidays.defaultNameRange"
+          : "holidays.defaultNameSingle";
+
+        return <span className="text-muted-foreground">{t(defaultKey)}</span>;
       },
     },
     {

@@ -68,7 +68,10 @@ export function ProfessorSelector({
                   {workload?.professor.professor_profile?.academic_title}{" "}
                   {workload?.professor.name} {workload?.professor.surname}
                   <span className="text-sm text-gray-500">
-                    ({workload.assigned_hours}h)
+                    ({workload?.assigned_hours}h)
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    ({workload?.study_form?.form})
                   </span>
                   {!isAvailable && (
                     <Badge variant="destructive" className="ml-2">

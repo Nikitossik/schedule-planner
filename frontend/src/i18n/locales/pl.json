@@ -449,6 +449,8 @@
   },
   "holidays": {
     "defaultName": "Dzień wolny",
+    "defaultNameSingle": "Dzień wolny",
+    "defaultNameRange": "Dni wolne",
     "form": {
       "title": {
         "create": "Utwórz dzień wolny",
