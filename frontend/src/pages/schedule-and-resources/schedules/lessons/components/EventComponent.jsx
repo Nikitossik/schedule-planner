@@ -33,20 +33,8 @@ export function EventComponent({ event, groupBy }) {
   const isGroupedByProfessor = groupBy === "professor";
   const isGroupedByRoom = groupBy === "room";
 
-  // Получаем цвет предмета
-  const subjectColor = resource.lesson.subject?.color;
-
-  // Всегда используем цвет предмета
-  const backgroundStyle = {
-    backgroundColor: subjectColor,
-    borderLeftColor: subjectColor,
-  };
-
   return (
-    <div
-      className="rbc-event-content text-white transition-colors duration-200"
-      style={backgroundStyle}
-    >
+    <div className="rbc-event-content transition-colors duration-200">
       <div className="rbc-event-title font-medium">{resource.subject}</div>
       <div className="rbc-event-details text-xs space-y-0.5 mt-1">
         {!isGroupedByGroup && (
@@ -76,10 +64,6 @@ export function EventComponent({ event, groupBy }) {
             <span className="truncate">{resource.room}</span>
           </div>
         )}
-        <div className="flex items-center gap-1">
-          <Clock className="h-3 w-3 flex-shrink-0" />
-          <span>{resource.timeStr}</span>
-        </div>
       </div>
     </div>
   );

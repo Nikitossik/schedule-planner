@@ -522,13 +522,16 @@ export function LessonsCalendar({
               // Стили для уроков - используем цвет преподавателя
               const professorColor =
                 event.resource?.lesson?.professor?.professor_profile?.color;
+              const textColor =
+                event.resource?.lesson?.professor?.professor_profile
+                  ?.text_color;
               const borderColor = darkenColor(professorColor, 0.2);
 
               return {
                 style: {
                   backgroundColor: professorColor,
                   borderColor: borderColor,
-                  color: "white",
+                  color: textColor,
                   fontSize: "12px",
                 },
               };

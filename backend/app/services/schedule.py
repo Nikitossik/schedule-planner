@@ -25,6 +25,7 @@ from reportlab.lib.units import mm
 
 from ..models import Lesson, Group, StudyForm
 from app.services.university_holiday import UniversityHolidayService
+from colour import Color
 
 
 class ScheduleService(BaseService[Schedule, ScheduleIn]):
@@ -312,7 +313,7 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         story.append(Paragraph(subtitle_text, subtitle_style))
 
         # Создаем таблицу данных
-        table_data, cell_colors = self._create_pdf_table_data(
+        table_data, cell_colors, cell_text_colors = self._create_pdf_table_data(
             start, end, time_slots, lessons, holiday_dates
         )
 
@@ -357,19 +358,24 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
 
         table.setStyle(table_style)
 
-        # Применяем цвета к ячейкам с уроками
+        # Применяем цвета фона к ячейкам с уроками
         for (row, col), hex_color in cell_colors.items():
             rgb_color = self._hex_to_rgb(hex_color)
             table.setStyle(
                 TableStyle(
                     [
                         ("BACKGROUND", (col, row), (col, row), rgb_color),
-                        (
-                            "TEXTCOLOR",
-                            (col, row),
-                            (col, row),
-                            colors.black,
-                        ),  # Черный текст как в Excel
+                    ]
+                )
+            )
+
+        # Применяем цвета текста к ячейкам с уроками
+        for (row, col), text_color_hex in cell_text_colors.items():
+            text_rgb_color = self._hex_to_rgb(text_color_hex)
+            table.setStyle(
+                TableStyle(
+                    [
+                        ("TEXTCOLOR", (col, row), (col, row), text_rgb_color),
                     ]
                 )
             )
@@ -437,7 +443,8 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         """
         """Создание данных для PDF таблицы"""
         table_data = []
-        cell_colors = {}  # Словарь для хранения цветов ячеек: {(row, col): color}
+        cell_colors = {}  # Словарь для хранения цветов фона ячеек: {(row, col): color}
+        cell_text_colors = {}  # Словарь для хранения цветов текста: {(row, col): color}
 
         # Заголовочная строка (используем пустую ячейку как в Excel)
         header_row = [""] + time_slots + ["GRUPA"]
@@ -563,16 +570,30 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                                 and lesson_in_slot.id not in processed_lessons
                             ):
                                 cell_text = self._format_lesson_for_pdf(lesson_in_slot)
-                                # Сохраняем цвет для этой ячейки
-                                if lesson_in_slot.professor.professor_profile.color:
+                                # Сохраняем цвета фона и текста для этой ячейки
+                                if lesson_in_slot.professor.professor_profile:
                                     slots_count = self._get_lesson_time_slots_count(
                                         lesson_in_slot, time_slots
                                     )
+
+                                    # Получаем цвета через связи урока
+                                    bg_color = (
+                                        lesson_in_slot.professor.professor_profile.color
+                                    )
+                                    text_color = lesson_in_slot.professor.professor_profile.text_color  # По умолчанию черный
+
                                     for slot_offset in range(slots_count):
                                         if col_idx + slot_offset < len(time_slots):
-                                            cell_colors[
+                                            if bg_color:
+                                                cell_colors[
+                                                    (
+                                                        table_row,
+                                                        col_idx + 1 + slot_offset,
+                                                    )
+                                                ] = bg_color
+                                            cell_text_colors[
                                                 (table_row, col_idx + 1 + slot_offset)
-                                            ] = lesson_in_slot.professor.professor_profile.color
+                                            ] = text_color
                                 processed_lessons.add(lesson_in_slot.id)
                             elif (
                                 lesson_in_slot
@@ -598,7 +619,7 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
 
             current_date += timedelta(days=1)
 
-        return table_data, cell_colors
+        return table_data, cell_colors, cell_text_colors
 
     def _hex_to_rgb(self, hex_color: str):
         """
@@ -610,16 +631,14 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             reportlab.lib.colors.Color: RGB color for ReportLab.
         """
-        """Конвертация hex цвета в RGB для ReportLab"""
-        # Убираем # если есть
-        hex_color = hex_color.lstrip("#")
-
-        # Конвертируем в RGB (значения от 0 до 1)
-        r = int(hex_color[0:2], 16) / 255.0
-        g = int(hex_color[2:4], 16) / 255.0
-        b = int(hex_color[4:6], 16) / 255.0
-
-        return colors.Color(r, g, b)
+        """Конвертация hex цвета в RGB для ReportLab используя библиотеку colour"""
+        try:
+            color = Color(hex_color)
+            r, g, b = color.rgb
+            return colors.Color(r, g, b)
+        except Exception:
+            # Fallback на черный цвет в случае ошибки
+            return colors.Color(0, 0, 0)
 
     def _is_holiday(self, date_obj, schedule=None, holiday_dates=None) -> bool:
         """
@@ -1353,9 +1372,12 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         cell.alignment = Alignment(
             horizontal="center", vertical="center", wrap_text=True
         )
-        cell.font = Font(
-            name="Arial", size=9, color="000000", bold=False
-        )  # Черный обычный текст Arial
+
+        # Получаем цвет текста из профиля преподавателя через связи урока
+        text_color = "000000"  # По умолчанию черный
+        text_color = lesson.professor.professor_profile.text_color.lstrip("#")
+
+        cell.font = Font(name="Arial", size=9, color=text_color, bold=False)
 
         # Устанавливаем цвет фона из цвета преподавателя
         if lesson.professor.professor_profile.color:

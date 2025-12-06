@@ -61,6 +61,11 @@ class ProfessorProfileMiniOut(BaseModel):
         description='Optional hex color for UI tagging (e.g., "#RRGGBB").',
         examples=["#1E90FF"],
     )
+    text_color: str = Field(
+        ...,
+        description="Contrast text color for UI tagging.",
+        examples=["#FFFFFF", "#000000"],
+    )
 
 
 class ProfessorMiniOut(BaseModel):

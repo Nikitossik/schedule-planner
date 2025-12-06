@@ -2,14 +2,16 @@ from __future__ import annotations
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, Text, String
+from sqlalchemy.ext.hybrid import hybrid_property
+
 
 from typing import TYPE_CHECKING
+
+from ..utils.colors import get_contrast_text_color
 
 if TYPE_CHECKING:
     from .user import User
     from .professor_contract import ProfessorContract
-    from .professor_workload import ProfessorWorkload
-    from .subject_assignment import SubjectAssignment
 
 
 class ProfessorProfile(Base):
@@ -45,8 +47,6 @@ class ProfessorProfile(Base):
         cascade="all, delete-orphan",
     )
 
-    # One-to-many: contracts per semester; cascades on profile deletion
-    # workloads: Mapped[list["ProfessorWorkload"]] = relationship(
-    #     "ProfessorWorkload", back_populates="professor_profile"
-    # )  # One-to-many: workload items (currently disabled)
-    # subject_assignments: Mapped[list["SubjectAssignment"]] = relationship("SubjectAssignment", back_populates="professor_profile")  # One-to-many: subject assignments (currently disabled)
+    @hybrid_property
+    def text_color(self):
+        return get_contrast_text_color(self.color)
