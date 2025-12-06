@@ -6,19 +6,19 @@ import { Plus, Download } from "lucide-react";
 import { LessonForm } from "./LessonForm";
 import { LessonsCalendar } from "./LessonsCalendar";
 import { ExportDialog } from "./components/ExportDialog";
-import { SchedulePageProvider } from "@/contexts/SchedulePageContext";
+import { ScheduleAnalysisProvider } from "@/contexts/ScheduleAnalysisContext";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function LessonsList({ schedule, onUpdate }) {
-  // SchedulePageProvider предоставляет данные о конфликтах и предупреждениях
+  // ScheduleAnalysisProvider предоставляет данные анализа расписания (конфликты + нагрузка)
   // Он используется внутри ScheduleDataProvider для дополнительной функциональности
   return (
-    <SchedulePageProvider schedule={schedule}>
+    <ScheduleAnalysisProvider schedule={schedule}>
       <LessonsListContent schedule={schedule} onUpdate={onUpdate} />
-    </SchedulePageProvider>
+    </ScheduleAnalysisProvider>
   );
 }
 
@@ -69,8 +69,7 @@ function LessonsListContent({ schedule, onUpdate }) {
 
       // Инвалидируем кеши
       queryClient.invalidateQueries(["calendar-lessons", schedule?.id]);
-      queryClient.invalidateQueries(["conflicts-summary", schedule?.id]);
-      queryClient.invalidateQueries(["combined-warnings", schedule?.id]);
+      queryClient.invalidateQueries(["schedule-analysis", schedule?.id]);
 
       setIsCreateDialogOpen(false);
       setEditingLesson(null);
@@ -89,8 +88,7 @@ function LessonsListContent({ schedule, onUpdate }) {
 
       // Инвалидируем кеши
       queryClient.invalidateQueries(["calendar-lessons", schedule?.id]);
-      queryClient.invalidateQueries(["conflicts-summary", schedule?.id]);
-      queryClient.invalidateQueries(["combined-warnings", schedule?.id]);
+      queryClient.invalidateQueries(["schedule-analysis", schedule?.id]);
 
       setIsCreateDialogOpen(false);
       setEditingLesson(null);

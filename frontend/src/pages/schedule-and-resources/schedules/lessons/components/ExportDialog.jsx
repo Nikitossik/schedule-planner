@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useSchedulePageData } from "@/contexts/SchedulePageContext";
+import { useScheduleAnalysisData } from "@/contexts/ScheduleAnalysisContext";
 import { useScheduleExport } from "@/hooks/useScheduleExport";
 
 export function ExportDialog({ children }) {
@@ -25,10 +25,10 @@ export function ExportDialog({ children }) {
     hasConflicts,
     totalConflicts,
     hasWorkloadIssues,
-    totalWarnings,
+    totalWorkloadIssues,
     groupsInvolved,
     isLoading,
-  } = useSchedulePageData();
+  } = useScheduleAnalysisData();
 
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState("excel");
@@ -69,7 +69,7 @@ export function ExportDialog({ children }) {
   };
 
   const hasIssues = hasConflicts || hasWorkloadIssues;
-  const totalIssues = totalConflicts + totalWarnings;
+  const totalIssues = totalConflicts + totalWorkloadIssues;
 
   const handleExport = async () => {
     if (hasIssues && !confirmExport) {
@@ -144,7 +144,7 @@ export function ExportDialog({ children }) {
                       <li>
                         •{" "}
                         {t("lessons.export.issues.workload", {
-                          count: totalWarnings,
+                          count: totalWorkloadIssues,
                         })}
                       </li>
                     )}

@@ -14,6 +14,7 @@ from .lesson import LessonService
 from .academic_year import AcademicYearService
 from .university_holiday import UniversityHolidayService
 from .recurring_template import RecurringLessonTemplateService
+from .schedule_analysis import ScheduleAnalysisService
 
 __all__ = [
     "UserService",
@@ -32,4 +33,5 @@ __all__ = [
     "AcademicYearService",
     "UniversityHolidayService",
     "RecurringLessonTemplateService",
+    "ScheduleAnalysisService",
 ]

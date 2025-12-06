@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, ChevronDown } from "lucide-react";
-import { useSchedulePageData } from "@/contexts/SchedulePageContext";
+import { useScheduleAnalysisData } from "@/contexts/ScheduleAnalysisContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,34 +13,28 @@ import { toast } from "sonner";
 
 export function ConflictsDropdown({ onNavigateToConflict }) {
   const { t } = useTranslation();
-  const { conflicts, hasConflicts, totalConflicts, conflictsLoading } =
-    useSchedulePageData();
-
-  const single = conflicts?.single || [];
-  const shared = conflicts?.shared || [];
-  const total_single = single.reduce((sum, group) => sum + group.count, 0);
-  const total_shared = shared.reduce((sum, group) => sum + group.count, 0);
+  const {
+    roomConflicts,
+    professorConflicts,
+    groupConflicts,
+    hasConflicts,
+    totalConflicts,
+    totalSingleScheduleConflicts,
+    totalCrossScheduleConflicts,
+    analysisLoading,
+  } = useScheduleAnalysisData();
 
   // Функции для работы с конфликтами
-  const getConflictIcon = (type) => {
-    switch (type) {
-      case "room":
-        return "🏢";
-      case "professor":
-        return "👨‍🏫";
-      case "group":
-        return "👥";
-      default:
-        return "⚠️";
-    }
-  };
 
   const getConflictColor = (type) => {
     switch (type) {
+      case "room_double_booking":
       case "room":
         return "border-red-500 bg-red-50 text-red-700";
+      case "professor_time_conflict":
       case "professor":
         return "border-orange-500 bg-orange-50 text-orange-700";
+      case "group_schedule_conflict":
       case "group":
         return "border-yellow-500 bg-yellow-50 text-yellow-700";
       default:
@@ -50,10 +44,13 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
 
   const getConflictBadgeColor = (type) => {
     switch (type) {
+      case "room_double_booking":
       case "room":
         return "bg-red-100 text-red-800 border-red-200";
+      case "professor_time_conflict":
       case "professor":
         return "bg-orange-100 text-orange-800 border-orange-200";
+      case "group_schedule_conflict":
       case "group":
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
       default:
@@ -61,7 +58,7 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
     }
   };
 
-  if (conflictsLoading) {
+  if (analysisLoading) {
     return (
       <Button variant="outline" disabled className="gap-2">
         <AlertTriangle className="h-4 w-4" />
@@ -88,7 +85,7 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-96 max-h-80 overflow-y-hidden p-0"
+        className="max-w-md max-h-90 overflow-y-hidden p-0"
         align="end"
       >
         <div className="p-3 border-b bg-gray-50">
@@ -116,76 +113,102 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
         ) : (
           <div className="max-h-64 overflow-y-auto">
             {/* Single Schedule Conflicts */}
-            {single.length > 0 && (
+            {totalSingleScheduleConflicts > 0 && (
               <div>
                 <div className="px-3 py-2 bg-gray-100 border-b">
                   <h5 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
                     📋{" "}
                     {t("lessons.conflicts.types.internal", {
-                      count: total_single,
+                      count: totalSingleScheduleConflicts,
                     })}
                   </h5>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {t("lessons.conflicts.types.internalDescription")}
                   </p>
                 </div>
-                {single.map((group, groupIndex) => (
-                  <div key={`single-${groupIndex}`}>
-                    <div className="px-3 py-1 bg-gray-50 border-b">
-                      <span className="text-xs font-medium text-gray-700 flex items-center gap-1">
-                        {getConflictIcon(group.type)} {group.type.toUpperCase()}{" "}
-                        ({group.count})
-                      </span>
-                    </div>
-                    {group.conflicts.map((conflict, conflictIndex) => (
-                      <ConflictItem
-                        key={`single-${group.type}-${conflictIndex}`}
-                        conflict={conflict}
-                        onNavigateToConflict={onNavigateToConflict}
-                        getConflictColor={getConflictColor}
-                        getConflictIcon={getConflictIcon}
-                        getConflictBadgeColor={getConflictBadgeColor}
-                      />
-                    ))}
-                  </div>
-                ))}
+
+                {/* Room Conflicts - Single Schedule */}
+                {roomConflicts?.single_schedule?.length > 0 && (
+                  <ConflictSection
+                    type="room"
+                    conflicts={roomConflicts.single_schedule}
+                    onNavigateToConflict={onNavigateToConflict}
+                    getConflictColor={getConflictColor}
+                    getConflictBadgeColor={getConflictBadgeColor}
+                  />
+                )}
+
+                {/* Professor Conflicts - Single Schedule */}
+                {professorConflicts?.single_schedule?.length > 0 && (
+                  <ConflictSection
+                    type="professor"
+                    conflicts={professorConflicts.single_schedule}
+                    onNavigateToConflict={onNavigateToConflict}
+                    getConflictColor={getConflictColor}
+                    getConflictBadgeColor={getConflictBadgeColor}
+                  />
+                )}
+
+                {/* Group Conflicts - Single Schedule */}
+                {groupConflicts?.single_schedule?.length > 0 && (
+                  <ConflictSection
+                    type="group"
+                    conflicts={groupConflicts.single_schedule}
+                    onNavigateToConflict={onNavigateToConflict}
+                    getConflictColor={getConflictColor}
+                    getConflictBadgeColor={getConflictBadgeColor}
+                  />
+                )}
               </div>
             )}
 
-            {/* Shared Schedule Conflicts */}
-            {shared.length > 0 && (
+            {/* Cross Schedule Conflicts */}
+            {totalCrossScheduleConflicts > 0 && (
               <div>
                 <div className="px-3 py-2 bg-blue-100 border-b">
                   <h5 className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
                     🔄{" "}
                     {t("lessons.conflicts.types.crossSchedule", {
-                      count: total_shared,
+                      count: totalCrossScheduleConflicts,
                     })}
                   </h5>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {t("lessons.conflicts.types.crossScheduleDescription")}
                   </p>
                 </div>
-                {shared.map((group, groupIndex) => (
-                  <div key={`shared-${groupIndex}`}>
-                    <div className="px-3 py-1 bg-blue-50 border-b">
-                      <span className="text-xs font-medium text-blue-700 flex items-center gap-1">
-                        {getConflictIcon(group.type)} {group.type.toUpperCase()}{" "}
-                        ({group.count})
-                      </span>
-                    </div>
-                    {group.conflicts.map((conflict, conflictIndex) => (
-                      <ConflictItem
-                        key={`shared-${group.type}-${conflictIndex}`}
-                        conflict={conflict}
-                        onNavigateToConflict={onNavigateToConflict}
-                        getConflictColor={getConflictColor}
-                        getConflictIcon={getConflictIcon}
-                        getConflictBadgeColor={getConflictBadgeColor}
-                      />
-                    ))}
-                  </div>
-                ))}
+
+                {/* Room Conflicts - Cross Schedule */}
+                {roomConflicts?.cross_schedule?.length > 0 && (
+                  <ConflictSection
+                    type="room"
+                    conflicts={roomConflicts.cross_schedule}
+                    onNavigateToConflict={onNavigateToConflict}
+                    getConflictColor={getConflictColor}
+                    getConflictBadgeColor={getConflictBadgeColor}
+                  />
+                )}
+
+                {/* Professor Conflicts - Cross Schedule */}
+                {professorConflicts?.cross_schedule?.length > 0 && (
+                  <ConflictSection
+                    type="professor"
+                    conflicts={professorConflicts.cross_schedule}
+                    onNavigateToConflict={onNavigateToConflict}
+                    getConflictColor={getConflictColor}
+                    getConflictBadgeColor={getConflictBadgeColor}
+                  />
+                )}
+
+                {/* Group Conflicts - Cross Schedule */}
+                {groupConflicts?.cross_schedule?.length > 0 && (
+                  <ConflictSection
+                    type="group"
+                    conflicts={groupConflicts.cross_schedule}
+                    onNavigateToConflict={onNavigateToConflict}
+                    getConflictColor={getConflictColor}
+                    getConflictBadgeColor={getConflictBadgeColor}
+                  />
+                )}
               </div>
             )}
           </div>
@@ -195,23 +218,137 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
   );
 }
 
+// Компонент для отображения секции конфликтов определенного типа
+function ConflictSection({
+  type,
+  conflicts,
+  onNavigateToConflict,
+  getConflictColor,
+  getConflictBadgeColor,
+}) {
+  const { t } = useTranslation();
+
+  const getTypeTitle = (conflictType) => {
+    switch (conflictType) {
+      case "room":
+        return t("lessons.conflicts.sections.rooms");
+      case "professor":
+        return t("lessons.conflicts.sections.professors");
+      case "group":
+        return t("lessons.conflicts.sections.groups");
+      default:
+        return conflictType;
+    }
+  };
+
+  return (
+    <div>
+      <div className="px-3 py-1 bg-gray-50 border-b">
+        <span className="text-xs font-medium text-gray-700">
+          {getTypeTitle(type)} ({conflicts.length})
+        </span>
+      </div>
+      {conflicts.map((conflict, conflictIndex) => (
+        <ConflictItem
+          key={`${type}-${conflictIndex}`}
+          conflict={conflict}
+          onNavigateToConflict={onNavigateToConflict}
+          getConflictColor={getConflictColor}
+          getConflictBadgeColor={getConflictBadgeColor}
+        />
+      ))}
+    </div>
+  );
+}
+
 // Вынесенный компонент для отображения одного конфликта
 function ConflictItem({
   conflict,
   onNavigateToConflict,
   getConflictColor,
-  getConflictIcon,
   getConflictBadgeColor,
 }) {
-  const { t } = useTranslation();
-  const { schedule } = useSchedulePageData();
+  const { t, i18n } = useTranslation();
+  const { schedule } = useScheduleAnalysisData();
+
+  // Функция для форматирования времени без секунд
+  const formatTime = (timeString) => {
+    return timeString.slice(0, 5); // "08:00:00" -> "08:00"
+  };
+
+  // Функция для форматирования даты
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(i18n.language, {
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+
+  // Функция для построения сообщения о конфликте
+  const buildConflictMessage = (conflict) => {
+    const firstLesson = conflict.lessons[0];
+    const timeRange = `${formatTime(firstLesson.start_time)}-${formatTime(
+      firstLesson.end_time
+    )}`;
+
+    // Определяем, есть ли конфликт между разными расписаниями
+    const isCrossSchedule = conflict.schedules_involved?.length > 1;
+
+    // Используем resource_name из схемы конфликта
+    const resourceName = conflict.resource_name;
+
+    switch (conflict.type) {
+      case "group_schedule_conflict":
+      case "group":
+        return isCrossSchedule
+          ? t("lessons.conflicts.messages.groupCrossSchedule", {
+              group: resourceName,
+              time: timeRange,
+            })
+          : t("lessons.conflicts.messages.groupSingleSchedule", {
+              group: resourceName,
+              time: timeRange,
+            });
+
+      case "room_double_booking":
+      case "room":
+        return isCrossSchedule
+          ? t("lessons.conflicts.messages.roomCrossSchedule", {
+              room: resourceName,
+              time: timeRange,
+            })
+          : t("lessons.conflicts.messages.roomSingleSchedule", {
+              room: resourceName,
+              time: timeRange,
+            });
+
+      case "professor_time_conflict":
+      case "professor":
+        return isCrossSchedule
+          ? t("lessons.conflicts.messages.professorCrossSchedule", {
+              professor: resourceName,
+              time: timeRange,
+            })
+          : t("lessons.conflicts.messages.professorSingleSchedule", {
+              professor: resourceName,
+              time: timeRange,
+            });
+
+      default:
+        return `${resourceName} conflict at ${timeRange}`;
+    }
+  };
 
   const handleClick = () => {
     const firstLesson = conflict.lessons[0];
-    const lessonDate = new Date(firstLesson.date);
 
     onNavigateToConflict(conflict);
-    toast.info(`Navigated to ${firstLesson.date} - ${conflict.message}`);
+    toast.info(
+      `Navigated to ${formatDate(firstLesson.date)} - ${buildConflictMessage(
+        conflict
+      )}`
+    );
   };
 
   return (
@@ -222,49 +359,55 @@ function ConflictItem({
       onClick={handleClick}
     >
       <div className="flex items-start gap-3">
-        <span className="text-lg flex-shrink-0 mt-0.5">
-          {getConflictIcon(conflict.type)}
-        </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <Badge
-              variant="outline"
-              className={`text-xs ${getConflictBadgeColor(conflict.type)}`}
-            >
-              {conflict.type.toUpperCase()}
-            </Badge>
             <span className="text-xs text-muted-foreground">
-              {conflict.lessons[0]?.date} • {conflict.lessons[0]?.start_time}-
-              {conflict.lessons[0]?.end_time}
+              {formatDate(conflict.lessons[0]?.date)} •{" "}
+              {formatTime(conflict.lessons[0]?.start_time)}-
+              {formatTime(conflict.lessons[0]?.end_time)}
             </span>
           </div>
 
           <p className="text-sm font-medium text-gray-900 mb-2">
-            {conflict.message}
+            {buildConflictMessage(conflict)}
           </p>
 
-          <div className="space-y-1">
+          <div className="space-y-2">
             {conflict.lessons.map((lesson, lessonIndex) => (
               <div
                 key={lessonIndex}
-                className="flex items-center justify-between text-xs bg-white bg-opacity-60 rounded px-2 py-1"
+                className="text-xs bg-white bg-opacity-60 rounded px-3 py-2 space-y-1"
               >
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{lesson.group?.name}</span>
-                  <span className="text-muted-foreground">•</span>
-                  <span>{lesson.subject?.name}</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <span>
-                    {lesson.professor?.name} {lesson.professor?.surname}
-                  </span>
-                  {lesson.schedule?.id !== schedule?.id && (
-                    <Badge
-                      variant="outline"
-                      className="text-xs bg-blue-50 text-blue-700 border-blue-200"
-                    >
-                      {t("lessons.conflicts.otherScheduleBadge")}
-                    </Badge>
+                {/* Информация о предмете и группе (если не конфликт группы) */}
+                <div className="flex flex-col space-y-1">
+                  {conflict.type !== "group_schedule_conflict" &&
+                    conflict.type !== "group" && (
+                      <div className="font-medium text-gray-800">
+                        {lesson.group_name}
+                      </div>
+                    )}
+
+                  <div className="text-gray-700">{lesson.subject_name}</div>
+
+                  {/* Преподаватель (если не конфликт преподавателя) */}
+                  {conflict.type !== "professor_time_conflict" &&
+                    conflict.type !== "professor" && (
+                      <div className="text-gray-600">
+                        {lesson.professor_full_name}
+                      </div>
+                    )}
+
+                  {/* Комната (если не конфликт комнаты) */}
+                  {conflict.type !== "room_double_booking" &&
+                    conflict.type !== "room" && (
+                      <div className="text-gray-600">{lesson.room_number}</div>
+                    )}
+
+                  {/* Название плана (если это другой план) */}
+                  {lesson.schedule_name !== schedule?.name && (
+                    <div className="text-blue-700 font-medium">
+                      {t("entities.plan")}: {lesson.schedule_name}
+                    </div>
                   )}
                 </div>
               </div>

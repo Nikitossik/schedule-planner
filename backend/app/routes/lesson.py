@@ -1,8 +1,6 @@
-from typing import Annotated, Optional
+from typing import Annotated
 from fastapi import Depends, status, APIRouter, Query
 from sqlalchemy.orm import Session
-from datetime import date
-
 from ..dependencies import get_db, RoleChecker
 from ..schemas.lesson import (
     LessonIn,
@@ -10,11 +8,6 @@ from ..schemas.lesson import (
     LessonUpdate,
     LessonQueryParams,
     CalendarLessonsResponse,
-)
-from ..schemas.shared import PaginatedResponse
-from ..schemas.lesson_conflict import (
-    ConflictQueryParams,
-    ConflictsSummaryOut,
 )
 from ..services import LessonService
 from ..utils.enums import UserRoleEnum
@@ -38,35 +31,6 @@ async def get_calendar_lessons(
 ):
     """Get lessons for the calendar with date filtering and no pagination."""
     return LessonService(db).get_calendar_lessons(query_params)
-
-
-@lesson_router.get(
-    "/conflicts/summary",
-    response_model=ConflictsSummaryOut,
-    summary="Get lesson conflicts summary",
-    description="Detect and summarize scheduling conflicts by scope (single/shared) and type (room/professor/group). Lessons are collected across all schedules; optional schedule_id is applied only during grouping.",
-)
-async def get_lesson_conflicts_summary(
-    *,
-    db: Session = Depends(get_db),
-    query_params: Annotated[ConflictQueryParams, Query()],
-):
-    return LessonService(db).get_conflicts_summary(query_params)
-
-
-@lesson_router.get(
-    "/groups",
-    summary="List groups present in a schedule",
-    description="Return the distinct groups that participate in the specified schedule. Useful for filtering and summaries.",
-)
-async def get_schedule_groups(
-    schedule_id: int = Query(..., description="Schedule ID to inspect"),
-    db: Session = Depends(get_db),
-):
-    """Get unique groups involved in a schedule."""
-    lesson_service = LessonService(db)
-    groups = lesson_service.get_schedule_groups(schedule_id)
-    return {"groups": groups}
 
 
 @lesson_router.get(

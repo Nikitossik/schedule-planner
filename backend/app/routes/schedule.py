@@ -10,9 +10,12 @@ from ..schemas.schedule import (
     ScheduleQueryParams,
     ScheduleExportParams,
 )
+from ..schemas.schedule_analysis import ScheduleAnalysisOut
 from ..schemas.shared import PaginatedResponse
 from ..services import ScheduleService
+from ..services.schedule_analysis import ScheduleAnalysisService
 from ..utils.enums import UserRoleEnum
+
 
 # Router: Schedules (timetables) CRUD and export
 schedule_router = APIRouter(prefix="/api/schedule", tags=["Schedules"])
@@ -113,3 +116,15 @@ def export_schedule(
     return ScheduleService(db).export(
         schedule_id=schedule_id, export_params=export_params
     )
+
+
+@schedule_router.get(
+    "/{schedule_id}/analysis",
+    response_model=ScheduleAnalysisOut,
+    summary="Get complete schedule analysis",
+    description="Get comprehensive schedule analysis including all conflicts and workload warnings for a specific schedule.",
+)
+def get_schedule_analysis(schedule_id: int, db=Depends(get_db)):
+    """Get complete schedule analysis including conflicts and workload warnings"""
+    service = ScheduleAnalysisService(db)
+    return service.analyze_complete_schedule(schedule_id)

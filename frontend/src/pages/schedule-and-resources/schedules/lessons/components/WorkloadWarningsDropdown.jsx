@@ -11,21 +11,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useSchedulePageData } from "@/contexts/SchedulePageContext";
+import { useScheduleAnalysisData } from "@/contexts/ScheduleAnalysisContext";
 
 export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
   const { t } = useTranslation();
   const {
     professorWarnings,
     subjectWarnings,
-    totalProfessorWarnings,
-    totalSubjectWarnings,
-    totalWarnings,
+    totalWorkloadIssues,
     hasWorkloadIssues,
-    workloadLoading,
-  } = useSchedulePageData();
+    analysisLoading,
+  } = useScheduleAnalysisData();
 
-  if (workloadLoading) {
+  if (analysisLoading) {
     return (
       <Button variant="outline" disabled>
         <Clock className="h-4 w-4 mr-2" />
@@ -50,7 +48,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
           <AlertTriangle className="h-4 w-4 mr-2" />
           {t("lessons.workloadWarnings.hoursIssues")}
           <Badge variant="destructive" className="ml-2">
-            {totalWarnings}
+            {totalWorkloadIssues}
           </Badge>
         </Button>
       </DropdownMenuTrigger>
@@ -88,10 +86,10 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
 
                   <div className="text-sm space-y-1">
                     <div className="font-medium text-foreground">
-                      {warning.professor_name}
+                      {warning.resource_name}
                     </div>
                     <div className="text-muted-foreground">
-                      {warning.subject_name}
+                      {warning.lessons?.[0]?.subject_name || "Unknown Subject"}
                     </div>
                   </div>
 
@@ -105,7 +103,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
                     <div className="flex justify-between">
                       <span>{t("lessons.workloadWarnings.allowed")}</span>
                       <span className="font-medium">
-                        {warning.allowed_hours}h
+                        {warning.allocated_hours}h
                       </span>
                     </div>
                     <div className="flex justify-between text-red-600">
@@ -143,7 +141,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
             </div>
             {subjectWarnings.map((warning) => (
               <DropdownMenuItem
-                key={warning.subject_id}
+                key={warning.resource_id}
                 className="cursor-pointer p-3"
                 onClick={() =>
                   onNavigateToLessons && onNavigateToLessons(warning.lessons)
@@ -159,10 +157,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
 
                   <div className="text-sm space-y-1">
                     <div className="font-medium text-foreground">
-                      {warning.subject_name}
-                    </div>
-                    <div className="text-muted-foreground text-xs">
-                      {warning.subject_code}
+                      {warning.resource_name}
                     </div>
                   </div>
 
@@ -201,13 +196,13 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
           </>
         )}
 
-        {totalWarnings > 3 && (
+        {totalWorkloadIssues > 3 && (
           <>
             <DropdownMenuSeparator />
             <div className="p-2 text-xs text-center text-muted-foreground">
               {t("lessons.workloadWarnings.showingWarnings", {
-                shown: Math.min(3, totalWarnings),
-                total: totalWarnings,
+                shown: Math.min(3, totalWorkloadIssues),
+                total: totalWorkloadIssues,
               })}
             </div>
           </>

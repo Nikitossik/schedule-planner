@@ -2,8 +2,9 @@ from __future__ import annotations
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Column, Date, Table, Time, ForeignKey, Index, Enum
+from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime, date, time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from ..utils.enums import LessonTypeEnum
 
 if TYPE_CHECKING:
@@ -102,15 +103,6 @@ class Lesson(Base):
     def subject(self):
         return self.subject_assignment.subject
 
-    # Optional shortcuts (kept commented out); can be enabled if needed
-    # @property
-    # def direction(self):
-    #     return self.subject_assignment.workload.direction
-
-    # @property
-    # def study_form(self):
-    #     return self.subject_assignment.workload.study_form
-
     # Indices supporting fast conflict checks and filtering
     __table_args__ = (
         # Room-time conflict: a room cannot host multiple lessons at the same time
@@ -158,3 +150,38 @@ class Lesson(Base):
         additional_hour = 1 if remainder >= 45 else 0
 
         return float(full_blocks + additional_hour)
+
+    # Hybrid properties for analysis schemas
+    @hybrid_property
+    def professor_full_name(self) -> Optional[str]:
+        """Get professor full name with academic title"""
+
+        user = self.subject_assignment.workload.contract.professor_profile.user
+        prof_profile = self.subject_assignment.workload.contract.professor_profile
+
+        parts = []
+        parts.append(prof_profile.academic_title)
+        parts.append(user.name)
+        parts.append(user.surname)
+
+        return " ".join(parts) if parts else None
+
+    @hybrid_property
+    def room_display(self) -> Optional[str]:
+        """Get room number or 'Online' for display"""
+        if self.is_online:
+            return "online"
+        elif self.room:
+            return self.room.number
+        return None
+
+    @hybrid_property
+    def schedule_name(self) -> str:
+        """Get schedule name"""
+
+        return self.schedule.name
+
+    @hybrid_property
+    def subject_name(self) -> str:
+        """Get subject name"""
+        return self.subject_assignment.subject.name

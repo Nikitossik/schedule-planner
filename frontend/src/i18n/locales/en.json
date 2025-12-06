@@ -1042,6 +1042,19 @@
         "internalDescription": "Conflicts within this schedule",
         "crossScheduleDescription": "Conflicts with other schedules"
       },
+      "sections": {
+        "rooms": "Rooms",
+        "professors": "Professors", 
+        "groups": "Groups"
+      },
+      "messages": {
+        "groupSingleSchedule": "Group '{{group}}' has multiple lessons at {{time}}",
+        "groupCrossSchedule": "Group '{{group}}' has multiple lessons across schedules at {{time}}",
+        "roomSingleSchedule": "Room '{{room}}' is booked multiple times at {{time}}",
+        "roomCrossSchedule": "Room '{{room}}' is booked multiple times across schedules at {{time}}",
+        "professorSingleSchedule": "Professor {{professor}} has multiple lessons at {{time}}",
+        "professorCrossSchedule": "Professor {{professor}} has multiple lessons across schedules at {{time}}"
+      },
       "otherScheduleBadge": "Other Schedule"
     },
     "workloadWarnings": {
@@ -1281,6 +1294,7 @@
     "professor": "professor",
     "student": "student",
     "professorProfile": "professor profile",
-    "studentProfile": "student profile"
+    "studentProfile": "student profile",
+    "plan": "Plan"
   }
 }

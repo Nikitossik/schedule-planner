@@ -8,8 +8,6 @@ from ..schemas.professor_workload import (
     ProfessorWorkloadOut,
     ProfessorWorkloadUpdate,
     ProfessorWorkloadQueryParams,
-    WorkloadSummaryOut,
-    CombinedWarningsSummaryOut,
 )
 from ..schemas.shared import PaginatedResponse
 from ..services import ProfessorWorkloadService
@@ -126,31 +124,3 @@ async def delete_professor_workload(
 ):
     """Delete a professor workload by its ID."""
     return ProfessorWorkloadService(db).delete(professor_workload_id)
-
-
-@professor_workload_router.get(
-    "/warnings/local/{schedule_id}",
-    response_model=WorkloadSummaryOut,
-    summary="Get local workload warnings for a schedule",
-    description=(
-        "Analyze a single schedule for subject assignments that exceeded allocated hours. "
-        "Returns a list of warnings and a total count."
-    ),
-)
-async def get_local_workload_warnings(schedule_id: int, db: Session = Depends(get_db)):
-    """Get local warnings about exceeding allocated hours within a specific schedule."""
-    return ProfessorWorkloadService(db).get_local_workload_warnings(schedule_id)
-
-
-@professor_workload_router.get(
-    "/warnings/combined/{schedule_id}",
-    response_model=CombinedWarningsSummaryOut,
-    summary="Get combined professor and subject warnings for a schedule",
-    description=(
-        "Analyze a single schedule for both professor workload and subject hours violations. "
-        "Returns separate lists for professor assignment warnings and subject allocation warnings."
-    ),
-)
-async def get_combined_warnings(schedule_id: int, db: Session = Depends(get_db)):
-    """Get combined warnings for both professors and subjects in a specific schedule."""
-    return ProfessorWorkloadService(db).get_combined_warnings(schedule_id)

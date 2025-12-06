@@ -1040,6 +1040,19 @@
         "internalDescription": "Konflikty w ramach tego planu",
         "crossScheduleDescription": "Konflikty z innymi planami"
       },
+      "sections": {
+        "rooms": "Sale",
+        "professors": "Wykładowcy",
+        "groups": "Grupy"
+      },
+      "messages": {
+        "groupSingleSchedule": "Grupa '{{group}}' ma kilka zajęć w godzinach {{time}}",
+        "groupCrossSchedule": "Grupa '{{group}}' ma kilka zajęć w różnych planach w godzinach {{time}}",
+        "roomSingleSchedule": "Sala '{{room}}' jest zarezerwowana wielokrotnie w godzinach {{time}}",
+        "roomCrossSchedule": "Sala '{{room}}' jest zarezerwowana wielokrotnie w różnych planach w godzinach {{time}}",
+        "professorSingleSchedule": "Wykładowca '{{professor}}' ma kilka zajęć w godzinach {{time}}",
+        "professorCrossSchedule": "Wykładowca '{{professor}}' ma kilka zajęć w różnych planach w godzinach {{time}}"
+      },
       "otherScheduleBadge": "Inny plan"
     },
     "workloadWarnings": {
@@ -1279,6 +1292,7 @@
     "professor": "profesora",
     "student": "studenta",
     "professorProfile": "profil profesora",
-    "studentProfile": "profil studenta"
+    "studentProfile": "profil studenta",
+    "plan": "Plan"
   }
 }
