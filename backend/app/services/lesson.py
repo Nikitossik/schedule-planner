@@ -390,12 +390,14 @@ class LessonService(BaseService[Lesson, LessonIn]):
                             if overlap_group[0].room
                             else f"Room {room_id}"
                         )
-                        conflicts.append({
-                            "type": "room",
-                            "message": f"Room '{room_name}' is double-booked across schedules at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
-                            "severity": "error",
-                            "lessons": overlap_group,
-                        })
+                        conflicts.append(
+                            {
+                                "type": "room",
+                                "message": f"Room '{room_name}' is double-booked across schedules at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
+                                "severity": "error",
+                                "lessons": overlap_group,
+                            }
+                        )
                     else:
                         # Внутрирасписанийный конфликт - применяем логику с преподавателями
                         # Если один преподаватель ведет все уроки в одной комнате - это многогрупповое занятие, не конфликт
@@ -408,12 +410,14 @@ class LessonService(BaseService[Lesson, LessonIn]):
                             if overlap_group[0].room
                             else f"Room {room_id}"
                         )
-                        conflicts.append({
-                            "type": "room",
-                            "message": f"Room '{room_name}' is double-booked by different professors at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
-                            "severity": "error",
-                            "lessons": overlap_group,
-                        })
+                        conflicts.append(
+                            {
+                                "type": "room",
+                                "message": f"Room '{room_name}' is double-booked by different professors at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
+                                "severity": "error",
+                                "lessons": overlap_group,
+                            }
+                        )
         return conflicts
 
     def _find_professor_conflicts_in_day(self, lessons: List[Lesson]) -> List[Dict]:
@@ -444,14 +448,14 @@ class LessonService(BaseService[Lesson, LessonIn]):
 
         for professor_id, prof_lesson_list in professor_lessons.items():
             overlapping_groups = self._find_time_overlaps(prof_lesson_list)
-            
+
             for overlap_group in overlapping_groups:
                 if len(overlap_group) > 1:
                     # Получаем расписания для определения типа конфликта
                     schedules = set()
                     for lesson in overlap_group:
                         schedules.add(lesson.schedule_id)
-                    
+
                     # Проверяем, в одной ли комнате все уроки преподавателя
                     rooms = set()
                     online_lessons = 0
@@ -470,13 +474,17 @@ class LessonService(BaseService[Lesson, LessonIn]):
                         professor = self._get_professor_object(first_lesson)
 
                         if professor and professor.user:
-                            professor_name = f"{professor.user.name} {professor.user.surname}"
-                            conflicts.append({
-                                "type": "professor",
-                                "message": f"Professor {professor_name} has conflicting lessons across schedules at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
-                                "severity": "error",
-                                "lessons": overlap_group,
-                            })
+                            professor_name = (
+                                f"{professor.user.name} {professor.user.surname}"
+                            )
+                            conflicts.append(
+                                {
+                                    "type": "professor",
+                                    "message": f"Professor {professor_name} has conflicting lessons across schedules at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
+                                    "severity": "error",
+                                    "lessons": overlap_group,
+                                }
+                            )
                     else:
                         # Внутрирасписанийный конфликт - применяем логику с комнатами
                         # Если все уроки в одной комнате ИЛИ все онлайн - это многогрупповое занятие, не конфликт
@@ -488,13 +496,17 @@ class LessonService(BaseService[Lesson, LessonIn]):
                         professor = self._get_professor_object(first_lesson)
 
                         if professor and professor.user:
-                            professor_name = f"{professor.user.name} {professor.user.surname}"
-                            conflicts.append({
-                                "type": "professor",
-                                "message": f"Professor {professor_name} teaching in multiple locations simultaneously at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
-                                "severity": "error",
-                                "lessons": overlap_group,
-                            })
+                            professor_name = (
+                                f"{professor.user.name} {professor.user.surname}"
+                            )
+                            conflicts.append(
+                                {
+                                    "type": "professor",
+                                    "message": f"Professor {professor_name} teaching in multiple locations simultaneously at {overlap_group[0].start_time}-{overlap_group[0].end_time}",
+                                    "severity": "error",
+                                    "lessons": overlap_group,
+                                }
+                            )
         return conflicts
 
     def _find_group_conflicts_in_day(self, lessons: List[Lesson]) -> List[Dict]:
@@ -546,12 +558,14 @@ class LessonService(BaseService[Lesson, LessonIn]):
                     else:
                         message = f"Group '{group_name}' has multiple lessons at {overlap_group[0].start_time}-{overlap_group[0].end_time}"
 
-                    conflicts.append({
-                        "type": "group",
-                        "message": message,
-                        "severity": "error",
-                        "lessons": overlap_group,
-                    })
+                    conflicts.append(
+                        {
+                            "type": "group",
+                            "message": message,
+                            "severity": "error",
+                            "lessons": overlap_group,
+                        }
+                    )
         return conflicts
 
     def _find_time_overlaps(self, lessons: List[Lesson]) -> List[List[Lesson]]:

@@ -610,10 +610,13 @@
         "role": "Rola",
         "userType": "Typ",
         "academicTitle": "Tytuł Naukowy",
-        "notes": "Uwagi"
+        "notes": "Uwagi",
+        "unavailableDays": "Dostępność"
       },
       "viewNotes": "Zobacz uwagi",
       "notesTitle": "Uwagi",
+      "allDaysAvailable": "Codziennie",
+      "unavailable": "Niedostępny: {{days}}",
       "searchPlaceholder": "Szukaj użytkowników...",
       "addButton": "+ Utwórz Użytkownika"
     },

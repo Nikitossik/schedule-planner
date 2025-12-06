@@ -611,10 +611,13 @@
         "role": "Role",
         "userType": "Type",
         "academicTitle": "Academic Title",
-        "notes": "Notes"
+        "notes": "Notes",
+        "unavailableDays": "Availability"
       },
       "viewNotes": "View notes",
       "notesTitle": "Notes",
+      "allDaysAvailable": "Daily",
+      "unavailable": "Unavailable: {{days}}",
       "searchPlaceholder": "Search users...",
       "addButton": "+ Create User"
     },

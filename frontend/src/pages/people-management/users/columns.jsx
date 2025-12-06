@@ -3,6 +3,7 @@
 import { actionsColumn } from "@/components/datatable/commonColumns";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +14,35 @@ import {
 import { Info } from "lucide-react";
 
 export const useUserColumns = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const formatUnavailableDays = (unavailableDays) => {
+    if (
+      !unavailableDays ||
+      unavailableDays === "[]" ||
+      unavailableDays === ""
+    ) {
+      return [];
+    }
+
+    try {
+      const daysArray =
+        typeof unavailableDays === "string"
+          ? JSON.parse(unavailableDays)
+          : unavailableDays;
+      if (!Array.isArray(daysArray) || daysArray.length === 0) {
+        return [];
+      }
+
+      const locale = i18n?.language === "pl" ? "pl" : "en";
+      return daysArray.map((day) => {
+        const date = new Date(2024, 0, 1 + day);
+        return date.toLocaleDateString(locale, { weekday: "short" });
+      });
+    } catch {
+      return [];
+    }
+  };
 
   return [
     { accessorKey: "id", header: t("users.table.columns.id") },
@@ -100,6 +129,40 @@ export const useUserColumns = () => {
           }}
         ></div>
       ),
+    },
+    {
+      accessorKey: "unavailable_days",
+      header: t("users.table.columns.unavailableDays"),
+      cell: ({ row }) => {
+        const unavailableDays =
+          row.original.professor_profile?.unavailable_days;
+        const userType = row.original.user_type;
+
+        // Показываем дни доступности только для профессоров
+        if (userType !== "professor") {
+          return "-";
+        }
+
+        const unavailableDaysArray = formatUnavailableDays(unavailableDays);
+
+        if (unavailableDaysArray.length === 0) {
+          return (
+            <Badge variant="secondary" className="text-xs">
+              {t("users.table.allDaysAvailable")}
+            </Badge>
+          );
+        }
+
+        return (
+          <div className="flex flex-wrap gap-1">
+            {unavailableDaysArray.map((day, index) => (
+              <Badge key={index} variant="destructive" className="text-xs">
+                {day}
+              </Badge>
+            ))}
+          </div>
+        );
+      },
     },
     actionsColumn({ entity: "user", useModal: true }),
   ];
