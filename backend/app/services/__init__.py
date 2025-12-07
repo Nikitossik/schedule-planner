@@ -15,23 +15,3 @@ from .academic_year import AcademicYearService
 from .university_holiday import UniversityHolidayService
 from .recurring_template import RecurringLessonTemplateService
 from .schedule_analysis import ScheduleAnalysisService
-
-__all__ = [
-    "UserService",
-    "FacultyService",
-    "DirectionService",
-    "SubjectService",
-    "RoomService",
-    "GroupService",
-    "ScheduleService",
-    "SemesterService",
-    "ProfessorContractService",
-    "ProfessorWorkloadService",
-    "StudyFormService",
-    "SubjectAssignmentService",
-    "LessonService",
-    "AcademicYearService",
-    "UniversityHolidayService",
-    "RecurringLessonTemplateService",
-    "ScheduleAnalysisService",
-]

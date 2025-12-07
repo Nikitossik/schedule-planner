@@ -54,20 +54,14 @@ class Semester(Base):
         "AcademicYear", back_populates="semesters", lazy="selectin"
     )  # Many-to-one: parent academic year
     groups: Mapped[list["Group"]] = relationship(
-        "Group", back_populates="semester"
+        "Group", back_populates="semester", cascade="all, delete-orphan"
     )  # One-to-many: student groups in this semester
     contracts: Mapped[list["ProfessorContract"]] = relationship(
-        "ProfessorContract", back_populates="semester"
+        "ProfessorContract", back_populates="semester", cascade="all, delete-orphan"
     )  # One-to-many: professor contracts active this semester
     schedules: Mapped[list["Schedule"]] = relationship(
-        "Schedule", back_populates="semester"
+        "Schedule", back_populates="semester", cascade="all, delete-orphan"
     )  # One-to-many: schedules associated with this semester
-    # workloads: Mapped[list["ProfessorWorkload"]] = relationship(
-    #     "ProfessorWorkload", back_populates="semester"
-    # )
-    # subject_assignments: Mapped[list["SubjectAssignment"]] = relationship(
-    #     "SubjectAssignment", back_populates="semester"
-    # )
 
     @hybrid_property
     def is_current(self) -> bool:

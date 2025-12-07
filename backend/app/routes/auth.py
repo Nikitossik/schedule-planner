@@ -9,7 +9,6 @@ from ..schemas.user import Token, RefreshTokenIn
 import app.utils.security as security
 
 
-# Auth endpoints: token issuance (password flow) and token refresh
 auth_router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
 
@@ -17,12 +16,12 @@ auth_router = APIRouter(prefix="/api/auth", tags=["Auth"])
     "/token",
     summary="Obtain access/refresh token pair",
     description=(
-        "Authenticate with OAuth2 Password flow and receive a JWT access token and refresh token.\n\n"
+    	"Authenticate with OAuth2 Password flow and receive a JWT access token and refresh token.\n\n"
         "Form fields:\n"
         "- username: user email\n"
         "- password: user password"
     ),
-)
+)	
 async def login_for_token_pair(
     *,
     db: Session = Depends(get_db),

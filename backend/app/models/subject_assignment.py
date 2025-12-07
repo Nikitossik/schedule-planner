@@ -53,7 +53,7 @@ class SubjectAssignment(Base):
     )  # Many-to-one: workload under which this assignment is managed
 
     lessons: Mapped[list["Lesson"]] = relationship(
-        "Lesson", back_populates="subject_assignment", lazy="selectin"
+        "Lesson", back_populates="subject_assignment", lazy="selectin", cascade="all, delete-orphan"
     )  # One-to-many: lessons scheduled for this subject assignment
 
     @property

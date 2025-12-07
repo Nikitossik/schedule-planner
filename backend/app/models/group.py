@@ -56,7 +56,8 @@ class Group(Base):
     )  # Many-to-one: this group belongs to one semester
     students: Mapped[list["StudentProfile"]] = relationship(
         "StudentProfile", back_populates="group"
-    )  # One-to-many: student profiles assigned to this group
+    ) 
+    # One-to-many: student profiles assigned to this group
     # lessons: Mapped[list["Lesson"]] = relationship("Lesson", back_populates="group")  # One-to-many: lessons scheduled for this group (currently disabled)
 
     @property

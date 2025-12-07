@@ -87,35 +87,35 @@ class ScheduleOut(BaseModel):
         examples=["CS Fall 2024"],
     )
 
-    academic_year: AcademicYearMiniOut = Field(
+    academic_year: AcademicYearMiniOut | None = Field(
         ...,
         description="Mini representation of the academic year derived from the semester.",
         examples=[{"id": 1, "name": "2024-2025"}],
     )
-    semester: SemesterMiniOut = Field(
+    semester: SemesterMiniOut | None = Field(
         ...,
         description="Mini representation of the semester this schedule belongs to.",
         examples=[{"id": 2, "name": "Fall 2024"}],
     )
-    study_form: StudyFormMiniOut = Field(
+    study_form: StudyFormMiniOut | None = Field(
         ...,
         description="Mini representation of the study form this schedule is for.",
     )
-    faculty: FacultyMiniOut = Field(
+    faculty: FacultyMiniOut | None = Field(
         ...,
         description="Mini representation of the faculty derived from the direction.",
         examples=[{"id": 4, "name": "Engineering"}],
     )
-    direction: DirectionMiniOut = Field(
+    direction: DirectionMiniOut | None = Field(
         ...,
         description="Mini representation of the direction this schedule is for.",
         examples=[{"id": 3, "name": "Computer Science", "code": "CS-01"}],
     )
-    workloads: list[ScheduleWorkloadOut] = Field(
+    workloads: list[ScheduleWorkloadOut] | None= Field(
         ...,
         description="List of mini representations of professor workloads associated with this schedule.",
     )
-    groups: list[GroupMiniOut] = Field(
+    groups: list[GroupMiniOut] | None = Field(
         ...,
         description="List of mini representations of student groups associated with this schedule.",
     )
@@ -140,11 +140,6 @@ class ScheduleExportParams(BaseModel):
         default=ExportFormat.excel,
         description='Export format. One of: "excel", "pdf".',
         examples=["excel"],
-    )
-    group_ids: Optional[list[int]] = Field(
-        default=None,
-        description="IDs of groups to include in the export. If omitted, include all.",
-        examples=[[10, 11, 15]],
     )
     filename: Optional[str] = Field(
         default=None,

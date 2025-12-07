@@ -53,10 +53,10 @@ class Lesson(Base):
         ForeignKey("schedule.id")
     )  # FK to the owning schedule
     subject_assignment_id: Mapped[int] = mapped_column(
-        ForeignKey("subject_assignment.id")
+        ForeignKey("subject_assignment.id", ondelete="CASCADE")
     )  # FK to subject assignment (links subject + professor/workload)
     room_id: Mapped[int] = mapped_column(
-        ForeignKey("room.id"), nullable=True
+        ForeignKey("room.id", ondelete="SET NULL"), nullable=True
     )  # Optional FK to room (null for online or TBA)
 
     is_online: Mapped[bool] = mapped_column(

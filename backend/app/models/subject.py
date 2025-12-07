@@ -46,7 +46,7 @@ class Subject(Base):
         "Direction", back_populates="subjects", lazy="selectin"
     )  # Many-to-one: direction that owns this subject
     subject_assignments: Mapped[list["SubjectAssignment"]] = relationship(
-        "SubjectAssignment", back_populates="subject", lazy="selectin"
+        "SubjectAssignment", back_populates="subject", lazy="selectin", cascade="all, delete-orphan"
     )  # One-to-many: assignments of this subject to professor workloads
 
     @property

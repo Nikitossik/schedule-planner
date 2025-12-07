@@ -91,7 +91,7 @@ class RecurringLessonTemplate(Base):
     )  # Last date (null = until semester end)
 
     # Relationships
-    schedule: Mapped["Schedule"] = relationship("Schedule")
+    schedule: Mapped["Schedule"] = relationship("Schedule", back_populates="recurring_lessons")
     groups: Mapped[List["Group"]] = relationship(
         "Group", secondary=recurring_template_groups
     )

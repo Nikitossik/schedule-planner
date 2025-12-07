@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .direction import Direction
     from .group import Group
     from .professor_workload import ProfessorWorkload
-
+    from .schedule import Schedule
 
 class StudyForm(Base):
     """
@@ -35,15 +35,15 @@ class StudyForm(Base):
     )  # Enum storing the study format (e.g., FULL_TIME, PART_TIME)
 
     # relations
+    schedules: Mapped[list["Schedule"]] = relationship(
+        "Schedule", back_populates="study_form", lazy="selectin", cascade="all, delete-orphan"
+    )  # One-to-many: schedules associated with this study form; select-in eager loading
     direction: Mapped["Direction"] = relationship(
         "Direction", back_populates="study_forms", lazy="selectin"
     )  # Many-to-one: this study form belongs to a single direction; select-in eager loading
     groups: Mapped[list["Group"]] = relationship(
-        "Group", back_populates="study_form", lazy="selectin"
+        "Group", back_populates="study_form", lazy="selectin", cascade="all, delete-orphan"
     )  # One-to-many: groups organized under this study form; select-in eager loading
-    # semesters: Mapped[list["Semester"]] = relationship(
-    #     "Semester", back_populates="study_form"
-    # )  # Optional relation placeholder: semesters per study form (currently disabled)
     workloads: Mapped[list["ProfessorWorkload"]] = relationship(
-        "ProfessorWorkload", back_populates="study_form", lazy="selectin"
+        "ProfessorWorkload", back_populates="study_form", lazy="selectin", cascade="all, delete-orphan"
     )  # One-to-many: professor workloads allocated for this study form

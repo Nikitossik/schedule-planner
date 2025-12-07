@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .semester import Semester
     from .lesson import Lesson
     from .study_form import StudyForm
-
+    from .recurring_template import RecurringLessonTemplate
 
 class Schedule(Base):
     """
@@ -43,31 +43,36 @@ class Schedule(Base):
         "Semester", back_populates="schedules"
     )  # Many-to-one: this schedule belongs to one semester
 
+    recurring_lessons: Mapped[List["RecurringLessonTemplate"]] = relationship(
+        "RecurringLessonTemplate", back_populates="schedule", cascade="all, delete-orphan",
+    )
     lessons: Mapped[List["Lesson"]] = relationship(
-        "Lesson", back_populates="schedule"
+        "Lesson", back_populates="schedule", cascade="all, delete-orphan",
     )  # One-to-many: lessons contained in this schedule
     study_form: Mapped["StudyForm"] = relationship("StudyForm", lazy="selectin")
 
     @property
     def academic_year(self):
-        # Convenience: academic year derived via the related semester.
-        return self.semester.academic_year
+        if self.semester and self.semester.academic_year:
+            return self.semester.academic_year
 
     @property
     def faculty(self):
-        # Convenience: faculty derived via the related study form.
-        return self.study_form.direction.faculty
+        if self.study_form and self.study_form.direction and self.study_form.direction.faculty:
+            return self.study_form.direction.faculty
+        
 
     @property
     def direction(self):
-        # Convenience: direction derived via the related study form.
-        return self.study_form.direction
+        if self.study_form and self.study_form.direction:
+            return self.study_form.direction
 
     @property
     def workloads(self):
-        # Convenience: workloads derived via the related study form.
-        return self.study_form.workloads
+        if self.study_form and self.study_form.workloads:
+            return self.study_form.workloads
 
     @property
     def groups(self):
-        return self.study_form.groups
+        if self.study_form and self.study_form.groups:
+            return self.study_form.groups

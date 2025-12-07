@@ -44,5 +44,5 @@ class AcademicYear(Base):
     )  # Indicates the currently active academic year
 
     semesters: Mapped[list["Semester"]] = relationship(
-        "Semester", back_populates="academic_year"
+        "Semester", back_populates="academic_year", cascade="all, delete-orphan"
     )  # One-to-many: all semesters associated with this academic year

@@ -33,12 +33,8 @@ class Faculty(Base):
     name: Mapped[str] = mapped_column(String(100), unique=True)  # Unique faculty name
 
     # relations
-    # subjects: Mapped[list["Subject"]] = relationship(
-    #     "Subject", back_populates="faculty"
-    # )  # One-to-many: subjects offered under this faculty (currently disabled)
-    # groups: Mapped[list["Group"]] = relationship("Group", back_populates="faculty")  # One-to-many: student groups (currently disabled)
     directions: Mapped[list["Direction"]] = relationship(
-        "Direction", back_populates="faculty", lazy="selectin"
+        "Direction", back_populates="faculty", lazy="selectin", cascade="all, delete-orphan"
     )  # One-to-many: directions/programs belonging to this faculty; select-in for efficient eager loading
 
     @hybrid_property

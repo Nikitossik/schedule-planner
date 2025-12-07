@@ -54,5 +54,5 @@ class Direction(Base):
         cascade="all, delete-orphan",
     )  # One-to-many: study formats under this direction; cascades on direction deletion
     subjects: Mapped[list["Subject"]] = relationship(
-        "Subject", back_populates="direction"
+        "Subject", back_populates="direction", cascade="all, delete-orphan"
     )  # One-to-many: subjects associated with this direction
