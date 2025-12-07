@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BookOpen } from "lucide-react";
+import { truncateText } from "@/utils/textUtils";
 
 export function SubjectSelector({
   value,
@@ -18,6 +19,11 @@ export function SubjectSelector({
   disabled = false,
 }) {
   const { t } = useTranslation();
+
+  // Найдем выбранное назначение для отображения сокращенного названия
+  const selectedAssignment = assignments.find(a => a.id.toString() === value);
+  const selectedSubjectName = selectedAssignment?.subject?.name || '';
+  const displaySelectedText = selectedSubjectName ? truncateText(selectedSubjectName, 40) : '';
 
   return (
     <div className="space-y-2">
@@ -37,7 +43,19 @@ export function SubjectSelector({
                 ? t("lessons.form.placeholders.selectSubject")
                 : t("lessons.form.placeholders.selectProfessorFirst")
             }
-          />
+          >
+            {displaySelectedText && (
+              <div className="flex items-center" title={selectedSubjectName}>
+                <BookOpen className="h-4 w-4 mr-2" />
+                {displaySelectedText}
+                {selectedAssignment && (
+                  <span className="text-sm text-gray-500 ml-2">
+                    {selectedAssignment.hours_per_subject}h
+                  </span>
+                )}
+              </div>
+            )}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {assignments.length === 0 ? (
