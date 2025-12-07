@@ -537,6 +537,12 @@
             "id": 21,
             "subject_id": 7,
             "workload_id": 20
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 22,
+            "subject_id": 7,
+            "workload_id": 13
         }
     ],
     "subject": [

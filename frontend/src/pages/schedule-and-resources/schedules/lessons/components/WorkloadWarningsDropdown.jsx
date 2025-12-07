@@ -80,7 +80,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
             </p>
           </div>
         ) : (
-          <div className="max-h-64 overflow-y-auto">
+          <div className="max-h-64 overflow-y-auto overflow-x-hidden">
             {/* Предупреждения по преподавателям */}
             {professorWarnings.length > 0 && (
               <>
@@ -214,18 +214,6 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
                     </div>
                   </DropdownMenuItem>
                 ))}
-              </>
-            )}
-
-            {totalWorkloadIssues > 3 && (
-              <>
-                <DropdownMenuSeparator />
-                <div className="p-2 text-xs text-center text-muted-foreground">
-                  {t("lessons.workloadWarnings.showingWarnings", {
-                    shown: Math.min(3, totalWorkloadIssues),
-                    total: totalWorkloadIssues,
-                  })}
-                </div>
               </>
             )}
           </div>
