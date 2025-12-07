@@ -115,7 +115,7 @@ export function useLessonFormData({
       const baseValues = {
         schedule_id: schedule?.id || initialData.schedule?.id,
         subject_assignment_id: initialData.subject_assignment_id || null,
-        room_id: initialData.room?.id || null,
+        room_id: initialData.room_id || initialData.room?.id || null,
         is_online: initialData.is_online || false,
         lesson_type: initialData.lesson_type || "lecture",
         // Для recurring templates workload_id хранится напрямую, для lessons - в объекте workload

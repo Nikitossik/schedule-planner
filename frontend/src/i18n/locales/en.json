@@ -1086,14 +1086,16 @@
       "filename": {
         "label": "Filename",
         "placeholder": "Enter filename without extension",
-        "help": "Leave empty to use auto-generated name"
+        "help": "Leave empty to use auto-generated name",
+        "required": "Filename is required"
       },
       "groups": {
         "label": "Groups to include",
         "noGroups": "No groups found for this schedule",
         "selectAll": "Select All",
         "clearAll": "Clear All",
-        "selected": "Selected: {{selected}} of {{total}} group(s)"
+        "selected": "Selected: {{selected}} of {{total}} group(s)",
+        "required": "At least one group must be selected"
       },
       "format": {
         "label": "Export format",

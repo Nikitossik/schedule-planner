@@ -97,7 +97,7 @@ class UserService(BaseService[User, UserIn]):
             )
         return query
 
-    def create(self, user: UserIn) -> User:
+    def create(self, user: UserIn, create_profile=True) -> User:
         """
         Create a new user and provision the role-specific profile when applicable.
 
@@ -126,8 +126,8 @@ class UserService(BaseService[User, UserIn]):
 
         new_user = super().create(user_data)
 
-        # Create profile using data from student_profile or professor_profile
-        self.create_user_profile(new_user, user)
+        if create_profile:
+            self.create_user_profile(new_user, user)
 
         return new_user
 

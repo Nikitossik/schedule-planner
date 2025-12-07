@@ -1084,14 +1084,16 @@
       "filename": {
         "label": "Nazwa pliku",
         "placeholder": "Wprowadź nazwę pliku bez rozszerzenia",
-        "help": "Pozostaw puste, aby użyć automatycznie wygenerowanej nazwy"
+        "help": "Pozostaw puste, aby użyć automatycznie wygenerowanej nazwy",
+        "required": "Nazwa pliku jest wymagana"
       },
       "groups": {
         "label": "Grupy do uwzględnienia",
         "noGroups": "Nie znaleziono grup dla tego planu",
         "selectAll": "Zaznacz wszystkie",
         "clearAll": "Wyczyść wszystkie",
-        "selected": "Wybrane: {{selected}} z {{total}} grup"
+        "selected": "Wybrane: {{selected}} z {{total}} grup",
+        "required": "Przynajmniej jedna grupa musi być wybrana"
       },
       "format": {
         "label": "Format eksportu",

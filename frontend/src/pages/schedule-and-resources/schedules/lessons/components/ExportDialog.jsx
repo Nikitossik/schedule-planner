@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, Download, FileText, X } from "lucide-react";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useScheduleAnalysisData } from "@/contexts/ScheduleAnalysisContext";
@@ -32,46 +32,54 @@ export function ExportDialog({ children }) {
 
   const [open, setOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState("excel");
-  const [selectedGroups, setSelectedGroups] = useState([]);
   const [filename, setFilename] = useState("");
+  const [errors, setErrors] = useState({});
   const [confirmExport, setConfirmExport] = useState(false);
+
+  // Схема валидации
+  const exportSchema = z.object({
+    filename: z.string().min(1, t("lessons.export.filename.required")),
+  });
 
   const { exportSchedule, isExporting } = useScheduleExport();
 
-  // Инициализация выбранных групп и имени файла
-  useEffect(() => {
-    if (groupsInvolved.length > 0 && selectedGroups.length === 0) {
-      setSelectedGroups(groupsInvolved.map((g) => g.id));
-    }
-  }, [groupsInvolved]);
-
+  // Инициализация имени файла
   useEffect(() => {
     if (schedule && !filename) {
-      const defaultName = `schedule_${schedule.study_form?.direction?.name}_${schedule.semester?.number}`;
-      setFilename(defaultName.replace(/[^a-zA-Z0-9_-]/g, "_"));
+      const defaultName = schedule.name || "schedule";
+      setFilename(defaultName.replace(/[^a-zA-Z0-9_-\s]/g, "_"));
     }
   }, [schedule]);
-
-  const handleGroupToggle = (groupId) => {
-    setSelectedGroups((prev) =>
-      prev.includes(groupId)
-        ? prev.filter((id) => id !== groupId)
-        : [...prev, groupId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    setSelectedGroups(groupsInvolved.map((g) => g.id));
-  };
-
-  const handleClearAll = () => {
-    setSelectedGroups([]);
-  };
 
   const hasIssues = hasConflicts || hasWorkloadIssues;
   const totalIssues = totalConflicts + totalWorkloadIssues;
 
+  const validateForm = () => {
+    try {
+      exportSchema.parse({
+        filename: filename.trim(),
+      });
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            newErrors[err.path[0]] = err.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
+
   const handleExport = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     if (hasIssues && !confirmExport) {
       setConfirmExport(true);
       return;
@@ -81,10 +89,7 @@ export function ExportDialog({ children }) {
       await exportSchedule({
         scheduleId: schedule.id,
         format: exportFormat,
-        groupIds:
-          selectedGroups.length === groupsInvolved.length
-            ? null
-            : selectedGroups,
+        groupIds: null, // Экспортируем все группы
         filename: filename.trim() || undefined,
       });
       setOpen(false);
@@ -93,10 +98,6 @@ export function ExportDialog({ children }) {
       console.error("Export failed:", error);
     }
   };
-
-  const selectedGroupsData = groupsInvolved.filter((g) =>
-    selectedGroups.includes(g.id)
-  );
 
   if (isLoading) {
     return (
@@ -181,71 +182,17 @@ export function ExportDialog({ children }) {
             <Input
               id="filename"
               value={filename}
-              onChange={(e) => setFilename(e.target.value)}
+              onChange={(e) => {
+                setFilename(e.target.value);
+                if (errors.filename && e.target.value.trim()) {
+                  setErrors((prev) => ({ ...prev, filename: undefined }));
+                }
+              }}
               placeholder={t("lessons.export.filename.placeholder")}
+              className={errors.filename ? "border-red-500" : ""}
             />
-          </div>
-
-          {/* Выбор групп */}
-          <div className="space-y-3">
-            <Label>{t("lessons.export.groups.label")}</Label>
-
-            {groupsInvolved.length === 0 ? (
-              <div className="text-sm text-muted-foreground p-3 border rounded-md">
-                {t("lessons.export.groups.noGroups")}
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-2 gap-3 max-h-32 overflow-y-auto border rounded-md p-3">
-                  {groupsInvolved.map((group) => (
-                    <div key={group.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`group-${group.id}`}
-                        checked={selectedGroups.includes(group.id)}
-                        onCheckedChange={() => handleGroupToggle(group.id)}
-                      />
-                      <Label
-                        htmlFor={`group-${group.id}`}
-                        className="text-sm font-normal cursor-pointer"
-                      >
-                        {group.name}
-                        {group.study_form && (
-                          <span className="text-muted-foreground ml-1">
-                            ({group.study_form.form})
-                          </span>
-                        )}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Быстрые действия */}
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleSelectAll}
-                    disabled={selectedGroups.length === groupsInvolved.length}
-                  >
-                    {t("lessons.export.groups.selectAll")}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleClearAll}
-                    disabled={selectedGroups.length === 0}
-                  >
-                    {t("lessons.export.groups.clearAll")}
-                  </Button>
-                </div>
-
-                <p className="text-sm text-muted-foreground">
-                  {t("lessons.export.groups.selected", {
-                    selected: selectedGroupsData.length,
-                    total: groupsInvolved.length,
-                  })}
-                </p>
-              </>
+            {errors.filename && (
+              <p className="text-sm text-red-500">{errors.filename}</p>
             )}
           </div>
 
@@ -277,6 +224,7 @@ export function ExportDialog({ children }) {
               onClick={() => {
                 setOpen(false);
                 setConfirmExport(false);
+                setErrors({});
               }}
             >
               {t("lessons.export.buttons.cancel")}
@@ -291,12 +239,7 @@ export function ExportDialog({ children }) {
                 {t("lessons.export.issues.continueAnyway")}
               </Button>
             ) : (
-              <Button
-                onClick={handleExport}
-                disabled={
-                  isExporting || selectedGroups.length === 0 || !filename.trim()
-                }
-              >
+              <Button onClick={handleExport} disabled={isExporting}>
                 {isExporting ? (
                   t("lessons.export.buttons.exporting")
                 ) : (

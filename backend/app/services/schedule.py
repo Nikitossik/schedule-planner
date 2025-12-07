@@ -105,14 +105,14 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         # Вызываем соответствующий метод экспорта
         if export_params.format == "excel":
             file_buffer, generated_filename = self.export_schedule_excel(
-                schedule_id, export_params.group_ids, export_params.filename
+                schedule_id, export_params.filename
             )
             media_type = (
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
         else:  # pdf
             file_buffer, generated_filename = self.export_schedule_pdf(
-                schedule_id, export_params.group_ids, export_params.filename
+                schedule_id, export_params.filename
             )
             media_type = "application/pdf"
 
@@ -132,7 +132,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
     def export_schedule_excel(
         self,
         schedule_id: int,
-        group_ids: Optional[List[int]] = None,
         custom_filename: Optional[str] = None,
     ) -> Tuple[io.BytesIO, str]:
         """
@@ -157,8 +156,8 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         # Получаем расписание
         schedule = self.get_by_id(schedule_id)
 
-        # Получаем уроки для расписания (с фильтрацией по группам если указаны)
-        lessons = self._get_lessons_for_schedule(schedule_id, group_ids)
+        # Получаем уроки для расписания (все группы)
+        lessons = self._get_lessons_for_schedule(schedule_id)
 
         # Создаем временные слоты (с 8:00 до 18:00 с интервалом 45 минут)
         time_slots = self._generate_time_slots()
@@ -225,7 +224,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
     def export_schedule_pdf(
         self,
         schedule_id: int,
-        group_ids: Optional[List[int]] = None,
         custom_filename: Optional[str] = None,
     ) -> Tuple[io.BytesIO, str]:
         """
@@ -247,11 +245,10 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         """Экспорт расписания в PDF в том же формате что и Excel"""
 
         # Получаем расписание
-
         schedule = self.get_by_id(schedule_id)
 
-        # Получаем уроки для расписания (с фильтрацией по группам если указаны)
-        lessons = self._get_lessons_for_schedule(schedule_id, group_ids)
+        # Получаем уроки для расписания (все группы)
+        lessons = self._get_lessons_for_schedule(schedule_id)
 
         # Создаем временные слоты (с 8:00 до 18:00 с интервалом 45 минут)
         time_slots = self._generate_time_slots()
@@ -831,9 +828,7 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
 
         return lesson_text
 
-    def _get_lessons_for_schedule(
-        self, schedule_id: int, group_ids: Optional[List[int]] = None
-    ) -> List[Lesson]:
+    def _get_lessons_for_schedule(self, schedule_id: int) -> List[Lesson]:
         """
         Fetch lessons for a schedule, optionally restricted to specific groups.
 
@@ -844,20 +839,15 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             List[Lesson]: Lessons ordered by date and start time.
         """
-        """Получение уроков для расписания с возможной фильтрацией по группам"""
-        from ..models.group import Group
+        """Получение уроков для расписания (все группы)"""
+        return (
+            self.db.query(Lesson)
+            .filter(Lesson.schedule_id == schedule_id)
+            .order_by(Lesson.date, Lesson.start_time)
+            .all()
+        )
 
-        query = self.db.query(Lesson).filter(Lesson.schedule_id == schedule_id)
-
-        # Если указаны конкретные группы, фильтруем по ним через many-to-many
-        if group_ids:
-            query = query.join(Lesson.groups).filter(Group.id.in_(group_ids))
-
-        return query.order_by(Lesson.date, Lesson.start_time).all()
-
-    def _get_groups_for_schedule(
-        self, schedule_id: int, group_ids: Optional[List[int]] = None
-    ) -> List[Group]:
+    def _get_groups_for_schedule(self, schedule_id: int) -> List[Group]:
         """
         Fetch groups for a schedule, optionally restricted to specific groups.
 
@@ -870,10 +860,10 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             List[Group]: Groups ordered by name.
         """
-        """Получение групп для расписания с возможной фильтрацией"""
+        """Получение групп для расписания (все группы)"""
         schedule = self.db.query(Schedule).filter(Schedule.id == schedule_id).first()
 
-        query = (
+        return (
             self.db.query(Group)
             .join(StudyForm)
             .filter(
@@ -882,13 +872,9 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                     Group.semester_id == schedule.semester_id,
                 )
             )
+            .order_by(Group.name)
+            .all()
         )
-
-        # Если указаны конкретные группы, фильтруем по ним
-        if group_ids:
-            query = query.filter(Group.id.in_(group_ids))
-
-        return query.order_by(Group.name).all()
 
     def _generate_time_slots(self) -> List[str]:
         """

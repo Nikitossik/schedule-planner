@@ -94,6 +94,7 @@ export function RecurringLessonForm({
   const watchedStartDate = watch("start_date");
   const watchedDaysOfWeek = watch("days_of_week");
   const watchedSubjectAssignmentId = watch("subject_assignment_id");
+  const watchedRoomId = watch("room_id");
 
   // Загрузка и фильтрация данных (без фильтрации комнат по времени для recurring)
   const { groups, workloads, assignments, rooms, disabledDayMatchers } =
@@ -431,7 +432,7 @@ export function RecurringLessonForm({
             onIsOnlineChange={(checked) =>
               setValue("is_online", checked, { shouldValidate: true })
             }
-            roomId={watch("room_id")}
+            roomId={watchedRoomId ? watchedRoomId.toString() : null}
             onRoomChange={(value) =>
               setValue("room_id", value, { shouldValidate: true })
             }

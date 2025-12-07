@@ -63,6 +63,7 @@ export function LessonForm({
   const watchedWorkloadId = watch("workload_id");
   const watchedIsOnline = watch("is_online");
   const watchedDate = watch("date");
+  const watchedRoomId = watch("room_id");
 
   // Загрузка и фильтрация данных
   const { groups, workloads, assignments, rooms, disabledDayMatchers } =
@@ -187,7 +188,7 @@ export function LessonForm({
           onIsOnlineChange={(checked) =>
             setValue("is_online", checked, { shouldValidate: true })
           }
-          roomId={watch("room_id")}
+          roomId={watchedRoomId ? watchedRoomId.toString() : null}
           onRoomChange={(value) =>
             setValue("room_id", value, { shouldValidate: true })
           }
