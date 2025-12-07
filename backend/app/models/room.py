@@ -30,6 +30,3 @@ class Room(Base):
     capacity: Mapped[int] = mapped_column(
         Integer, nullable=True
     )  # Seating capacity; nullable when not specified
-
-    # relations
-    # lessons: Mapped[list["Lesson"]] = relationship("Lesson", back_populates="room")  # One-to-many: lessons scheduled in this room (disabled)

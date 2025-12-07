@@ -16,7 +16,20 @@ import {
 const createSchema = (t) =>
   z.object({
     number: z.string().min(1, t("rooms.form.validation.numberRequired")),
-    capacity: z.coerce.number().min(1, t("rooms.form.validation.capacityMin")),
+    capacity: z
+      .union([z.string(), z.number(), z.null()])
+      .optional()
+      .transform((val) => {
+        if (val === "" || val === null || val === undefined) return null;
+        const num = typeof val === 'string' ? Number(val) : val;
+        return isNaN(num) ? null : num;
+      })
+      .refine(
+        (val) => val === null || (typeof val === 'number' && val > 0),
+        {
+          message: t("rooms.form.validation.capacityMin"),
+        }
+      ),
   });
 
 export default function RoomForm({
@@ -30,7 +43,10 @@ export default function RoomForm({
   const { t } = useTranslation();
   const form = useForm({
     resolver: zodResolver(createSchema(t)),
-    defaultValues,
+    defaultValues: {
+      number: defaultValues?.number || "",
+      capacity: defaultValues?.capacity || "",
+    },
   });
 
   return (
@@ -66,6 +82,7 @@ export default function RoomForm({
               <FormControl>
                 <Input
                   type="number"
+                  min={1}
                   {...field}
                   placeholder={t("rooms.form.placeholders.capacity")}
                 />

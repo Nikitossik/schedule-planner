@@ -39,12 +39,12 @@ export function LocationSection({
             {t("lessons.form.fields.room")}
           </label>
           <Select
-            value={roomId || "no-room"}
+            value={roomId ? roomId.toString() : "no-room"}
             onValueChange={(value) => {
               if (value === "no-room") {
                 onRoomChange(null);
               } else {
-                onRoomChange(value);
+                onRoomChange(Number(value));
                 // Если выбран кабинет, убираем онлайн
                 if (isOnline) {
                   onIsOnlineChange(false);
@@ -82,9 +82,11 @@ export function LocationSection({
                     <div className="flex items-center">
                       <Building2 className="h-4 w-4 mr-2" />
                       {room.number}
-                      <span className="text-sm text-gray-500 ml-2">
-                        (capacity: {room.capacity})
-                      </span>
+                      {room.capacity && (
+                        <span className="text-sm text-gray-500 ml-2">
+                          (capacity: {room.capacity})
+                        </span>
+                      )}
                     </div>
                   </SelectItem>
                 ))

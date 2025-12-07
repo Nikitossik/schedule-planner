@@ -92,6 +92,9 @@ export function DataTable({
 
   return (
     <>
+      <div className="mb-2 text-sm text-muted-foreground">
+        {t("datatable.totalRecords", { count: rowCount || 0 })}
+      </div>
       <div
         className="rounded-md border overflow-x-auto"
         style={{ maxWidth: elementWidth }}

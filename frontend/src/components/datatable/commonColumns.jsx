@@ -20,6 +20,7 @@ import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEntityTranslator } from "@/utils/entityTranslator";
+import { usePolishDeclensions } from "@/utils/polish-declensions";
 
 export const selectColumn = {
   id: "select",
@@ -57,6 +58,7 @@ function ActionsCell({
 }) {
   const { t } = useTranslation();
   const { translateEntity } = useEntityTranslator();
+  const { getDeleteConfirmMessage, getDeleteSuccessMessage } = usePolishDeclensions();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const itemId = row.original.id;
@@ -95,9 +97,7 @@ function ActionsCell({
         { id: itemId },
         {
           onSuccess: () => {
-            toast.success(
-              t("datatable.deleteSuccess", { item: entityDisplayName })
-            );
+            toast.success(getDeleteSuccessMessage(entity));
             setOpen(false);
             queryClient.invalidateQueries(["entity", entity]);
             if (onRefresh) {
@@ -152,7 +152,7 @@ function ActionsCell({
           open={open}
           onConfirm={handleDelete}
           onCancel={() => setOpen(false)}
-          message={t("datatable.confirmDelete", { item: entityDisplayName })}
+          entityType={entity}
         />
       )}
     </>

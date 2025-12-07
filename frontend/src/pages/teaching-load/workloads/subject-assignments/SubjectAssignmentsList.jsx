@@ -11,9 +11,11 @@ import {
 import { toast } from "sonner";
 import SubjectAssignmentForm from "./SubjectAssignmentForm";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
+import { usePolishDeclensions } from "@/utils/polish-declensions";
 
 const SubjectAssignmentsList = ({ workload, onUpdate }) => {
   const { t } = useTranslation();
+  const { getDeleteSuccessMessage } = usePolishDeclensions();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState(null);
@@ -71,7 +73,7 @@ const SubjectAssignmentsList = ({ workload, onUpdate }) => {
   const handleDelete = async (assignmentId) => {
     try {
       await deleteAssignment.mutateAsync({ id: assignmentId });
-      toast.success(t("workloads.subjectAssignments.messages.deleteSuccess"));
+      toast.success(getDeleteSuccessMessage("assignment"));
 
       // Триггерим обновление таблицы
       setRefetchTrigger((prev) => prev + 1);

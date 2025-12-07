@@ -29,9 +29,15 @@ const createSchema = (t) =>
     study_form_id: z.coerce
       .number()
       .min(1, t("workloads.form.validation.directionRequired")),
-    assigned_hours: z.coerce
-      .number()
-      .min(0, t("workloads.form.validation.assignedHoursMin")),
+    assigned_hours: z
+      .string()
+      .refine((val) => val.trim() !== "", {
+        message: t("workloads.form.validation.hoursEmpty"),
+      })
+      .refine((val) => val.trim() !== "0", {
+        message: t("workloads.form.validation.hoursZero"),
+      })
+      .transform((val) => Number(val)),
   });
 
 const WorkloadForm = ({
@@ -81,7 +87,7 @@ const WorkloadForm = ({
     onSubmit({
       contract_id: Number(data.contract_id),
       study_form_id: Number(data.study_form_id),
-      assigned_hours: Number(data.assigned_hours),
+      assigned_hours: data.assigned_hours === "" ? null : Number(data.assigned_hours),
     });
   };
 
@@ -172,7 +178,12 @@ const WorkloadForm = ({
                   ) : (
                     studyForms.map((sf) => (
                       <SelectItem key={sf.id} value={String(sf.id)}>
-                        {sf.direction?.name} ({sf.form})
+                        {(() => {
+                          const form = sf.form;
+                          const translatedForm = form === 'full-time' ? t('common.studyForms.fullTime') : 
+                                                form === 'part-time' ? t('common.studyForms.partTime') : form;
+                          return `${sf.direction?.name} (${translatedForm})`;
+                        })()}
                       </SelectItem>
                     ))
                   )}

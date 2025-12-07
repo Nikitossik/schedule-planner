@@ -217,8 +217,8 @@ class RoomMiniOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int = Field(..., description="Unique identifier of the room.", examples=[101])
     number: str = Field(..., description="Room number/code.", examples=["B-201"])
-    capacity: int = Field(
-        ..., description="Seating capacity of the room.", examples=[30]
+    capacity: int | None = Field(
+        None, description="Seating capacity of the room.", examples=[30]
     )
 
 

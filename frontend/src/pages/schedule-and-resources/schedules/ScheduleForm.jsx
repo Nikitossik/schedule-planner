@@ -202,10 +202,15 @@ export default function ScheduleForm({
                   <Input
                     value={
                       defaultValues?.semester
-                        ? t("schedules.table.columns.semesterFormat", {
-                            number: defaultValues.semester.number,
-                            period: defaultValues.semester.period,
-                          })
+                        ? (() => {
+                            const period = defaultValues.semester.period;
+                            const translatedPeriod = period === 'winter' ? t('common.periods.winter') : 
+                                                    period === 'summer' ? t('common.periods.summer') : period;
+                            return t("schedules.table.columns.semesterFormat", {
+                              number: defaultValues.semester.number,
+                              period: translatedPeriod,
+                            });
+                          })()
                         : ""
                     }
                     disabled={true}
@@ -247,10 +252,15 @@ export default function ScheduleForm({
                           key={semester.id}
                           value={String(semester.id)}
                         >
-                          {t("schedules.table.columns.semesterFormat", {
-                            number: semester.number,
-                            period: semester.period,
-                          })}
+                          {(() => {
+                            const period = semester.period;
+                            const translatedPeriod = period === 'winter' ? t('common.periods.winter') : 
+                                                    period === 'summer' ? t('common.periods.summer') : period;
+                            return t("schedules.table.columns.semesterFormat", {
+                              number: semester.number,
+                              period: translatedPeriod,
+                            });
+                          })()}
                         </SelectItem>
                       ))
                     )}
@@ -275,7 +285,12 @@ export default function ScheduleForm({
                   <Input
                     value={
                       defaultValues?.study_form
-                        ? `${defaultValues.direction?.name} (${defaultValues.study_form.form})`
+                        ? (() => {
+                            const form = defaultValues.study_form.form;
+                            const translatedForm = form === 'full-time' ? t('common.studyForms.fullTime') : 
+                                                  form === 'part-time' ? t('common.studyForms.partTime') : form;
+                            return `${defaultValues.direction?.name} (${translatedForm})`;
+                          })()
                         : ""
                     }
                     disabled={true}
@@ -305,7 +320,12 @@ export default function ScheduleForm({
                           key={studyForm.id}
                           value={String(studyForm.id)}
                         >
-                          {studyForm.direction?.name} ({studyForm.form})
+                          {(() => {
+                            const form = studyForm.form;
+                            const translatedForm = form === 'full-time' ? t('common.studyForms.fullTime') : 
+                                                  form === 'part-time' ? t('common.studyForms.partTime') : form;
+                            return `${studyForm.direction?.name} (${translatedForm})`;
+                          })()}
                         </SelectItem>
                       ))
                     )}

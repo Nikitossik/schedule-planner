@@ -8,6 +8,8 @@
     "add": "Dodaj",
     "search": "Szukaj",
     "noData": "Brak danych",
+    "notSet": "Nie ustawiono",
+    "notApplicable": "Nie dotyczy",
     "selectLanguage": "Wybierz język",
     "actions": "Akcje",
     "confirm": "Potwierdź",
@@ -32,6 +34,131 @@
         "friday": "Pt",
         "saturday": "Sob",
         "sunday": "Nie"
+      }
+    },
+    "periods": {
+      "winter": "Zima",
+      "summer": "Lato"
+    },
+    "studyForms": {
+      "fullTime": "Stacjonarne",
+      "partTime": "Niestacjonarne"
+    },
+    "confirmDialog": {
+      "defaultMessage": "Czy na pewno chcesz usunąć ten element?",
+      "cancel": "Anuluj",
+      "delete": "Usuń"
+    },
+    "entities": {
+      "group": {
+        "nominative": "Grupa",
+        "accusative": "grupę",
+        "deleted": "usunięta"
+      },
+      "user": {
+        "nominative": "Użytkownik",
+        "accusative": "użytkownika",
+        "deleted": "usunięty"
+      },
+      "lesson": {
+        "nominative": "Zajęcia",
+        "accusative": "zajęcia",
+        "deleted": "usunięte"
+      },
+      "professor": {
+        "nominative": "Prowadzący",
+        "accusative": "prowadzącego",
+        "deleted": "usunięty"
+      },
+      "room": {
+        "nominative": "Sala",
+        "accusative": "salę",
+        "deleted": "usunięta"
+      },
+      "subject": {
+        "nominative": "Przedmiot",
+        "accusative": "przedmiot",
+        "deleted": "usunięty"
+      },
+      "assignment": {
+        "nominative": "Przypisanie",
+        "accusative": "przypisanie",
+        "deleted": "usunięte"
+      },
+      "schedule": {
+        "nominative": "Harmonogram",
+        "accusative": "harmonogram",
+        "deleted": "usunięty"
+      },
+      "semester": {
+        "nominative": "Semestr",
+        "accusative": "semestr",
+        "deleted": "usunięty"
+      },
+      "academicYear": {
+        "nominative": "Rok akademicki",
+        "accusative": "rok akademicki",
+        "deleted": "usunięty"
+      },
+      "faculty": {
+        "nominative": "Wydział",
+        "accusative": "wydział",
+        "deleted": "usunięty"
+      },
+      "direction": {
+        "nominative": "Kierunek",
+        "accusative": "kierunek",
+        "deleted": "usunięty"
+      },
+      "studyForm": {
+        "nominative": "Forma studiów",
+        "accusative": "formę studiów",
+        "deleted": "usunięta"
+      },
+      "holiday": {
+        "nominative": "Dzień wolny",
+        "accusative": "dzień wolny",
+        "deleted": "usunięty"
+      },
+      "contract": {
+        "nominative": "Kontrakt",
+        "accusative": "kontrakt",
+        "deleted": "usunięty"
+      },
+      "workload": {
+        "nominative": "Obciążenie",
+        "accusative": "obciążenie",
+        "deleted": "usunięte"
+      },
+      "template": {
+        "nominative": "Szablon",
+        "accusative": "szablon",
+        "deleted": "usunięty"
+      },
+      "academic_year": {
+        "nominative": "Rok akademicki",
+        "accusative": "rok akademicki",
+        "deleted": "usunięty"
+      },
+      "university_holiday": {
+        "nominative": "Dzień wolny",
+        "accusative": "dzień wolny",
+        "deleted": "usunięty"
+      },
+      "professor_contract": {
+        "nominative": "Kontrakt",
+        "accusative": "kontrakt",
+        "deleted": "usunięty"
+      },
+      "professor_workload": {
+        "nominative": "Obciążenie",
+        "accusative": "obciążenie",
+        "deleted": "usunięte"
+      },
+      "recurring_template": {
+        "nominative": "Szablon zajęć",
+        "accusative": "szablon zajęć",
+        "deleted": "usunięty"
       }
     }
   },
@@ -101,11 +228,12 @@
     "edit": "Edytuj",
     "delete": "Usuń",
     "deleteSelected": "Usuń wybrane",
-    "confirmDelete": "Czy na pewno chcesz usunąć ten {{item}}?",
-    "confirmDeleteSelected": "Czy na pewno chcesz usunąć wybrane {{items}}?",
+    "confirmDelete": "Czy na pewno chcesz usunąć {{item_accusative}}?",
+    "confirmDeleteSelected": "Czy na pewno chcesz usunąć wybrane {{items_accusative}}?",
     "deleteSuccess": "{{item}} usunięty",
-    "deleteManySuccess": "Usunięto {{count}} {{items}}",
+    "deleteManySuccess": "Usunięto {{count}} {{items_accusative}}",
     "deleteFailed": "Nie udało się usunąć",
+    "totalRecords": "Łącznie: {{count}} rekordów",
     "sorting": "Sortowanie",
     "filtering": "Filtrowanie",
     "reset": "Resetuj",
@@ -253,7 +381,8 @@
           "current": "(Bieżący)"
         },
         "startDate": {
-          "label": "Data Rozpoczęcia"
+          "label": "Data Rozpoczęcia",
+          "placeholder": "Wybierz datę rozpoczęcia"
         },
         "endDate": {
           "label": "Data Zakończenia",
@@ -366,7 +495,8 @@
         "nameRequired": "Nazwa kierunku jest wymagana",
         "codeRequired": "Kod jest wymagany",
         "facultyRequired": "Wydział jest wymagany",
-        "studyFormRequired": "Musi być wybrana co najmniej jedna forma studiów"
+        "studyFormRequired": "Musi być wybrana co najmniej jedna forma studiów",
+        "formsRequired": "Musi być wybrana co najmniej jedna forma studiów"
       },
       "buttons": {
         "create": "Utwórz",
@@ -550,7 +680,7 @@
       },
       "validation": {
         "numberRequired": "Numer sali jest wymagany",
-        "capacityMin": "Pojemność musi być co najmniej 1"
+        "capacityMin": "Pojemność musi być większa niż 0"
       }
     },
     "messages": {
@@ -664,6 +794,8 @@
         "notes": "Wprowadź uwagi dotyczące dostępności lub inne informacje o profesorze"
       },
       "validation": {
+        "nameRequired": "Imię jest wymagane",
+        "surnameRequired": "Nazwisko jest wymagane",
         "passwordLength": "Hasło musi mieć co najmniej 6 znaków",
         "academicTitleRequired": "Tytuł naukowy jest wymagany dla profesorów",
         "emailRequired": "Email jest wymagany",
@@ -794,7 +926,9 @@
         "academicYearRequired": "Rok akademicki jest wymagany",
         "semesterRequired": "Semestr jest wymagany",
         "hoursRequired": "Godziny są wymagane",
-        "hoursMin": "Godziny muszą być większe lub równe 0"
+        "hoursMin": "Godziny muszą być większe lub równe 0",
+        "hoursEmpty": "Proszę wprowadzić liczbę godzin",
+        "hoursZero": "Godziny muszą być większe od 0"
       },
       "noData": {
         "noProfessors": "Nie znaleziono profesorów",
@@ -846,7 +980,9 @@
         "contractRequired": "Kontrakt jest wymagany",
         "directionRequired": "Kierunek jest wymagany",
         "assignedHoursRequired": "Przypisane godziny są wymagane",
-        "assignedHoursMin": "Przypisane godziny muszą być większe lub równe 0"
+        "assignedHoursMin": "Przypisane godziny muszą być większe lub równe 0",
+        "hoursEmpty": "Przypisane godziny są wymagane",
+        "hoursZero": "Przypisane godziny muszą być większe niż 0"
       },
       "noData": {
         "noContracts": "Nie znaleziono kontraktów",
@@ -992,6 +1128,7 @@
     "title": "Zajęcia",
     "addButton": "Dodaj zajęcia",
     "exportButton": "Eksportuj plan zajęć",
+    "exporting": "Eksportowanie...",
     "calendar": {
       "title": "Widok planu",
       "groupBy": "Grupuj według:",
@@ -1028,7 +1165,8 @@
       "deleteError": "Nie udało się usunąć zajęć"
     },
     "conflicts": {
-      "title": "Konflikty",
+      "title": "Konflikty Planu",
+      "plan": "Plan",
       "loading": "Ładowanie...",
       "noConflicts": "Brak konfliktów",
       "foundConflicts": "Znaleziono {{count}} konflikt{{s}}",
@@ -1060,6 +1198,10 @@
       "loading": "Ładowanie...",
       "hoursOk": "Godziny",
       "hoursIssues": "Problemy z godzinami",
+      "noIssues": "Brak Problemów",
+      "foundIssues": "Znaleziono {{count}} problem{{s}}",
+      "clickToNavigate": "Kliknij na problem, aby przejść do lekcji",
+      "noIssuesMessage": "Nie wykryto problemów z obciążeniem dla tego planu",
       "professorSection": "Ostrzeżenia profesorów",
       "subjectSection": "Ostrzeżenia przedmiotów",
       "assignmentExceeded": "Przekroczono przypisanie",
@@ -1187,7 +1329,7 @@
     }
   },
   "recurringLessons": {
-    "add": "Dodaj szablon",
+    "add": "+ Dodaj szablon",
     "search": {
       "placeholder": "Szukaj szablonów..."
     },

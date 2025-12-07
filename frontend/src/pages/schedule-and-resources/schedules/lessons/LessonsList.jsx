@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus, Download } from "lucide-react";
+import { Plus, Download, Loader2 } from "lucide-react";
 import { LessonForm } from "./LessonForm";
 import { LessonsCalendar } from "./LessonsCalendar";
 import { ExportDialog } from "./components/ExportDialog";
@@ -10,6 +10,7 @@ import { ScheduleAnalysisProvider } from "@/contexts/ScheduleAnalysisContext";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { usePolishDeclensions } from "@/utils/polish-declensions";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function LessonsList({ schedule, onUpdate }) {
@@ -24,11 +25,13 @@ export function LessonsList({ schedule, onUpdate }) {
 
 function LessonsListContent({ schedule, onUpdate }) {
   const { t } = useTranslation();
+  const { getDeleteSuccessMessage } = usePolishDeclensions();
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [isExporting, setIsExporting] = useState(false);
   // const [viewMode, setViewMode] = useState("table");
 
   const createLesson = useEntityMutation("lesson", "create");
@@ -74,7 +77,6 @@ function LessonsListContent({ schedule, onUpdate }) {
       setIsCreateDialogOpen(false);
       setEditingLesson(null);
       setIsEditing(false);
-      if (onUpdate) onUpdate();
     } catch (error) {
       toast.error(error.message || t("lessons.messages.createError"));
     }
@@ -83,7 +85,7 @@ function LessonsListContent({ schedule, onUpdate }) {
   const handleDeleteLesson = async (lessonId) => {
     try {
       await deleteLesson.mutateAsync({ id: lessonId });
-      toast.success(t("lessons.messages.deleteSuccess"));
+      toast.success(getDeleteSuccessMessage("lesson"));
       setRefreshTrigger((prev) => prev + 1); // Тригgerим обновление календаря
 
       // Инвалидируем кеши
@@ -93,7 +95,6 @@ function LessonsListContent({ schedule, onUpdate }) {
       setIsCreateDialogOpen(false);
       setEditingLesson(null);
       setIsEditing(false);
-      if (onUpdate) onUpdate();
     } catch (error) {
       toast.error(error.message || t("lessons.messages.deleteError"));
     }
@@ -103,10 +104,10 @@ function LessonsListContent({ schedule, onUpdate }) {
     <div className="space-y-4">
       {/* Add lesson and export buttons */}
       <div className="flex items-center justify-between">
-        <ExportDialog>
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            {t("lessons.exportButton")}
+        <ExportDialog onExportStateChange={setIsExporting}>
+          <Button variant="default" className="bg-black hover:bg-gray-800 text-white" disabled={isExporting}>
+            {isExporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+            {isExporting ? t("lessons.exporting") : t("lessons.exportButton")}
           </Button>
         </ExportDialog>
 

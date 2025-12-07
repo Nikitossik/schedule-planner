@@ -60,7 +60,6 @@ export default function HolidaysPage() {
         }}
         sortFields={[
           { label: t("holidays.table.columns.id"), value: "id" },
-          { label: t("holidays.table.columns.name"), value: "name" },
         ]}
         filterSchema={[]}
         onEdit={handleEditHoliday}

@@ -34,9 +34,16 @@ const createSchema = (t) =>
     semester_id: z.coerce
       .number()
       .min(1, t("contracts.form.validation.semesterRequired")),
-    total_hours: z.coerce
-      .number()
-      .min(0, t("contracts.form.validation.hoursMin")),
+    total_hours: z
+      .string()
+      .min(1, t("contracts.form.validation.hoursEmpty"))
+      .refine((val) => !isNaN(Number(val)), {
+        message: t("contracts.form.validation.hoursEmpty"),
+      })
+      .refine((val) => Number(val) > 0, {
+        message: t("contracts.form.validation.hoursZero"),
+      })
+      .transform((val) => Number(val)),
   });
 
 const ContractForm = ({
@@ -324,7 +331,7 @@ const ContractForm = ({
             </FormItem>
           )}
         />
-        <FormField
+          <FormField
           control={form.control}
           name="total_hours"
           render={({ field }) => (
@@ -334,7 +341,8 @@ const ContractForm = ({
                 <Input
                   type="number"
                   placeholder={t("contracts.form.placeholders.hours")}
-                  min={0}
+                  min={1}
+                  step={1}
                   {...field}
                 />
               </FormControl>

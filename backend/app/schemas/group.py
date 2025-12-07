@@ -25,7 +25,6 @@ class GroupBase(BaseModel):
     )
     student_count: int | None = Field(
         None,
-        ge=0,
         description="Manual student count (for production mode without student accounts).",
         examples=[25],
     )
@@ -58,7 +57,6 @@ class GroupUpdate(BaseModel):
     )
     student_count: int | None = Field(
         None,
-        ge=0,
         description="Optional manual student count.",
         examples=[30],
     )

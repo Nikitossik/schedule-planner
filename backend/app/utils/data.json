@@ -173,7 +173,7 @@
         {
             "academic_title": "dr",
             "color": "#4D93D9",
-            "notes": null,
+            "notes": "",
             "unavailable_days": "[]",
             "user_id": 4
         },
@@ -358,6 +358,12 @@
         },
         {
             "assigned_hours": 1000,
+            "contract_id": 13,
+            "id": 13,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
             "contract_id": 14,
             "id": 14,
             "study_form_id": 2
@@ -384,12 +390,6 @@
             "assigned_hours": 1000,
             "contract_id": 18,
             "id": 18,
-            "study_form_id": 2
-        },
-        {
-            "assigned_hours": 1000,
-            "contract_id": 13,
-            "id": 20,
             "study_form_id": 2
         }
     ],
@@ -645,15 +645,6 @@
             "is_date_range": 0,
             "name": null,
             "start_date": null
-        },
-        {
-            "date": null,
-            "end_date": "2025-05-15",
-            "id": 4,
-            "is_annual": 1,
-            "is_date_range": 1,
-            "name": "test",
-            "start_date": "2025-05-10"
         }
     ],
     "user": [

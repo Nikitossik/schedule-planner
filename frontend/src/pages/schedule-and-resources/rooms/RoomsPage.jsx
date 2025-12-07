@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useRoomColumns } from "./useRoomColumns";
+import { useRoomColumns } from "./columns";
 import DataTableWrapper from "@/components/datatable/DataTableWrapper";
 import RoomModal from "./RoomModal";
 

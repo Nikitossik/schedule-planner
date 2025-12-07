@@ -2,6 +2,7 @@ from __future__ import annotations
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, ForeignKey
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from typing import TYPE_CHECKING
 
@@ -58,12 +59,12 @@ class ProfessorContract(Base):
         # Convenience: academic year derived from the associated semester.
         return self.semester.academic_year
 
-    @property
+    @hybrid_property
     def total_workload_hours(self) -> int:
         """Calculate total workload hours for this contract."""
         return sum(workload.assigned_hours for workload in self.workloads)
 
-    @property
+    @hybrid_property
     def remaining_hours(self) -> int:
         """Calculate remaining hours for this contract."""
         return self.total_hours - self.total_workload_hours

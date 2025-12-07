@@ -75,16 +75,7 @@ export const RecurringLessonsPage = ({ scheduleId }) => {
           label: t("recurringLessons.add"),
           onClick: handleCreate,
         }}
-        sortFields={[
-          { label: t("recurringLessons.table.name"), value: "name" },
-          {
-            label: t("recurringLessons.table.subject"),
-            value: "subject_assignment.subject.name",
-          },
-          { label: t("recurringLessons.table.group"), value: "group.name" },
-          { label: t("recurringLessons.table.type"), value: "lesson_type" },
-          { label: t("recurringLessons.table.time"), value: "start_time" },
-        ]}
+
         filterSchema={[]}
         onEdit={handleEdit}
         onRefresh={handleRefresh}

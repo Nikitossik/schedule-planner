@@ -17,7 +17,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useEntityList } from "@/hooks/useEntityList";

@@ -34,7 +34,15 @@ export const useRecurringLessonsColumns = () => {
       accessorKey: "name",
       header: t("recurringLessons.table.name"),
       cell: ({ row }) => {
-        return <div className="font-medium">{row.original.name}</div>;
+        const name = row.original.name;
+        if (!name || name.trim() === "") {
+          return (
+            <Badge variant="secondary" className="text-muted-foreground">
+              {t("common.notSet")}
+            </Badge>
+          );
+        }
+        return <div className="font-medium">{name}</div>;
       },
     },
     {
@@ -130,7 +138,14 @@ export const useRecurringLessonsColumns = () => {
             </Badge>
           );
         }
-        return room ? room.number : "-";
+        if (!room) {
+          return (
+            <Badge variant="secondary" className="text-muted-foreground">
+              {t("common.notSet")}
+            </Badge>
+          );
+        }
+        return room.number;
       },
     },
     {

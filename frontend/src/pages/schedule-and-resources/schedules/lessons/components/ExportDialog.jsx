@@ -18,7 +18,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useScheduleAnalysisData } from "@/contexts/ScheduleAnalysisContext";
 import { useScheduleExport } from "@/hooks/useScheduleExport";
 
-export function ExportDialog({ children }) {
+export function ExportDialog({ children, onExportStateChange }) {
   const { t } = useTranslation();
   const {
     schedule,
@@ -42,6 +42,13 @@ export function ExportDialog({ children }) {
   });
 
   const { exportSchedule, isExporting } = useScheduleExport();
+
+  // Отслеживание состояния экспорта
+  useEffect(() => {
+    if (onExportStateChange) {
+      onExportStateChange(isExporting);
+    }
+  }, [isExporting, onExportStateChange]);
 
   // Инициализация имени файла
   useEffect(() => {

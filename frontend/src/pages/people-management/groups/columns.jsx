@@ -32,7 +32,7 @@ export function useGroupColumns() {
         header: t("groups.table.columns.directionAndStudyForm"),
         cell: ({ row }) => (
           <Badge variant="outline">
-            {row.original.direction?.code} - {row.original.study_form?.form}
+            {row.original.direction?.code} - {t(`common.studyForms.${row.original.study_form?.form === 'full-time' ? 'fullTime' : 'partTime'}`)}
           </Badge>
         ),
       },

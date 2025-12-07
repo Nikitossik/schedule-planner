@@ -25,11 +25,16 @@ export function useScheduleColumns() {
       },
       {
         header: t("schedules.table.columns.direction"),
-        cell: ({ row }) => (
-          <Badge variant="outline">
-            {row.original.direction?.code} - {row.original.study_form?.form}
-          </Badge>
-        ),
+        cell: ({ row }) => {
+          const form = row.original.study_form?.form;
+          const translatedForm = form === 'full-time' ? t('common.studyForms.fullTime') : 
+                                form === 'part-time' ? t('common.studyForms.partTime') : form;
+          return (
+            <Badge variant="outline">
+              {row.original.direction?.code} - {translatedForm}
+            </Badge>
+          );
+        },
       },
       {
         header: t("schedules.table.columns.academicYear"),
@@ -42,14 +47,19 @@ export function useScheduleColumns() {
       {
         accessorKey: "semester",
         header: t("schedules.table.columns.semester"),
-        cell: ({ row }) => (
-          <Badge variant="outline">
-            {t("schedules.table.columns.semesterFormat", {
-              number: row.original.semester?.number,
-              period: row.original.semester?.period,
-            })}
-          </Badge>
-        ),
+        cell: ({ row }) => {
+          const period = row.original.semester?.period;
+          const translatedPeriod = period === 'winter' ? t('common.periods.winter') : 
+                                  period === 'summer' ? t('common.periods.summer') : period;
+          return (
+            <Badge variant="outline">
+              {t("schedules.table.columns.semesterFormat", {
+                number: row.original.semester?.number,
+                period: translatedPeriod,
+              })}
+            </Badge>
+          );
+        },
       },
       actionsColumn({
         entity: "schedule",

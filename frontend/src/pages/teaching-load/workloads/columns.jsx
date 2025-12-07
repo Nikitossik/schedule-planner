@@ -42,11 +42,16 @@ export function useWorkloadColumns() {
       },
       {
         header: t("workloads.table.columns.directionAndStudyForm"),
-        cell: ({ row }) => (
-          <Badge variant="outline">
-            {row.original.direction?.code} - {row.original.study_form?.form}
-          </Badge>
-        ),
+        cell: ({ row }) => {
+          const form = row.original.study_form?.form;
+          const translatedForm = form === 'full-time' ? t('common.studyForms.fullTime') : 
+                                form === 'part-time' ? t('common.studyForms.partTime') : form;
+          return (
+            <Badge variant="outline">
+              {row.original.direction?.code} - {translatedForm}
+            </Badge>
+          );
+        },
       },
       {
         accessorKey: "academic_year",
@@ -58,16 +63,19 @@ export function useWorkloadColumns() {
       {
         accessorKey: "semester",
         header: t("workloads.table.columns.semester"),
-        cell: ({ row }) => (
-          <Badge variant="outline">
-            {t("workloads.table.semesterFormat", {
-              number: row.original.semester?.number,
-              period: t(
-                `filterLabels.periods.${row.original.semester?.period}`
-              ),
-            })}
-          </Badge>
-        ),
+        cell: ({ row }) => {
+          const period = row.original.semester?.period;
+          const translatedPeriod = period === 'winter' ? t('common.periods.winter') : 
+                                  period === 'summer' ? t('common.periods.summer') : period;
+          return (
+            <Badge variant="outline">
+              {t("workloads.table.semesterFormat", {
+                number: row.original.semester?.number,
+                period: translatedPeriod,
+              })}
+            </Badge>
+          );
+        },
       },
       {
         header: t("workloads.table.columns.hours"),

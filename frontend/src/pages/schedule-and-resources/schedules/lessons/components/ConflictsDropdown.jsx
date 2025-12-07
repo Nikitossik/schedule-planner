@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, ChevronDown } from "lucide-react";
+import { AlertTriangle, CalendarCheck } from "lucide-react";
 import { useScheduleAnalysisData } from "@/contexts/ScheduleAnalysisContext";
 import {
   DropdownMenu,
@@ -72,16 +72,21 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
       <DropdownMenuTrigger asChild>
         <Button
           variant={hasConflicts ? "destructive" : "outline"}
-          className="gap-2"
+          className={hasConflicts ? "gap-2" : "gap-2 text-green-600"}
         >
-          <AlertTriangle className="h-4 w-4" />
-          {t("lessons.conflicts.title")}
+          {hasConflicts ? (
+            <AlertTriangle className="h-4 w-4" />
+          ) : (
+            <CalendarCheck className="h-4 w-4" />
+          )}
+          {hasConflicts
+            ? t("lessons.conflicts.title")
+            : t("lessons.conflicts.plan")}
           {hasConflicts && (
             <Badge variant="secondary" className="ml-1 bg-white text-red-600">
               {totalConflicts}
             </Badge>
           )}
-          <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

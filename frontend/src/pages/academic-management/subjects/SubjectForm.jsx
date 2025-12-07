@@ -69,7 +69,7 @@ export default function SubjectForm({
     direction_id: String(defaultValues?.direction?.id ?? ""),
     academic_year_id: String(defaultValues?.academic_year?.id ?? ""),
     semester_id: String(defaultValues?.semester?.id ?? ""),
-    allocated_hours: defaultValues?.allocated_hours || 0,
+    allocated_hours: isEdit ? defaultValues?.allocated_hours || 0 : undefined,
   };
 
   const form = useForm({
@@ -315,7 +315,8 @@ export default function SubjectForm({
                   step={1}
                   placeholder={t("subjects.form.placeholders.allocatedHours")}
                   {...field}
-                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                  value={field.value || ""}
+                  onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                 />
               </FormControl>
               <FormMessage />

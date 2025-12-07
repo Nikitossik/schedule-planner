@@ -5,6 +5,7 @@ from typing import Optional
 from ..repositories import RoomRepository
 from ..models import Room, Lesson
 from ..schemas.room import RoomIn
+from ..utils.exceptions import AlreadyExistsException
 from .base import BaseService
 
 
@@ -25,6 +26,18 @@ class RoomService(BaseService[Room, RoomIn]):
             db (Session): Active SQLAlchemy session.
         """
         super().__init__(db, Room, RoomRepository(db))
+
+    def find_by_number(self, number: str) -> Optional[Room]:
+        """
+        Find a room by its number.
+
+        Args:
+            number (str): The room number to search for.
+
+        Returns:
+            Optional[Room]: The room if found, None otherwise.
+        """
+        return self.db.query(Room).filter(Room.number == number).first()
 
     def apply_filters(self, query, params):
         """
@@ -47,10 +60,6 @@ class RoomService(BaseService[Room, RoomIn]):
         if params.q:
             query_string = params.q.strip()
             query = query.filter(Room.number.ilike(f"%{query_string}%"))
-
-        # Filter by minimum seating capacity
-        if params.min_capacity:
-            query = query.filter(Room.capacity >= params.min_capacity)
 
         # Availability filter for a specific date and time window
         if (
@@ -129,3 +138,42 @@ class RoomService(BaseService[Room, RoomIn]):
         query = query.filter(not_(Room.id.in_(occupied_rooms_subquery)))
 
         return query
+
+    def create(self, data: RoomIn) -> Room:
+        """
+        Create a new room with uniqueness validation.
+
+        Args:
+            data (RoomIn): Room data for creation.
+
+        Returns:
+            Room: The created room.
+
+        Raises:
+            AlreadyExistsException: If a room with the same number already exists.
+        """
+        existing_room = self.find_by_number(data.number)
+        if existing_room:
+            raise AlreadyExistsException("Room", "number", data.number)
+        
+        return super().create(data)
+
+    def update(self, room_id: int, data: RoomIn) -> Room:
+        """
+        Update a room with uniqueness validation.
+
+        Args:
+            room_id (int): ID of the room to update.
+            data (RoomIn): Updated room data.
+
+        Returns:
+            Room: The updated room.
+
+        Raises:
+            AlreadyExistsException: If a room with the same number already exists (excluding current room).
+        """
+        existing_room = self.find_by_number(data.number)
+        if existing_room and existing_room.id != room_id:
+            raise AlreadyExistsException("Room", "number", data.number)
+        
+        return super().update(room_id, data)

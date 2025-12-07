@@ -49,7 +49,7 @@ export function useLessonFormData({
     // Валидация location: оба поля опциональны, можно не выбирать ни кабинет, ни онлайн
     const locationSchema = z.object({
       is_online: z.boolean(),
-      room_id: z.union([z.string(), z.null()]).optional(),
+      room_id: z.union([z.string(), z.number(), z.null()]).optional(),
     });
 
     if (formType === "lesson") {
@@ -64,7 +64,7 @@ export function useLessonFormData({
           end_time: z
             .string()
             .min(1, t("lessons.form.validation.endTimeRequired")),
-          room_id: z.union([z.string(), z.null()]).optional(),
+          room_id: z.union([z.string(), z.number(), z.null()]).optional(),
         })
         .and(locationSchema);
     } else {
@@ -89,7 +89,7 @@ export function useLessonFormData({
           end_time: z
             .string()
             .min(1, t("lessons.form.validation.endTimeRequired")),
-          room_id: z.union([z.string(), z.null()]).optional(),
+          room_id: z.union([z.string(), z.number(), z.null()]).optional(),
         })
         .and(locationSchema)
         .refine(

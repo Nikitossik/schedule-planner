@@ -8,6 +8,8 @@
     "add": "Add",
     "search": "Search",
     "noData": "No data available",
+    "notSet": "Not set",
+    "notApplicable": "Not applicable",
     "selectLanguage": "Select Language",
     "actions": "Actions",
     "confirm": "Confirm",
@@ -32,6 +34,131 @@
         "friday": "Fri",
         "saturday": "Sat",
         "sunday": "Sun"
+      }
+    },
+    "periods": {
+      "winter": "Winter",
+      "summer": "Summer"
+    },
+    "studyForms": {
+      "fullTime": "Full-time",
+      "partTime": "Part-time"
+    },
+    "confirmDialog": {
+      "defaultMessage": "Are you sure you want to delete this item?",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "entities": {
+      "group": {
+        "nominative": "Group",
+        "accusative": "group",
+        "deleted": "deleted"
+      },
+      "user": {
+        "nominative": "User",
+        "accusative": "user",
+        "deleted": "deleted"
+      },
+      "lesson": {
+        "nominative": "Lesson",
+        "accusative": "lesson",
+        "deleted": "deleted"
+      },
+      "professor": {
+        "nominative": "Professor",
+        "accusative": "professor",
+        "deleted": "deleted"
+      },
+      "room": {
+        "nominative": "Room",
+        "accusative": "room",
+        "deleted": "deleted"
+      },
+      "subject": {
+        "nominative": "Subject",
+        "accusative": "subject",
+        "deleted": "deleted"
+      },
+      "assignment": {
+        "nominative": "Assignment",
+        "accusative": "assignment",
+        "deleted": "deleted"
+      },
+      "schedule": {
+        "nominative": "Schedule",
+        "accusative": "schedule",
+        "deleted": "deleted"
+      },
+      "semester": {
+        "nominative": "Semester",
+        "accusative": "semester",
+        "deleted": "deleted"
+      },
+      "academicYear": {
+        "nominative": "Academic Year",
+        "accusative": "academic year",
+        "deleted": "deleted"
+      },
+      "faculty": {
+        "nominative": "Faculty",
+        "accusative": "faculty",
+        "deleted": "deleted"
+      },
+      "direction": {
+        "nominative": "Direction",
+        "accusative": "direction",
+        "deleted": "deleted"
+      },
+      "studyForm": {
+        "nominative": "Study Form",
+        "accusative": "study form",
+        "deleted": "deleted"
+      },
+      "holiday": {
+        "nominative": "Holiday",
+        "accusative": "holiday",
+        "deleted": "deleted"
+      },
+      "contract": {
+        "nominative": "Contract",
+        "accusative": "contract",
+        "deleted": "deleted"
+      },
+      "workload": {
+        "nominative": "Workload",
+        "accusative": "workload",
+        "deleted": "deleted"
+      },
+      "template": {
+        "nominative": "Template",
+        "accusative": "template",
+        "deleted": "deleted"
+      },
+      "academic_year": {
+        "nominative": "Academic Year",
+        "accusative": "academic year",
+        "deleted": "deleted"
+      },
+      "university_holiday": {
+        "nominative": "Holiday",
+        "accusative": "holiday",
+        "deleted": "deleted"
+      },
+      "professor_contract": {
+        "nominative": "Contract",
+        "accusative": "contract",
+        "deleted": "deleted"
+      },
+      "professor_workload": {
+        "nominative": "Workload",
+        "accusative": "workload",
+        "deleted": "deleted"
+      },
+      "recurring_template": {
+        "nominative": "Recurring Template",
+        "accusative": "recurring template",
+        "deleted": "deleted"
       }
     }
   },
@@ -101,11 +228,12 @@
     "edit": "Edit",
     "delete": "Delete",
     "deleteSelected": "Delete selected",
-    "confirmDelete": "Are you sure you want to delete this {{item}}?",
-    "confirmDeleteSelected": "Are you sure you want to delete selected {{items}}?",
+    "confirmDelete": "Are you sure you want to delete this {{item_accusative}}?",
+    "confirmDeleteSelected": "Are you sure you want to delete selected {{items_accusative}}?",
     "deleteSuccess": "{{item}} deleted",
-    "deleteManySuccess": "Deleted {{count}} {{items}}(s)",
+    "deleteManySuccess": "Deleted {{count}} {{items_accusative}}",
     "deleteFailed": "Failed to delete",
+    "totalRecords": "Total: {{count}} records",
     "sorting": "Sorting",
     "filtering": "Filtering",
     "reset": "Reset",
@@ -367,7 +495,8 @@
         "nameRequired": "Direction name is required",
         "codeRequired": "Code is required",
         "facultyRequired": "Faculty is required",
-        "studyFormRequired": "At least one study form must be selected"
+        "studyFormRequired": "At least one study form must be selected",
+        "formsRequired": "At least one study form must be selected"
       },
       "buttons": {
         "create": "Create",
@@ -551,7 +680,7 @@
       },
       "validation": {
         "numberRequired": "Room number is required",
-        "capacityMin": "Capacity must be at least 1"
+        "capacityMin": "Capacity must be greater than 0"
       }
     },
     "messages": {
@@ -665,6 +794,8 @@
         "notes": "Enter availability notes or other information about the professor"
       },
       "validation": {
+        "nameRequired": "Name is required",
+        "surnameRequired": "Surname is required",
         "passwordLength": "Password must be at least 6 characters",
         "academicTitleRequired": "Academic title is required for professors",
         "emailRequired": "Email is required",
@@ -795,7 +926,9 @@
         "academicYearRequired": "Academic year is required",
         "semesterRequired": "Semester is required",
         "hoursRequired": "Hours is required",
-        "hoursMin": "Hours must be greater than or equal to 0"
+        "hoursMin": "Hours must be greater than or equal to 0",
+        "hoursEmpty": "Please enter the number of hours",
+        "hoursZero": "Hours must be greater than 0"
       },
       "noData": {
         "noProfessors": "No professors found",
@@ -847,7 +980,9 @@
         "contractRequired": "Contract is required",
         "directionRequired": "Direction is required",
         "assignedHoursRequired": "Assigned hours is required",
-        "assignedHoursMin": "Assigned hours must be greater than or equal to 0"
+        "assignedHoursMin": "Assigned hours must be greater than or equal to 0",
+        "hoursEmpty": "Assigned hours is required",
+        "hoursZero": "Assigned hours must be greater than 0"
       },
       "noData": {
         "noContracts": "No contracts found",
@@ -993,6 +1128,7 @@
     "title": "Lessons",
     "addButton": "Add Lesson",
     "exportButton": "Export Schedule",
+    "exporting": "Exporting...",
     "calendar": {
       "title": "Schedule View",
       "groupBy": "Group by:",
@@ -1030,7 +1166,8 @@
       "deleteError": "Failed to delete lesson"
     },
     "conflicts": {
-      "title": "Conflicts",
+      "title": "Schedule Conflicts",
+      "plan": "Plan",
       "loading": "Loading...",
       "noConflicts": "No Conflicts",
       "foundConflicts": "{{count}} Conflict{{s}} Found",
@@ -1062,6 +1199,10 @@
       "loading": "Loading...",
       "hoursOk": "Hours",
       "hoursIssues": "Hours Issues",
+      "noIssues": "No Issues",
+      "foundIssues": "{{count}} Issue{{s}} Found",
+      "clickToNavigate": "Click on an issue to navigate to the lessons",
+      "noIssuesMessage": "No workload issues detected for this schedule",
       "professorSection": "Professor Warnings",
       "subjectSection": "Subject Warnings",
       "assignmentExceeded": "Assignment Exceeded",
@@ -1189,7 +1330,7 @@
     }
   },
   "recurringLessons": {
-    "add": "Add Template",
+    "add": "+ Add Template",
     "search": {
       "placeholder": "Search templates..."
     },

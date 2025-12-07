@@ -75,10 +75,6 @@ export default function WorkloadsPage() {
         }}
         sortFields={[
           { label: t("workloads.table.columns.id"), value: "id" },
-          {
-            label: t("workloads.table.columns.assignedHours"),
-            value: "assigned_hours",
-          },
         ]}
         filterSchema={filterSchema}
         onRefresh={handleRefresh}

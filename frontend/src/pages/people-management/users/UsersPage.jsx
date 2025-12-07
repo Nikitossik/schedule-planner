@@ -74,8 +74,7 @@ export default function UsersPage() {
           sortFields={[
             { label: t("users.table.columns.id"), value: "id" },
             { label: t("users.table.columns.name"), value: "name" },
-            { label: t("users.table.columns.surname"), value: "surname" },
-            { label: t("users.table.columns.email"), value: "email" },
+            { label: t("users.table.columns.surname"), value: "surname" }
           ]}
           filterSchema={filterSchema}
           onEdit={handleEdit}

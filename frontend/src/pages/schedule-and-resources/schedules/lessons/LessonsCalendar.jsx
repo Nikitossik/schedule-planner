@@ -1,19 +1,27 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import moment from "moment";
-import "moment/locale/pl";
+import { format as dateFnsFormat, parse, startOfWeek, getDay } from "date-fns";
+import { enUS, pl } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import "./LessonsCalendar.css";
 
 import { Users, User, MapPin } from "lucide-react";
 
-moment.updateLocale("en", {
-  week: {
-    dow: 1, // Monday is the first day of the week
-  },
+// Настройка локализатора date-fns
+const locales = {
+  'en': enUS,
+  'pl': pl,
+};
+
+const localizer = dateFnsLocalizer({
+  format: dateFnsFormat,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
 });
 
 import { useCalendarLessons } from "@/hooks/useCalendarLessons";
@@ -49,7 +57,6 @@ import {
   logDebugInfo,
 } from "./utils";
 
-const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
 // Локализованные сообщения для календаря
@@ -97,10 +104,8 @@ export function LessonsCalendar({
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
-  // Устанавливаем локаль для moment
-  useEffect(() => {
-    moment.locale(i18n.language === "pl" ? "pl" : "en");
-  }, [i18n.language]);
+  // Получаем текущую локаль для date-fns
+  const currentLocale = i18n.language === "pl" ? pl : enUS;
 
   // Получаем локализованные сообщения
   const calendarMessages = getCalendarMessages(t, i18n.language);
@@ -224,8 +229,8 @@ export function LessonsCalendar({
   // Кастомные форматы календаря с поддержкой праздников
   const customFormats = useMemo(
     () => ({
-      dayFormat: (date, culture, localizer) => {
-        const dayNumber = localizer.format(date, "DD", culture);
+      dayFormat: (date) => {
+        const dayNumber = dateFnsFormat(date, "dd", { locale: currentLocale });
         const holiday = getHolidayInfo(date);
         if (holiday) {
           const holidayName =
@@ -236,8 +241,8 @@ export function LessonsCalendar({
         }
         return dayNumber;
       },
-      dayHeaderFormat: (date, culture, localizer) => {
-        const dayHeader = localizer.format(date, "ddd DD", culture);
+      dayHeaderFormat: (date) => {
+        const dayHeader = dateFnsFormat(date, "eee dd", { locale: currentLocale });
         const holiday = getHolidayInfo(date);
         if (holiday) {
           const holidayName =
@@ -248,8 +253,47 @@ export function LessonsCalendar({
         }
         return dayHeader;
       },
+      timeGutterFormat: (date) => {
+        return dateFnsFormat(date, "HH:mm", { locale: currentLocale });
+      },
+      eventTimeRangeFormat: ({ start, end }) => {
+        return `${dateFnsFormat(
+          start,
+          "HH:mm",
+          { locale: currentLocale }
+        )} - ${dateFnsFormat(end, "HH:mm", { locale: currentLocale })}`;
+      },
+      eventTimeRangeStartFormat: (date) => {
+        return dateFnsFormat(date, "HH:mm", { locale: currentLocale });
+      },
+      eventTimeRangeEndFormat: (date) => {
+        return dateFnsFormat(date, "HH:mm", { locale: currentLocale });
+      },
+      selectRangeFormat: ({ start, end }) => {
+        return `${dateFnsFormat(
+          start,
+          "HH:mm",
+          { locale: currentLocale }
+        )} - ${dateFnsFormat(end, "HH:mm", { locale: currentLocale })}`;
+      },
+      dayRangeHeaderFormat: ({ start, end }) => {
+        const startMonth = dateFnsFormat(start, "LLLL", { locale: currentLocale });
+        const endMonth = dateFnsFormat(end, "LLLL", { locale: currentLocale });
+        const startDay = dateFnsFormat(start, "dd", { locale: currentLocale });
+        const endDay = dateFnsFormat(end, "dd", { locale: currentLocale });
+        const startYear = dateFnsFormat(start, "yyyy", { locale: currentLocale });
+        const endYear = dateFnsFormat(end, "yyyy", { locale: currentLocale });
+        
+        if (startMonth === endMonth && startYear === endYear) {
+          return `${startMonth} ${startDay} - ${endDay}, ${startYear}`;
+        } else if (startYear === endYear) {
+          return `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${startYear}`;
+        } else {
+          return `${startMonth} ${startDay}, ${startYear} - ${endMonth} ${endDay}, ${endYear}`;
+        }
+      },
     }),
-    [getHolidayInfo, t]
+    [getHolidayInfo, t, currentLocale]
   );
 
   // Создаем обработчики

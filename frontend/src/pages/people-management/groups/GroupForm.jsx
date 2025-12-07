@@ -91,6 +91,18 @@ export default function GroupForm({
     form.setValue("semester_id", ""); // Очищаем семестр при смене года
   };
 
+  // Обработчик отправки формы
+  const handleFormSubmit = (data) => {
+    // Преобразуем student_count в null если пустое значение
+    const transformedData = {
+      ...data,
+      student_count: data.student_count && data.student_count !== "" 
+        ? parseInt(data.student_count, 10) 
+        : null,
+    };
+    onSubmit(transformedData);
+  };
+
   // Логирование для диагностики
   console.log("🔍 GroupForm - defaultValues (raw):", defaultValues);
   console.log("🔍 GroupForm - study_form object:", defaultValues?.study_form);
@@ -110,7 +122,7 @@ export default function GroupForm({
     <Form {...form}>
       <form
         id={id}
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleFormSubmit)}
         className="space-y-6 max-w-xl"
       >
         <FormField
@@ -176,7 +188,7 @@ export default function GroupForm({
                         key={studyForm.id}
                         value={String(studyForm.id)}
                       >
-                        {studyForm.direction?.name} {studyForm.form}
+                        {studyForm.direction?.name} ({t(`common.studyForms.${studyForm.form === 'full-time' ? 'fullTime' : 'partTime'}`)})
                       </SelectItem>
                     ))
                   )}

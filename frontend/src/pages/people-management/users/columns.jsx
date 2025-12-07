@@ -54,7 +54,18 @@ export const useUserColumns = () => {
       cell: ({ row }) => {
         const role = row.original.role;
         const email = row.original.email;
-        return role === "admin" || role === "coordinator" ? email : "-";
+        if (role === "admin" || role === "coordinator") {
+          return email ? email : (
+            <Badge variant="secondary" className="text-xs">
+              {t("common.notSet")}
+            </Badge>
+          );
+        }
+        return (
+          <Badge variant="secondary" className="text-xs">
+            {t("common.notApplicable")}
+          </Badge>
+        );
       },
     },
     {
@@ -62,33 +73,86 @@ export const useUserColumns = () => {
       header: t("users.table.columns.role"),
       cell: ({ row }) => {
         const role = row.original.role;
-        return t(`users.form.roles.${role}`);
+        return (
+          <Badge variant="outline" className="text-xs">
+            {t(`users.form.roles.${role}`)}
+          </Badge>
+        );
       },
     },
     {
       accessorKey: "user_type",
       header: t("users.table.columns.userType"),
       cell: ({ row }) => {
+        const role = row.original.role;
         const userType = row.original.user_type;
-        return userType ? t(`users.form.userTypes.${userType}`) : "-";
+        
+        if (role === "admin" || role === "coordinator") {
+          return (
+            <Badge variant="secondary" className="text-xs">
+              {t("common.notApplicable")}
+            </Badge>
+          );
+        }
+        
+        return userType ? (
+          <Badge variant="outline" className="text-xs">
+            {t(`users.form.userTypes.${userType}`)}
+          </Badge>
+        ) : (
+          <Badge variant="secondary" className="text-xs">
+            {t("common.notSet")}
+          </Badge>
+        );
       },
     },
     {
       accessorKey: "academic_title",
       header: t("users.table.columns.academicTitle"),
       cell: ({ row }) => {
+        const role = row.original.role;
         const academicTitle = row.original.professor_profile?.academic_title;
-        return academicTitle || "-";
+        
+        if (role === "admin" || role === "coordinator") {
+          return (
+            <Badge variant="secondary" className="text-xs">
+              {t("common.notApplicable")}
+            </Badge>
+          );
+        }
+        
+        return academicTitle ? (
+          <Badge variant="outline" className="text-xs">
+            {academicTitle}
+          </Badge>
+        ) : (
+          <Badge variant="secondary" className="text-xs">
+            {t("common.notSet")}
+          </Badge>
+        );
       },
     },
     {
       accessorKey: "notes",
       header: t("users.table.columns.notes"),
       cell: ({ row }) => {
+        const role = row.original.role;
         const notes = row.original.professor_profile?.notes;
 
+        if (role === "admin" || role === "coordinator") {
+          return (
+            <Badge variant="secondary" className="text-xs">
+              {t("common.notApplicable")}
+            </Badge>
+          );
+        }
+
         if (!notes || notes.trim() === "") {
-          return <span className="pl-3">{"-"}</span>;
+          return (
+            <Badge variant="secondary" className="text-xs">
+              {t("common.notSet")}
+            </Badge>
+          );
         }
 
         return (
@@ -121,14 +185,26 @@ export const useUserColumns = () => {
     {
       accessorKey: "color",
       header: t("subjects.table.columns.color"),
-      cell: ({ row }) => (
-        <div
-          className="w-5 h-5 rounded-sm"
-          style={{
-            backgroundColor: row.original.professor_profile?.color,
-          }}
-        ></div>
-      ),
+      cell: ({ row }) => {
+        const role = row.original.role;
+        
+        if (role === "admin" || role === "coordinator") {
+          return (
+            <Badge variant="secondary" className="text-xs">
+              {t("common.notApplicable")}
+            </Badge>
+          );
+        }
+        
+        return (
+          <div
+            className="w-5 h-5 rounded-sm"
+            style={{
+              backgroundColor: row.original.professor_profile?.color,
+            }}
+          ></div>
+        );
+      },
     },
     {
       accessorKey: "unavailable_days",
@@ -138,9 +214,24 @@ export const useUserColumns = () => {
           row.original.professor_profile?.unavailable_days;
         const userType = row.original.user_type;
 
+        const role = row.original.role;
+        
+        // Не применимо для админов и координаторов
+        if (role === "admin" || role === "coordinator") {
+          return (
+            <Badge variant="secondary" className="text-xs">
+              {t("common.notApplicable")}
+            </Badge>
+          );
+        }
+        
         // Показываем дни доступности только для профессоров
         if (userType !== "professor") {
-          return "-";
+          return (
+            <Badge variant="secondary" className="text-xs">
+              {t("common.notApplicable")}
+            </Badge>
+          );
         }
 
         const unavailableDaysArray = formatUnavailableDays(unavailableDays);

@@ -7,8 +7,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 export function useSubjectAssignmentColumns(onEdit, onDelete) {
   const { t } = useTranslation();
@@ -40,7 +42,7 @@ export function useSubjectAssignmentColumns(onEdit, onDelete) {
       },
       {
         id: "actions",
-        header: t("workloads.subjectAssignments.columns.actions"),
+        header: "",
         cell: ({ row }) => {
           const assignment = row.original;
 
@@ -48,24 +50,26 @@ export function useSubjectAssignmentColumns(onEdit, onDelete) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{t("datatable.actions")}</DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => onEdit(assignment)}
                   className="cursor-pointer"
                 >
-                  <Edit className="mr-2 h-4 w-4" />
-                  {t("common.edit")}
+                  <Pencil className="h-4 w-4" />
+                  {t("datatable.edit")}
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
+                  variant="destructive"
+                  className="cursor-pointer"
                   onClick={() => onDelete(assignment.id)}
-                  className="cursor-pointer text-red-600"
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  {t("common.delete")}
+                  <Trash2 className="h-4 w-4" />
+                  {t("datatable.delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

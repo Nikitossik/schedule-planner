@@ -16,7 +16,7 @@ class RoomBase(BaseModel):
         description="Unique room number/code.",
         examples=["A101"],
     )
-    capacity: int = Field(
+    capacity: int | None = Field(
         gt=0,
         description="Seating capacity of the room.",
         examples=[30],
@@ -54,6 +54,12 @@ class RoomOut(RoomBase):
         description="Unique identifier of the room.",
         examples=[101],
     )
+    capacity: int | None = Field(
+        None,
+        gt=0,
+        description="Optional new seating capacity.",
+        examples=[40],
+    )
 
 
 class RoomFilters(BaseFilterParams):
@@ -86,14 +92,6 @@ class RoomFilters(BaseFilterParams):
         default=None,
         description="Exclude a specific lesson when checking availability (useful during edits).",
         examples=[123],
-    )
-
-    # Additional filters
-    min_capacity: Optional[int] = Field(
-        None,
-        ge=1,
-        description="Minimum required seating capacity.",
-        examples=[25],
     )
 
 

@@ -32,8 +32,8 @@ import { ColorPicker } from "@/components/ui/color-picker";
 const createSchema = (t, isEdit = false) =>
   z
     .object({
-      name: z.string().min(1),
-      surname: z.string().min(1),
+      name: z.string().min(1, t("users.form.validation.nameRequired")),
+      surname: z.string().min(1, t("users.form.validation.surnameRequired")),
       email: z.string().email().optional().or(z.literal("")),
       password: z.string().optional().or(z.literal("")),
       role: z.enum(["admin", "coordinator", "user"]),

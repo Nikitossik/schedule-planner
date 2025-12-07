@@ -63,12 +63,6 @@ export default function ContractsPage() {
         }}
         sortFields={[
           { label: t("contracts.table.columns.id"), value: "id" },
-          {
-            label: t("contracts.table.columns.totalHours"),
-            value: "total_hours",
-          },
-          // на беке исправить сортировку по этому полю
-          //{ label: t('contracts.table.columns.usedHours'), value: "total_workload_hours" },
         ]}
         filterSchema={filterSchema}
         onEdit={handleEdit}
