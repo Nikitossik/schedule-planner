@@ -19,7 +19,7 @@ const locales = {
 const localizer = dateFnsLocalizer({
   format: dateFnsFormat,
   parse,
-  startOfWeek,
+  startOfWeek: (date) => startOfWeek(date, { weekStartsOn: 1 }), // Понедельник как начало недели
   getDay,
   locales,
 });
@@ -171,6 +171,8 @@ export function LessonsCalendar({
   } = useCalendarLessons(schedule?.id, dateRange.date_from, dateRange.date_to);
 
   const lessons = lessonsData?.items || [];
+
+
 
   // Фильтруем праздники для текущего периода календаря
   const holidaysForPeriod = useMemo(() => {

@@ -11,6 +11,7 @@ export function FormActions({
   onDelete,
   deleteId,
   showCancelOnCreate = true,
+  formType = "lessons", // "lessons" | "recurringLessons"
 }) {
   const { t } = useTranslation();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -54,12 +55,16 @@ export function FormActions({
           )}
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
-              <>{t("lessons.form.buttons.saving")}</>
+              <>
+                {isEdit
+                  ? t(`${formType}.form.buttons.updating`)
+                  : t(`${formType}.form.buttons.creating`)}
+              </>
             ) : (
               <>
                 {isEdit
-                  ? t("lessons.form.buttons.update")
-                  : t("lessons.form.buttons.create")}
+                  ? t(`${formType}.form.buttons.update`)
+                  : t(`${formType}.form.buttons.create`)}
               </>
             )}
           </Button>

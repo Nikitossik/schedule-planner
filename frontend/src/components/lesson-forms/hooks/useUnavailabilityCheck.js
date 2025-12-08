@@ -44,16 +44,29 @@ export function useUnavailabilityCheck({
   // Получаем выбранный workload
   const selectedWorkload = useMemo(() => {
     if (!selectedWorkloadId) return null;
-    return workloads.find((w) => w.id.toString() === selectedWorkloadId);
+    
+    // Сравниваем и по числу, и по строке для надежности
+    const found = workloads.find((w) => 
+      w.id === selectedWorkloadId || 
+      w.id.toString() === selectedWorkloadId.toString()
+    );
+    
+    return found || null;
   }, [selectedWorkloadId, workloads]);
 
   // Вычисляем конфликтующие дни (для RecurringLessonForm)
   const unavailabilityInfo = useMemo(() => {
-    if (!selectedWorkload || !selectedDaysOfWeek?.length) return null;
+
+
+    if (!selectedWorkload || !selectedDaysOfWeek?.length) {
+      return null;
+    }
 
     const unavailableDays =
       selectedWorkload?.professor?.professor_profile?.unavailable_days;
-    if (!unavailableDays) return null;
+    if (!unavailableDays) {
+      return null;
+    }
 
     try {
       const unavailableDaysArray =
@@ -61,9 +74,13 @@ export function useUnavailabilityCheck({
           ? JSON.parse(unavailableDays)
           : unavailableDays;
 
+
+
       const conflictDays = selectedDaysOfWeek.filter((day) =>
         unavailableDaysArray.includes(day)
       );
+
+
 
       if (conflictDays.length === 0) return null;
 
@@ -71,12 +88,14 @@ export function useUnavailabilityCheck({
         (day) => !unavailableDaysArray.includes(day)
       );
 
-      return {
+      const result = {
         conflictDays,
         availableDays,
         professorName: `${selectedWorkload.professor.name} ${selectedWorkload.professor.surname}`,
       };
-    } catch {
+
+      return result;
+    } catch (error) {
       return null;
     }
   }, [selectedWorkload, selectedDaysOfWeek]);

@@ -1,4 +1,4 @@
-import moment from "moment";
+import { startOfWeek, endOfWeek, format } from "date-fns";
 
 /**
  * Утилиты для работы с датами календаря
@@ -8,20 +8,21 @@ import moment from "moment";
  * Вычисляет период для загрузки уроков на основе текущего вида
  */
 export const getDateRange = (date, view) => {
-  const startOfWeek = moment(date).startOf("week");
-  const endOfWeek = moment(date).endOf("week");
+  // Используем понедельник как начало недели (weekStartsOn: 1)
+  const weekStart = startOfWeek(date, { weekStartsOn: 1 });
+  const weekEnd = endOfWeek(date, { weekStartsOn: 1 });
 
   switch (view) {
     case "day":
       return {
-        date_from: moment(date).format("YYYY-MM-DD"),
-        date_to: moment(date).format("YYYY-MM-DD"),
+        date_from: format(date, "yyyy-MM-dd"),
+        date_to: format(date, "yyyy-MM-dd"),
       };
     case "week":
     default:
       return {
-        date_from: startOfWeek.format("YYYY-MM-DD"),
-        date_to: endOfWeek.format("YYYY-MM-DD"),
+        date_from: format(weekStart, "yyyy-MM-dd"),
+        date_to: format(weekEnd, "yyyy-MM-dd"),
       };
   }
 };

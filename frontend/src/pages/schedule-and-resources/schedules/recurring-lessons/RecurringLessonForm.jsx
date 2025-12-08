@@ -40,15 +40,22 @@ export function RecurringLessonForm({
 }) {
   const { t } = useTranslation();
 
+
+
+
+
   const [showUnavailabilityWarning, setShowUnavailabilityWarning] =
     useState(false);
   const [pendingFormData, setPendingFormData] = useState(null);
+  const [isSubmittingFromDialog, setIsSubmittingFromDialog] = useState(false);
   const [userEditedName, setUserEditedName] = useState(false); // Флаг что пользователь сам ввел имя
 
   const createRecurringTemplate = useEntityMutation(
     "recurring_template",
     "create"
   );
+  
+
   const updateRecurringTemplate = useEntityMutation(
     "recurring_template",
     "patch"
@@ -120,6 +127,8 @@ export function RecurringLessonForm({
     selectedDaysOfWeek: watchedDaysOfWeek,
   });
 
+
+
   // Дополнительный эффект для установки workload_id когда данные workloads загружены
   // Используем useState чтобы отслеживать, была ли начальная инициализация
   const [isWorkloadInitialized, setIsWorkloadInitialized] = useState(false);
@@ -168,6 +177,8 @@ export function RecurringLessonForm({
 
   // Автоматическое обновление названия шаблона (только если пользователь не вводил свое)
   useEffect(() => {
+
+    
     // Не генерируем автоматически если:
     // - В режиме редактирования
     // - Пользователь сам ввел имя
@@ -214,6 +225,7 @@ export function RecurringLessonForm({
 
   // Функция submit
   const submitForm = async (data) => {
+
     try {
       // Форматируем время
       const formatTime = (date) => {
@@ -260,12 +272,16 @@ export function RecurringLessonForm({
   };
 
   const handleFormSubmit = async (data) => {
+
+
     // Если есть конфликт с недоступными днями - показываем предупреждение
     if (unavailabilityInfo) {
+
       setPendingFormData(data);
       setShowUnavailabilityWarning(true);
       return;
     }
+
 
     await submitForm(data);
   };
@@ -273,8 +289,13 @@ export function RecurringLessonForm({
   const handleConfirmWithUnavailability = async () => {
     setShowUnavailabilityWarning(false);
     if (pendingFormData) {
-      await submitForm(pendingFormData);
-      setPendingFormData(null);
+      setIsSubmittingFromDialog(true);
+      try {
+        await submitForm(pendingFormData);
+        setPendingFormData(null);
+      } finally {
+        setIsSubmittingFromDialog(false);
+      }
     }
   };
 
@@ -444,11 +465,12 @@ export function RecurringLessonForm({
           {/* Form Actions */}
           <FormActions
             isEdit={isEdit}
-            isSubmitting={isSubmitting}
+            isSubmitting={isSubmitting || isSubmittingFromDialog}
             onCancel={onCancel}
             onDelete={onDelete}
             deleteId={template?.id}
             showCancelOnCreate={true}
+            formType="recurringLessons"
           />
         </form>
       </DialogContent>

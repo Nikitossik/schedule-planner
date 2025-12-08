@@ -206,6 +206,7 @@ export function LessonForm({
           onDelete={onDelete}
           deleteId={lesson?.id}
           showCancelOnCreate={true}
+          formType="lessons"
         />
       </form>
     </DialogContent>

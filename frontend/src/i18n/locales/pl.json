@@ -1316,7 +1316,9 @@
         "cancel": "Anuluj",
         "create": "Utwórz",
         "update": "Aktualizuj",
-        "saving": "Zapisywanie..."
+        "saving": "Zapisywanie...",
+        "creating": "Tworzenie...",
+        "updating": "Aktualizacja..."
       },
       "confirmDelete": "Czy na pewno chcesz usunąć te zajęcia?",
       "lessonType": {
@@ -1403,7 +1405,9 @@
         "create": "Utwórz szablon",
         "update": "Zaktualizuj szablon",
         "delete": "Usuń",
-        "saving": "Zapisywanie..."
+        "saving": "Zapisywanie...",
+        "creating": "Tworzenie...",
+        "updating": "Aktualizacja..."
       },
       "unavailabilityWarning": {
         "title": "Ostrzeżenie o niedostępności profesora",

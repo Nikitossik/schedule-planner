@@ -1317,7 +1317,9 @@
         "cancel": "Cancel",
         "create": "Create",
         "update": "Update",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "creating": "Creating...",
+        "updating": "Updating..."
       },
       "confirmDelete": "Are you sure you want to delete this lesson?",
       "lessonType": {
@@ -1404,7 +1406,9 @@
         "create": "Create Template",
         "update": "Update Template",
         "delete": "Delete",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "creating": "Creating...",
+        "updating": "Updating..."
       },
       "unavailabilityWarning": {
         "title": "Professor Unavailability Warning",
