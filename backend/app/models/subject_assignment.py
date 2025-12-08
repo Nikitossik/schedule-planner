@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from .subject import Subject
     from .professor_workload import ProfessorWorkload
     from .lesson import Lesson
+    from .recurring_template import RecurringLessonTemplate
 
 
 class SubjectAssignment(Base):
@@ -52,6 +53,9 @@ class SubjectAssignment(Base):
         "ProfessorWorkload", back_populates="subject_assignments"
     )  # Many-to-one: workload under which this assignment is managed
 
+    recurring_templates: Mapped[list["RecurringLessonTemplate"]] = relationship(
+        "RecurringLessonTemplate", back_populates="subject_assignment", lazy="selectin", cascade="all, delete-orphan"
+    )  # One-to-many: recurring templates associated with this subject assignment
     lessons: Mapped[list["Lesson"]] = relationship(
         "Lesson", back_populates="subject_assignment", lazy="selectin", cascade="all, delete-orphan"
     )  # One-to-many: lessons scheduled for this subject assignment

@@ -95,7 +95,7 @@ class RecurringLessonTemplate(Base):
     groups: Mapped[List["Group"]] = relationship(
         "Group", secondary=recurring_template_groups
     )
-    subject_assignment: Mapped["SubjectAssignment"] = relationship("SubjectAssignment")
+    subject_assignment: Mapped["SubjectAssignment"] = relationship("SubjectAssignment", back_populates="recurring_templates")
     room: Mapped["Room"] = relationship("Room")
     lessons: Mapped[List["Lesson"]] = relationship(
         "Lesson", back_populates="recurring_template", cascade="all, delete-orphan"
