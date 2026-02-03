@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     INITIAL_ADMIN_EMAIL: str
     INITIAL_ADMIN_PASSWORD: str
     RESET_DB_ON_START: bool
+    SEEDER_DATA_URL: str
     DISABLE_STUDENT_ACCOUNTS: bool
 
     model_config = SettingsConfigDict(

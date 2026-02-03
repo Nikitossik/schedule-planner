@@ -11,11 +11,10 @@ from .enums import UserRoleEnum, StudyFormEnum, SemesterPeriodEnum
 from ..config import setting
 from .security import get_password_hash
 
-
 def load_data() -> Dict[str, Any]:
     """Load data from the JSON file."""
     current_dir = os.path.dirname(__file__)
-    data_file_path = os.path.join(current_dir, "data.json")
+    data_file_path = os.path.join(current_dir, setting.SEEDER_DATA_URL)
     
     with open(data_file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
