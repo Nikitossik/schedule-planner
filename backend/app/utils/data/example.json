@@ -1,0 +1,829 @@
+{
+    "academic_year": [
+        {
+            "end_date": "2027-06-21",
+            "id": 1,
+            "is_current": 1,
+            "name": "2026/2027",
+            "start_date": "2026-10-01"
+        }
+    ],
+    "direction": [
+        {
+            "code": "SE",
+            "faculty_id": 1,
+            "id": 1,
+            "name": "Software Engineering"
+        }
+    ],
+    "faculty": [
+        {
+            "id": 1,
+            "name": "Faculty of Information Technologies"
+        }
+    ],
+    "group": [
+        {
+            "id": 1,
+            "name": "Group-1",
+            "semester_id": 1,
+            "student_count": 10,
+            "study_form_id": 2
+        },
+        {
+            "id": 2,
+            "name": "Group-2",
+            "semester_id": 1,
+            "student_count": 10,
+            "study_form_id": 2
+        },
+        {
+            "id": 3,
+            "name": "Group-3",
+            "semester_id": 1,
+            "student_count": 10,
+            "study_form_id": 2
+        }
+    ],
+    "professor_contract": [
+        {
+            "id": 1,
+            "professor_profile_id": 2,
+            "semester_id": 1,
+            "total_hours": 2000
+        },
+        {
+            "id": 2,
+            "professor_profile_id": 3,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 3,
+            "professor_profile_id": 4,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 4,
+            "professor_profile_id": 5,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 5,
+            "professor_profile_id": 6,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 6,
+            "professor_profile_id": 7,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 7,
+            "professor_profile_id": 8,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 8,
+            "professor_profile_id": 9,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 9,
+            "professor_profile_id": 10,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 10,
+            "professor_profile_id": 11,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 11,
+            "professor_profile_id": 12,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 12,
+            "professor_profile_id": 13,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 13,
+            "professor_profile_id": 14,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 14,
+            "professor_profile_id": 15,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 15,
+            "professor_profile_id": 16,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 16,
+            "professor_profile_id": 17,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 17,
+            "professor_profile_id": 18,
+            "semester_id": 1,
+            "total_hours": 1000
+        },
+        {
+            "id": 18,
+            "professor_profile_id": 19,
+            "semester_id": 1,
+            "total_hours": 1000
+        }
+    ],
+    "professor_profile": [
+        {
+            "academic_title": "Prof.",
+            "color": "#a6a6a6",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 2
+        },
+        {
+            "academic_title": "Dr.",
+            "color": "#c5c5c5",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 3
+        },
+        {
+            "academic_title": "Prof.",
+            "color": "#4D93D9",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 4
+        },
+        {
+            "academic_title": "Dr.",
+            "color": "#FF00FF",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 5
+        },
+        {
+            "academic_title": "Prof.",
+            "color": "#FFB7FF",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 6
+        },
+        {
+            "academic_title": "Dr.",
+            "color": "#FFFF00",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 7
+        },
+        {
+            "academic_title": "Prof.",
+            "color": "#5ABB33",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 8
+        },
+        {
+            "academic_title": "Prof.",
+            "color": "#44B3E1",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 9
+        },
+        {
+            "academic_title": "Dr.",
+            "color": "#94DCF8",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 10
+        },
+        {
+            "academic_title": "Prof.",
+            "color": "#F1A983",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 11
+        },
+        {
+            "academic_title": "Dr.",
+            "color": "#DEF3D5",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 12
+        },
+        {
+            "academic_title": "Prof.",
+            "color": "#F9FACE",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 13
+        },
+        {
+            "academic_title": "Prof.",
+            "color": "#9DDD83",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 14
+        },
+        {
+            "academic_title": "Dr.",
+            "color": "#3C7D22",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 15
+        },
+        {
+            "academic_title": "Dr.",
+            "color": "#FF0000",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 16
+        },
+        {
+            "academic_title": "Prof.",
+            "color": "#ED8E59",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 17
+        },
+        {
+            "academic_title": "Dr.",
+            "color": "#FBE2D5",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 18
+        },
+        {
+            "academic_title": "Prof.",
+            "color": "#FFC000",
+            "notes": "",
+            "unavailable_days": "[]",
+            "user_id": 19
+        }
+    ],
+    "professor_workload": [
+        {
+            "assigned_hours": 1000,
+            "contract_id": 1,
+            "id": 1,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 2,
+            "id": 2,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 3,
+            "id": 3,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 4,
+            "id": 4,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 5,
+            "id": 5,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 6,
+            "id": 6,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 7,
+            "id": 7,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 8,
+            "id": 8,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 9,
+            "id": 9,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 10,
+            "id": 10,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 11,
+            "id": 11,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 12,
+            "id": 12,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 13,
+            "id": 13,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 14,
+            "id": 14,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 15,
+            "id": 15,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 16,
+            "id": 16,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 17,
+            "id": 17,
+            "study_form_id": 2
+        },
+        {
+            "assigned_hours": 1000,
+            "contract_id": 18,
+            "id": 18,
+            "study_form_id": 2
+        }
+    ],
+    "room": [
+        {
+            "capacity": 30,
+            "id": 1,
+            "number": "B102"
+        }
+    ],
+    "semester": [
+        {
+            "academic_year_id": 1,
+            "end_date": "2027-02-20",
+            "id": 1,
+            "name": "Semester 3 2026/2027",
+            "number": 3,
+            "period": "winter",
+            "start_date": "2026-10-01"
+        }, 
+        {
+            "academic_year_id": 1,
+            "end_date": "2027-06-21",
+            "id": 2,
+            "name": "Semester 4 2026/2027",
+            "number": 4,
+            "period": "summer",
+            "start_date": "2027-03-01"
+        }
+    ],
+    "study_form": [
+        {
+            "direction_id": 1,
+            "form": "full_time",
+            "id": 1
+        },
+        {
+            "direction_id": 1,
+            "form": "part_time",
+            "id": 2
+        }
+    ],
+    "subject_assignment": [
+        {
+            "hours_per_subject": 100,
+            "id": 1,
+            "subject_id": 1,
+            "workload_id": 1
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 2,
+            "subject_id": 1,
+            "workload_id": 2
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 3,
+            "subject_id": 2,
+            "workload_id": 3
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 4,
+            "subject_id": 3,
+            "workload_id": 4
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 5,
+            "subject_id": 3,
+            "workload_id": 5
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 6,
+            "subject_id": 4,
+            "workload_id": 6
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 7,
+            "subject_id": 5,
+            "workload_id": 7
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 8,
+            "subject_id": 5,
+            "workload_id": 8
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 9,
+            "subject_id": 5,
+            "workload_id": 9
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 10,
+            "subject_id": 6,
+            "workload_id": 10
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 11,
+            "subject_id": 6,
+            "workload_id": 11
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 12,
+            "subject_id": 6,
+            "workload_id": 12
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 14,
+            "subject_id": 8,
+            "workload_id": 14
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 15,
+            "subject_id": 8,
+            "workload_id": 6
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 16,
+            "subject_id": 9,
+            "workload_id": 15
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 17,
+            "subject_id": 10,
+            "workload_id": 16
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 18,
+            "subject_id": 11,
+            "workload_id": 17
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 19,
+            "subject_id": 11,
+            "workload_id": 18
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 21,
+            "subject_id": 7,
+            "workload_id": 20
+        },
+        {
+            "hours_per_subject": 100,
+            "id": 22,
+            "subject_id": 7,
+            "workload_id": 13
+        }
+    ],
+    "subject": [
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 1,
+            "name": "Technical English",
+            "semester_id": 1
+        },
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 2,
+            "name": "Advanced Programming in C++",
+            "semester_id": 1
+        },
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 3,
+            "name": "Software Architecture",
+            "semester_id": 1
+        },
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 4,
+            "name": "Database Systems",
+            "semester_id": 1
+        },
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 5,
+            "name": "Operating Systems",
+            "semester_id": 1
+        },
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 6,
+            "name": "Computer Networks",
+            "semester_id": 1
+        },
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 7,
+            "name": "Web Development",
+            "semester_id": 1
+        },
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 8,
+            "name": "Software Testing",
+            "semester_id": 1
+        },
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 9,
+            "name": "Design Patterns",
+            "semester_id": 1
+        },
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 10,
+            "name": "Project Management",
+            "semester_id": 1
+        },
+        {
+            "allocated_hours": 10,
+            "direction_id": 1,
+            "id": 11,
+            "name": "Containerization Technologies",
+            "semester_id": 1
+        }
+    ],
+    "university_holiday": [
+        {
+            "date": null,
+            "end_date": "2025-05-03",
+            "id": 1,
+            "is_annual": 1,
+            "is_date_range": 1,
+            "name": "Example holidays",
+            "start_date": "2025-05-01"
+        },
+        {
+            "date": null,
+            "end_date": "2025-04-05",
+            "id": 2,
+            "is_annual": 1,
+            "is_date_range": 1,
+            "name": null,
+            "start_date": "2025-04-03"
+        },
+        {
+            "date": "2026-05-24",
+            "end_date": null,
+            "id": 3,
+            "is_annual": 0,
+            "is_date_range": 0,
+            "name": null,
+            "start_date": null
+        }
+    ],
+    "user": [
+        {
+            "id": 2,
+            "name": "Ethan",
+            "surname": "Walker",
+            "email": "ethan.walker@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 3,
+            "name": "Olivia",
+            "surname": "Harrington",
+            "email": "olivia.harrington@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 4,
+            "name": "Nathan",
+            "surname": "Coleman",
+            "email": "nathan.coleman@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 5,
+            "name": "Isabella",
+            "surname": "Montgomery",
+            "email": "isabella.montgomery@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 6,
+            "name": "Julian",
+            "surname": "Reynolds",
+            "email": "julian.reynolds@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 7,
+            "name": "Sophia",
+            "surname": "Bennett",
+            "email": "sophia.bennett@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 8,
+            "name": "Lucas",
+            "surname": "Armstrong",
+            "email": "lucas.armstrong@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 9,
+            "name": "Amelia",
+            "surname": "Foster",
+            "email": "amelia.foster@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 10,
+            "name": "Caleb",
+            "surname": "Morgan",
+            "email": "caleb.morgan@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 11,
+            "name": "Victoria",
+            "surname": "Hughes",
+            "email": "victoria.hughes@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 12,
+            "name": "Daniel",
+            "surname": "Parker",
+            "email": "daniel.parker@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 13,
+            "name": "Grace",
+            "surname": "Whitmore",
+            "email": "grace.whitmore@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 14,
+            "name": "Benjamin",
+            "surname": "Carter",
+            "email": "benjamin.carter@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 15,
+            "name": "Charlotte",
+            "surname": "Evans",
+            "email": "charlotte.evans@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 16,
+            "name": "Alexander",
+            "surname": "Brooks",
+            "email": "alexander.brooks@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 17,
+            "name": "Madeline",
+            "surname": "Turner",
+            "email": "madeline.turner@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 18,
+            "name": "Ryan",
+            "surname": "Mitchell",
+            "email": "ryan.mitchell@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        },
+        {
+            "id": 19,
+            "name": "Natalie",
+            "surname": "Sullivan",
+            "email": "natalie.sullivan@university.edu",
+            "password": "123123",
+            "role": "user",
+            "user_type": "professor"
+        }
+    ]
+}
