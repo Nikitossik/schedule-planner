@@ -21,12 +21,12 @@ export default function GroupsPage() {
   const [editingGroup, setEditingGroup] = useState(null);
 
   const { filterSchema, isLoading, hasError } = useFilterComposer([
-    useFacultyFilter, // Независимый
-    useDirectionFilter, // Зависит от Faculty
-    useStudyFormFilter, // Независимый (статический)
-    useAcademicYearFilter, // Независимый
-    usePeriodFilter, // Зависит от Academic Year (статический)
-    useSemesterFilter, // Зависит от Academic Year + Period
+    useFacultyFilter,
+    useDirectionFilter, 
+    useStudyFormFilter, 
+    useAcademicYearFilter, 
+    usePeriodFilter, 
+    useSemesterFilter, 
   ]);
 
   const handleCreateGroup = () => {

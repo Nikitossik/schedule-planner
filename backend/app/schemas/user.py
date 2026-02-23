@@ -60,8 +60,8 @@ class UserBase(BaseModel):
     ]
     user_type: UserTypeEnum | None = Field(
         default=None,
-        description="Optional classification for base users (e.g., STUDENT, PROFESSOR).",
-        examples=["STUDENT"],
+        description="Optional classification for base users (e.g., student, professor).",
+        examples=["student"],
     )
 
 
@@ -95,7 +95,7 @@ class UserIn(UserBase):
         Validate consistency between role and user_type.
 
         Ensures:
-        - If role == user, user_type must be provided (STUDENT or PROFESSOR).
+        - If role == user, user_type must be provided (student or professor).
         - If role != user, user_type must be None.
         """
         if self.role == UserRoleEnum.user:
@@ -164,7 +164,7 @@ class UserUpdate(BaseModel):
         Field(
             None,
             description="Optional new user type (for base users).",
-            examples=["PROFESSOR"],
+            examples=["professor"],
         ),
     ]
 
@@ -211,8 +211,8 @@ class UserFilterParams(BaseFilterParams):
     )
     user_types: list[UserTypeEnum] = Field(
         default=[],
-        description="Filter by one or more user types (e.g., STUDENT, PROFESSOR).",
-        examples=[["STUDENT"]],
+        description="Filter by one or more user types (e.g., student, professor).",
+        examples=[["student"]],
     )
 
 

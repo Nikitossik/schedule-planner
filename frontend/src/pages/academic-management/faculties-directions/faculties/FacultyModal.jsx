@@ -30,13 +30,12 @@ export default function FacultyModal({ isOpen, faculty, onClose, onSuccess }) {
         toast.success(t("faculties.messages.createSuccess"));
       }
 
-      // Сначала инвалидируем кеш
       queryClient.invalidateQueries({
         queryKey: ["faculty"],
         exact: false,
       });
 
-      // Потом вызываем коллбек
+      
       if (onSuccess) {
         onSuccess();
       } else {

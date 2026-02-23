@@ -37,7 +37,7 @@ export function Breadcrumbs() {
   const segments = location.pathname
     .split("/")
     .filter(Boolean)
-    .filter((segment) => !/^\d+$/.test(segment)); // пропускаем числовые ID
+    .filter((segment) => !/^\d+$/.test(segment)); 
 
   const breadcrumbItems = segments.map((segment, index) => {
     const href = "/" + segments.slice(0, index + 1).join("/");

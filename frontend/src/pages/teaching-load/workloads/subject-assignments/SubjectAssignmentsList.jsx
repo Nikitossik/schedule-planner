@@ -59,7 +59,6 @@ const SubjectAssignmentsList = ({ workload, onUpdate }) => {
         setIsCreateOpen(false);
       }
 
-      // Триггерим обновление таблицы
       setRefetchTrigger((prev) => prev + 1);
 
       if (onUpdate) onUpdate();
@@ -75,7 +74,6 @@ const SubjectAssignmentsList = ({ workload, onUpdate }) => {
       await deleteAssignment.mutateAsync({ id: assignmentId });
       toast.success(getDeleteSuccessMessage("assignment"));
 
-      // Триггерим обновление таблицы
       setRefetchTrigger((prev) => prev + 1);
 
       if (onUpdate) onUpdate();

@@ -3,42 +3,34 @@ import { useEntityList } from "@/hooks/useEntityList";
 import { useEntityQuery } from "@/hooks/useEntityQuery";
 import { format } from "date-fns";
 
-/**
- * Контекст для предзагруженных данных расписания
- * Загружает один раз при монтировании страницы редактирования расписания:
- * - Расписание со всеми связанными данными (groups, workloads с assignments)
- * - Комнаты (все)
- * - Праздники (все)
- */
 export const ScheduleDataContext = createContext(null);
 
 export function ScheduleDataProvider({ schedule, children }) {
-  // 1. Загружаем полные данные расписания со всеми связанными данными
+ 
   const { data: fullSchedule, isLoading: isLoadingSchedule } = useEntityQuery(
     "schedule",
     schedule?.id,
     !!schedule?.id,
     {
-      // Кешируем на 3 минуты - данные могут обновляться
+      
       staleTime: 3 * 60 * 1000,
       cacheTime: 10 * 60 * 1000,
     }
   );
 
-  // Извлекаем данные из полного ответа расписания
+
   const groups = fullSchedule?.groups || [];
   const workloads = fullSchedule?.workloads || [];
 
-  // 2. Комнаты - загружаем все отдельно
+
   const { data: roomsData, isLoading: isLoadingRooms } = useEntityList("room", {
     pagination: { loadAll: true },
-    // Кешируем на 5 минут - комнаты редко меняются
+
     staleTime: 5 * 60 * 1000,
     cacheTime: 10 * 60 * 1000,
   });
 
-  // 3. Праздники - загружаем развернутые даты для периода семестра
-  // Используем новый expanded endpoint для получения всех дат с именами
+
   const semesterStart =
     fullSchedule?.semester?.start_date || schedule?.semester?.start_date;
   const semesterEnd =
@@ -57,7 +49,7 @@ export function ScheduleDataProvider({ schedule, children }) {
       pagination: { loadAll: true },
     });
 
-  // Отладочная информация для праздников
+
   console.log("DEBUG ScheduleDataContext holidays:", {
     semesterStart,
     semesterEnd,
@@ -73,7 +65,7 @@ export function ScheduleDataProvider({ schedule, children }) {
       : expandedHolidaysData?.items || []
   );
 
-  // Создаем удобную функцию для фильтрации праздников по дате
+
   const filterHolidaysByDateRange = useMemo(() => {
     return (startDate, endDate) => {
       const holidays = expandedHolidaysData?.items || [];
@@ -90,25 +82,23 @@ export function ScheduleDataProvider({ schedule, children }) {
   }, [expandedHolidaysData]);
 
   const value = {
-    // Данные расписания
+  
     schedule: fullSchedule || schedule,
 
-    // Группы и workloads уже отфильтрованы по study_form на бэкенде
+    
     groups,
     workloads,
     isLoadingGroups: isLoadingSchedule,
     isLoadingWorkloads: isLoadingSchedule,
 
-    // Комнаты
     rooms: roomsData?.items || [],
     isLoadingRooms,
 
-    // Праздники (развернутые даты с именами)
     expandedHolidays: expandedHolidaysData?.items || [],
     filterHolidaysByDateRange,
     isLoadingHolidays,
 
-    // Общий статус загрузки
+
     isLoading: isLoadingSchedule || isLoadingRooms || isLoadingHolidays,
   };
 
@@ -119,9 +109,7 @@ export function ScheduleDataProvider({ schedule, children }) {
   );
 }
 
-/**
- * Хук для получения предзагруженных данных расписания
- */
+
 export function useScheduleData() {
   const context = useContext(ScheduleDataContext);
 

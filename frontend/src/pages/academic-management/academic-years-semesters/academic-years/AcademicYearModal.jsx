@@ -40,14 +40,14 @@ export const AcademicYearModal = ({
         toast.success(t("academicYears.messages.createSuccess"));
       }
 
-      // Сначала инвалидируем кеш
+     
       console.log("🗑️ AcademicYearModal: Invalidating queries");
       queryClient.invalidateQueries({
         queryKey: ["academic_year"],
         exact: false,
       });
 
-      // Потом вызываем коллбек
+    
       console.log("🔄 AcademicYearModal: Calling onSuccess", {
         hasOnSuccess: !!onSuccess,
       });

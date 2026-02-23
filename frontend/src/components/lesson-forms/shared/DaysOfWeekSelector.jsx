@@ -7,12 +7,11 @@ import { Calendar } from "lucide-react";
 export function DaysOfWeekSelector({ value = [], onChange, error }) {
   const { t, i18n } = useTranslation();
 
-  // Дни недели для селектора
   const daysOfWeek = useMemo(() => {
     const locale = i18n?.language === "pl" ? "pl" : "en";
 
     return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(2024, 0, 1 + index); // Начинаем с понедельника
+      const date = new Date(2024, 0, 1 + index);
       return {
         value: index,
         short: date.toLocaleDateString(locale, { weekday: "short" }),
@@ -22,7 +21,6 @@ export function DaysOfWeekSelector({ value = [], onChange, error }) {
   }, [i18n?.language]);
 
   const toggleDay = (dayValue) => {
-    // Конвертируем в массив, если пришла строка (JSON)
     let currentDays = value || [];
     if (typeof currentDays === "string") {
       try {
@@ -68,7 +66,6 @@ export function DaysOfWeekSelector({ value = [], onChange, error }) {
   );
 }
 
-// Экспортируем также функцию для получения дней недели (для использования в других компонентах)
 export function useDaysOfWeek() {
   const { i18n } = useTranslation();
 
@@ -76,7 +73,7 @@ export function useDaysOfWeek() {
     const locale = i18n?.language === "pl" ? "pl" : "en";
 
     return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(2024, 0, 1 + index); // Начинаем с понедельника
+      const date = new Date(2024, 0, 1 + index); 
       return {
         value: index,
         short: date.toLocaleDateString(locale, { weekday: "short" }),

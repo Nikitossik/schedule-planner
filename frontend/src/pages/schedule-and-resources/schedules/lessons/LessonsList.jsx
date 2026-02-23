@@ -11,11 +11,9 @@ import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usePolishDeclensions } from "@/utils/polish-declensions";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function LessonsList({ schedule, onUpdate }) {
-  // ScheduleAnalysisProvider предоставляет данные анализа расписания (конфликты + нагрузка)
-  // Он используется внутри ScheduleDataProvider для дополнительной функциональности
+
   return (
     <ScheduleAnalysisProvider schedule={schedule}>
       <LessonsListContent schedule={schedule} onUpdate={onUpdate} />
@@ -32,7 +30,6 @@ function LessonsListContent({ schedule, onUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
-  // const [viewMode, setViewMode] = useState("table");
 
   const createLesson = useEntityMutation("lesson", "create");
   const updateLesson = useEntityMutation("lesson", "patch");
@@ -68,9 +65,9 @@ function LessonsListContent({ schedule, onUpdate }) {
         toast.success(t("lessons.messages.createSuccess"));
       }
 
-      setRefreshTrigger((prev) => prev + 1); // Тригgerим обновление календаря
+      setRefreshTrigger((prev) => prev + 1); 
 
-      // Инвалидируем кеши
+    
       queryClient.invalidateQueries(["calendar-lessons", schedule?.id]);
       queryClient.invalidateQueries(["schedule-analysis", schedule?.id]);
 
@@ -86,9 +83,9 @@ function LessonsListContent({ schedule, onUpdate }) {
     try {
       await deleteLesson.mutateAsync({ id: lessonId });
       toast.success(getDeleteSuccessMessage("lesson"));
-      setRefreshTrigger((prev) => prev + 1); // Тригgerим обновление календаря
+      setRefreshTrigger((prev) => prev + 1); 
 
-      // Инвалидируем кеши
+      
       queryClient.invalidateQueries(["calendar-lessons", schedule?.id]);
       queryClient.invalidateQueries(["schedule-analysis", schedule?.id]);
 
@@ -123,7 +120,6 @@ function LessonsListContent({ schedule, onUpdate }) {
         onEditLesson={handleEdit}
         onUpdateLesson={updateLesson}
         onCreateLesson={(lessonData) => {
-          // Создать урок с предзаполненными датой/временем
           handleCreate(lessonData);
         }}
         refreshTrigger={refreshTrigger}

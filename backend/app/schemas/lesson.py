@@ -62,8 +62,8 @@ class LessonBase(BaseModel):
         examples=["11:30:00"],
     )
     lesson_type: LessonTypeEnum = Field(
-        description="Lesson type (e.g., LECTURE, SEMINAR, LAB).",
-        examples=["LECTURE"],
+        description="Lesson type (e.g., lecture, seminar, lab).",
+        examples=["lecture"],
     )
 
 
@@ -125,7 +125,7 @@ class LessonUpdate(BaseModel):
         None,
         max_length=50,
         description="Optional new lesson type.",
-        examples=["SEMINAR"],
+        examples=["seminar"],
     )
 
 
@@ -163,8 +163,8 @@ class LessonOut(BaseModel):
     )
     lesson_type: str = Field(
         ...,
-        description="Lesson type (e.g., LECTURE, SEMINAR, LAB).",
-        examples=["LECTURE"],
+        description="Lesson type (e.g., lecture, seminar, lab).",
+        examples=["lecture"],
     )
     is_online: bool = Field(
         ...,
@@ -253,8 +253,8 @@ class LessonFilterParams(BaseModel):
     )
     lesson_type: Optional[str] = Field(
         default=None,
-        description="Filter by lesson type (e.g., LECTURE, LAB).",
-        examples=["LECTURE"],
+        description="Filter by lesson type (e.g., lecture, seminar, lab).",
+        examples=["lecture"],
     )
     is_online: Optional[bool] = Field(
         default=None,
@@ -279,7 +279,7 @@ class CalendarLessonsResponse(BaseModel):
     items: List[LessonOut] = Field(
         ...,
         description="List of lessons in the requested period.",
-        examples=[[{"id": 1, "lesson_type": "LECTURE"}]],
+        examples=[[{"id": 1, "lesson_type": "lecture"}]],
     )
     count: int = Field(
         ...,

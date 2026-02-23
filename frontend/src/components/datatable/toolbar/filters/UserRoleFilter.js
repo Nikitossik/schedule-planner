@@ -1,8 +1,5 @@
 import { useTranslation } from "react-i18next";
 
-/**
- * Статический фильтр для ролей пользователей
- */
 export const useUserRoleFilter = () => {
   const { t } = useTranslation();
 

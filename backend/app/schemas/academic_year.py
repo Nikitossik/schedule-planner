@@ -76,7 +76,7 @@ class AcademicYearOut(AcademicYearBase):
     semesters: Optional[list[SemesterMiniOut]] = Field(
         default=None,
         description="List of semesters that belong to this academic year.",
-        examples=[[{"id": 1, "name": "Fall 2024"}]],
+        examples=[[{"id": 1, "name": "Winter 2024"}]],
     )
 
 

@@ -26,7 +26,6 @@ const LanguageSwitch = () => {
 
   const handleLanguageChange = (languageCode) => {
     i18n.changeLanguage(languageCode);
-    // Явно сохраняем в localStorage для надежности
     localStorage.setItem("i18nextLng", languageCode);
   };
 

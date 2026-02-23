@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 export default function SortOrderSelector({
   sorting = [],
   setSorting,
-  defaultField = "id", // новый пропс с дефолтным полем
+  defaultField = "id", 
 }) {
   const { t } = useTranslation();
   const currentField = sorting[0]?.id || defaultField;

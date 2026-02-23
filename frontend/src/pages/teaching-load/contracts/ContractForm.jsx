@@ -56,7 +56,6 @@ const ContractForm = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
     professor_profile_id: defaultValues?.professor?.id || "",
     academic_year_id: defaultValues?.academic_year?.id || "",
@@ -101,13 +100,11 @@ const ContractForm = ({
   academicYears = academicYears.items || [];
   semesters = semesters.items || [];
 
-  // Обработчик для изменения академического года
   const handleAcademicYearChange = (value) => {
     form.setValue("academic_year_id", Number(value));
-    form.setValue("semester_id", ""); // Очищаем семестр при смене года
+    form.setValue("semester_id", ""); 
   };
 
-  // Логирование для диагностики
   console.log("🔍 ContractForm - defaultValues (raw):", defaultValues);
   console.log(
     "🔍 ContractForm - transformedDefaultValues:",

@@ -24,7 +24,6 @@ import { useEffect } from "react";
 
 const createSchema = (t, isEdit) => {
   if (isEdit) {
-    // При редактировании только name обязательно
     return z.object({
       name: z.string().min(1, t("schedules.form.validation.nameRequired")),
       academic_year_id: z.string().optional(),
@@ -33,7 +32,6 @@ const createSchema = (t, isEdit) => {
     });
   }
 
-  // При создании все поля обязательны
   return z.object({
     name: z.string().min(1, t("schedules.form.validation.nameRequired")),
     academic_year_id: z
@@ -70,15 +68,12 @@ export default function ScheduleForm({
     defaultValues: transformedDefaultValues,
   });
 
-  // Следим за изменением академического года
   const watchedAcademicYearId = form.watch("academic_year_id");
 
-  // Загружаем академические года
   const { data: academicYearsData, isLoading: isAcademicYearsLoading } =
     useEntityList("academic_year");
   const academicYears = academicYearsData?.items || [];
 
-  // Загружаем семестры для выбранного академического года
   const { data: semestersData, isLoading: isSemestersLoading } = useEntityList(
     "semester",
     watchedAcademicYearId
@@ -87,7 +82,6 @@ export default function ScheduleForm({
   );
   const semesters = semestersData?.items || [];
 
-  // Загружаем формы обучения
   const { data: studyFormsData, isLoading: isStudyFormsLoading } =
     useEntityList("study_form", {
       filters: {
@@ -99,14 +93,12 @@ export default function ScheduleForm({
     });
   const studyForms = studyFormsData?.items || [];
 
-  // Очищаем семестр при смене академического года
   useEffect(() => {
     if (watchedAcademicYearId && !isEdit) {
       form.setValue("semester_id", "");
     }
   }, [watchedAcademicYearId, form, isEdit]);
 
-  // Заполняем форму при редактировании
   useEffect(() => {
     if (isEdit && defaultValues) {
       const newValues = {

@@ -32,7 +32,7 @@ export function useServerTableQuery({
   const [sorting, setSorting] = useState(getInitialState().sorting);
   const [filters, setFilters] = useState(getInitialState().filters);
 
-  // Debounce поисковый запрос на 300ms
+ 
   const debouncedFilters = useDebounce(filters, 300);
 
   const { data, isLoading, error, refetch } = useEntityList(entity, {
@@ -42,7 +42,7 @@ export function useServerTableQuery({
     refetchTrigger,
   });
 
-  // Сохраняем состояние в localStorage (не debouncedFilters, а реальные)
+
   useEffect(() => {
     localStorage.setItem(
       STORAGE_KEY,

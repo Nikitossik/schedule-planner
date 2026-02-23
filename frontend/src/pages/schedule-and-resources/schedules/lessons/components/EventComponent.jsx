@@ -14,7 +14,7 @@ import {
 export function EventComponent({ event, groupBy }) {
   const { t } = useTranslation();
 
-  // Иконки для типов занятий
+  
   const getLessonTypeIcon = (type) => {
     const iconMap = {
       lecture: Presentation,
@@ -26,7 +26,7 @@ export function EventComponent({ event, groupBy }) {
     return iconMap[type] || Presentation;
   };
 
-  // Праздники теперь отображаются в заголовках дней календаря
+ 
 
   const { resource } = event;
   const isGroupedByGroup = groupBy === "group";

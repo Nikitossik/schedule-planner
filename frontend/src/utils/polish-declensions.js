@@ -1,17 +1,9 @@
 import { useTranslation } from "react-i18next";
 
-/**
- * Hook для получения правильных склонений польских сущностей
- */
+
 export function usePolishDeclensions() {
   const { t, i18n } = useTranslation();
 
-  /**
-   * Получить сообщение подтверждения удаления с правильным склонением
-   * @param {string} entityType - тип сущности (group, user, lesson, etc.)
-   * @param {string} customMessage - кастомное сообщение (если есть)
-   * @returns {string} правильно склоненное сообщение
-   */
   const getDeleteConfirmMessage = (entityType, customMessage) => {
     if (customMessage) return customMessage;
     
@@ -25,41 +17,32 @@ export function usePolishDeclensions() {
     return t("common.confirmDialog.defaultMessage");
   };
 
-  /**
-   * Получить сообщение об успешном удалении с правильным склонением
-   * @param {string} entityType - тип сущности (group, user, lesson, etc.)
-   * @returns {string} правильно склоненное сообщение
-   */
+ 
   const getDeleteSuccessMessage = (entityType) => {
     if (!entityType) {
       return t("datatable.deleteSuccess", { item: "Element" });
     }
     
-    // Попытка получить переводы для данной сущности
+
     const nominativeKey = `common.entities.${entityType}.nominative`;
     const deletedKey = `common.entities.${entityType}.deleted`;
     
-    // Проверяем существуют ли переводы для данной сущности
+  
     const nominative = t(nominativeKey, { defaultValue: null });
     const deletedForm = t(deletedKey, { defaultValue: null });
     
     if (nominative && deletedForm && nominative !== nominativeKey && deletedForm !== deletedKey) {
-      // Есть переводы - используем их
+    
       return `${nominative} ${deletedForm}`;
     } else {
-      // Нет переводов - используем fallback
+      
       const fallbackNominative = entityType.charAt(0).toUpperCase() + entityType.slice(1).replace(/_/g, ' ');
       const fallbackDeleted = i18n.language === "pl" ? "usunięty" : "deleted";
       return `${fallbackNominative} ${fallbackDeleted}`;
     }
   };
 
-  /**
-   * Получить сообщение для множественного удаления с правильным склонением
-   * @param {string} entityType - тип сущности (group, user, lesson, etc.)
-   * @param {number} count - количество удаленных элементов
-   * @returns {string} правильно склоненное сообщение
-   */
+
   const getDeleteManySuccessMessage = (entityType, count) => {
     if (i18n.language === "pl" && entityType) {
       const accusativePlural = getPolishPluralForm(entityType, count);
@@ -72,15 +55,8 @@ export function usePolishDeclensions() {
     return t("datatable.deleteManySuccess", { count, items: entityType || "elements" });
   };
 
-  /**
-   * Получить правильную польскую форму множественного числа
-   * @param {string} entityType - тип сущности
-   * @param {number} count - количество
-   * @returns {string} склоненная форма
-   */
   const getPolishPluralForm = (entityType, count) => {
-    // Простейшие правила польского множественного числа
-    // Для большинства случаев используем винительный падеж множественного числа
+
     const pluralForms = {
       group: count === 1 ? "grupę" : count < 5 ? "grupy" : "grup",
       user: count === 1 ? "użytkownika" : count < 5 ? "użytkowników" : "użytkowników",

@@ -30,7 +30,6 @@ const SubjectAssignmentForm = ({
   const isEditing = !!assignment;
   const { t } = useTranslation();
 
-  // Создаем схему валидации с учетом максимальных часов
   const validationSchema = z.object({
     subject_id: z.coerce
       .number()
@@ -93,7 +92,7 @@ const SubjectAssignmentForm = ({
               <Select
                 onValueChange={(value) => field.onChange(Number(value))}
                 value={field.value ? String(field.value) : ""}
-                disabled={isEditing} // Не разрешаем менять предмет при редактировании
+                disabled={isEditing}
               >
                 <SelectTrigger>
                   <SelectValue

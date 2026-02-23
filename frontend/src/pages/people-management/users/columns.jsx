@@ -1,5 +1,3 @@
-// columns.js
-
 import { actionsColumn } from "@/components/datatable/commonColumns";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -216,7 +214,6 @@ export const useUserColumns = () => {
 
         const role = row.original.role;
         
-        // Не применимо для админов и координаторов
         if (role === "admin" || role === "coordinator") {
           return (
             <Badge variant="secondary" className="text-xs">
@@ -225,7 +222,6 @@ export const useUserColumns = () => {
           );
         }
         
-        // Показываем дни доступности только для профессоров
         if (userType !== "professor") {
           return (
             <Badge variant="secondary" className="text-xs">
@@ -259,5 +255,4 @@ export const useUserColumns = () => {
   ];
 };
 
-// Для обратной совместимости
 export const columns = [];

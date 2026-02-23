@@ -1,15 +1,5 @@
 import { useEntityList } from "@/hooks/useEntityList";
 
-/**
- * Хук для создания независимых фильтров
- * @param {Object} config - конфигурация фильтра
- * @param {string} config.entity - название сущности для загрузки данных
- * @param {string} config.key - ключ фильтра (например, 'faculty_ids')
- * @param {string} config.label - отображаемое название фильтра
- * @param {string} config.valueField - поле для value (по умолчанию 'id')
- * @param {string} config.labelField - поле для label (по умолчанию 'name')
- * @param {Function} config.customLabelFormatter - функция для кастомного форматирования label
- */
 export const useIndependentFilter = (config) => {
   const {
     entity,

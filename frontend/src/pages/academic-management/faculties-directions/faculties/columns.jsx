@@ -1,5 +1,3 @@
-// columns.js
-
 import { actionsColumn } from "@/components/datatable/commonColumns";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
@@ -25,5 +23,4 @@ export const useFacultyColumns = () => {
   ];
 };
 
-// Для обратной совместимости
 export const columns = [];

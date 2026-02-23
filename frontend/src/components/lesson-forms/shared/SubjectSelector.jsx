@@ -20,7 +20,6 @@ export function SubjectSelector({
 }) {
   const { t } = useTranslation();
 
-  // Найдем выбранное назначение для отображения сокращенного названия
   const selectedAssignment = assignments.find(a => a.id.toString() === value);
   const selectedSubjectName = selectedAssignment?.subject?.name || '';
   const displaySelectedText = selectedSubjectName ? truncateText(selectedSubjectName, 40) : '';

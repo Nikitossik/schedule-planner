@@ -1,4 +1,3 @@
-// components/TokenWatcher.jsx
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,7 +17,6 @@ export function TokenWatcher() {
       const now = Date.now();
 
       if (now >= exp) {
-        // Access токен истёк — пробуем обновить
         refreshAccessToken().catch(() => {
           logout();
           navigate("/login");
@@ -28,7 +26,7 @@ export function TokenWatcher() {
       logout();
       navigate("/login");
     }
-  }, [location.pathname]); // выполняется при каждом переходе
+  }, [location.pathname]); 
 
   return null;
 }

@@ -31,7 +31,6 @@ export const SemesterForm = ({
 }) => {
   const { t, i18n } = useTranslation();
 
-  // Создаем схему динамически в зависимости от режима
   const createSchema = (isEditMode) => {
     const baseSchema = {
       name: z.string().min(1, t("semesters.form.validation.nameRequired")),
@@ -39,7 +38,7 @@ export const SemesterForm = ({
         .number()
         .int()
         .min(1, t("semesters.form.validation.numberRequired")),
-      period: z.enum(["winter", "spring", "summer"], {
+      period: z.enum(["winter", "summer"], {
         errorMap: () => ({
           message: t("semesters.form.validation.periodRequired"),
         }),
@@ -52,7 +51,6 @@ export const SemesterForm = ({
         .min(1, t("semesters.form.validation.endDateRequired")),
     };
 
-    // Добавляем academic_year_id только при создании
     if (!isEditMode) {
       baseSchema.academic_year_id = z
         .string()
@@ -149,7 +147,6 @@ export const SemesterForm = ({
           />
         </div>
 
-        {/* Academic Year только при создании */}
         {!isEdit && (
           <FormField
             control={form.control}

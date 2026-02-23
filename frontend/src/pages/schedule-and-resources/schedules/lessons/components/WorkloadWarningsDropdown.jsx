@@ -5,7 +5,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -81,7 +80,7 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
           </div>
         ) : (
           <div className="max-h-64 overflow-y-auto overflow-x-hidden">
-            {/* Предупреждения по преподавателям */}
+         
             {professorWarnings.length > 0 && (
               <>
                 <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">
@@ -149,12 +148,12 @@ export function WorkloadWarningsDropdown({ onNavigateToLessons }) {
               </>
             )}
 
-            {/* Разделитель между секциями */}
+        
             {professorWarnings.length > 0 && subjectWarnings.length > 0 && (
               <DropdownMenuSeparator />
             )}
 
-            {/* Предупреждения по предметам */}
+         
             {subjectWarnings.length > 0 && (
               <>
                 <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">

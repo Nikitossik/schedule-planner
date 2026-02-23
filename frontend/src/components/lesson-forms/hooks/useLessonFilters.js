@@ -2,13 +2,8 @@ import { useMemo } from "react";
 import { useEntityList } from "@/hooks/useEntityList";
 import { useScheduleData } from "@/contexts/ScheduleDataContext";
 
-/**
- * Хук для обработки данных для форм уроков
- * Использует данные из ScheduleDataContext (groups, workloads уже отфильтрованы по study_form)
- * Выполняет минимальную обработку - извлечение assignments и фильтрацию комнат
- */
 export function useLessonFilters({
-  selectedGroupIds, // Массив выбранных групп
+  selectedGroupIds, 
   selectedWorkloadId,
   selectedDate,
   startTime,
@@ -18,7 +13,7 @@ export function useLessonFilters({
   currentLessonId,
   initialGroup,
 }) {
-  // Получаем предзагруженные данные из контекста
+  
   const {
     groups,
     workloads,
@@ -29,12 +24,8 @@ export function useLessonFilters({
     isLoadingRooms,
   } = useScheduleData();
 
-  // Группы и workloads уже отфильтрованы по study_form на бэкенде
-  // Не нужно дополнительно фильтровать
 
-  // Получаем выбранные группы для справки
   const selectedGroups = useMemo(() => {
-    // Используем selectedGroupIds (всегда массив)
     if (
       selectedGroupIds &&
       Array.isArray(selectedGroupIds) &&
@@ -43,7 +34,6 @@ export function useLessonFilters({
       return groups.filter((g) => selectedGroupIds.includes(g.id));
     }
 
-    // При редактировании используем initialGroup если нет выбранных групп
     if (
       isEdit &&
       initialGroup &&
@@ -55,7 +45,6 @@ export function useLessonFilters({
     return [];
   }, [groups, selectedGroupIds, isEdit, initialGroup]);
 
-  // Subject assignments: извлекаем из выбранного workload (уже включены в response)
   const assignments = useMemo(() => {
     if (!selectedWorkloadId) return [];
 
@@ -66,7 +55,6 @@ export function useLessonFilters({
     return selectedWorkload?.subject_assignments || [];
   }, [workloads, selectedWorkloadId]);
 
-  // Создаем массив функций-матчеров для блокировки праздничных дней в DatePicker
   const disabledDayMatchers = useMemo(() => {
     if (!expandedHolidays || expandedHolidays.length === 0) return [];
 
@@ -75,8 +63,6 @@ export function useLessonFilters({
     expandedHolidays.forEach((holiday) => {
       const holidayDate = new Date(holiday.date);
 
-      // Для всех праздников создаем матчер для конкретной даты
-      // (expanded holidays уже содержат развернутые даты)
       matchers.push(
         (date) =>
           date.getFullYear() === holidayDate.getFullYear() &&
@@ -88,8 +74,6 @@ export function useLessonFilters({
     return matchers;
   }, [expandedHolidays]);
 
-  // Комнаты: фильтруем по доступности
-  // Если указаны дата и время - делаем запрос с фильтрами, иначе используем все из контекста
   const shouldFilterRooms = !!(
     selectedDate &&
     startTime &&
@@ -106,7 +90,6 @@ export function useLessonFilters({
       available_end_time: endTime,
     };
 
-    // При редактировании исключаем текущий урок
     if (isEdit && currentLessonId) {
       filters.exclude_lesson_id = currentLessonId;
     }
@@ -121,19 +104,18 @@ export function useLessonFilters({
     shouldFilterRooms,
   ]);
 
-  // Если нужна фильтрация по доступности - делаем запрос, иначе используем все комнаты
   const { data: filteredRoomsData, isLoading: isLoadingFilteredRooms } =
     useEntityList("room", {
       filters: roomFilters,
       pagination: { loadAll: true },
-      enabled: shouldFilterRooms, // Запрос выполняется только если нужна фильтрация
+      enabled: shouldFilterRooms, 
     });
 
   const rooms = shouldFilterRooms ? filteredRoomsData?.items || [] : allRooms;
 
   return {
     groups,
-    workloads, // Уже отфильтрованы по study_form
+    workloads, 
     assignments,
     rooms,
     expandedHolidays,
@@ -141,7 +123,7 @@ export function useLessonFilters({
     selectedGroups,
     isLoadingGroups,
     isLoadingWorkloads,
-    isLoadingAssignments: isLoadingWorkloads, // Assignments загружаются вместе с workloads
+    isLoadingAssignments: isLoadingWorkloads, 
     isLoadingRooms: shouldFilterRooms ? isLoadingFilteredRooms : isLoadingRooms,
   };
 }

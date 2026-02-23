@@ -36,21 +36,20 @@ export function ExportDialog({ children, onExportStateChange }) {
   const [errors, setErrors] = useState({});
   const [confirmExport, setConfirmExport] = useState(false);
 
-  // Схема валидации
   const exportSchema = z.object({
     filename: z.string().min(1, t("lessons.export.filename.required")),
   });
 
   const { exportSchedule, isExporting } = useScheduleExport();
 
-  // Отслеживание состояния экспорта
+  
   useEffect(() => {
     if (onExportStateChange) {
       onExportStateChange(isExporting);
     }
   }, [isExporting, onExportStateChange]);
 
-  // Инициализация имени файла
+
   useEffect(() => {
     if (schedule && !filename) {
       const defaultName = schedule.name || "schedule";
@@ -96,7 +95,7 @@ export function ExportDialog({ children, onExportStateChange }) {
       await exportSchedule({
         scheduleId: schedule.id,
         format: exportFormat,
-        groupIds: null, // Экспортируем все группы
+        groupIds: null, 
         filename: filename.trim() || undefined,
       });
       setOpen(false);
@@ -130,7 +129,7 @@ export function ExportDialog({ children, onExportStateChange }) {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Предупреждение о проблемах */}
+        
           {hasIssues && !confirmExport && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
@@ -181,7 +180,7 @@ export function ExportDialog({ children, onExportStateChange }) {
             </Alert>
           )}
 
-          {/* Имя файла */}
+       
           <div className="space-y-2">
             <Label htmlFor="filename">
               {t("lessons.export.filename.label")}
@@ -203,7 +202,7 @@ export function ExportDialog({ children, onExportStateChange }) {
             )}
           </div>
 
-          {/* Формат экспорта */}
+       
           <div className="space-y-3">
             <Label>{t("lessons.export.format.label")}</Label>
             <RadioGroup value={exportFormat} onValueChange={setExportFormat}>
@@ -224,7 +223,7 @@ export function ExportDialog({ children, onExportStateChange }) {
             </RadioGroup>
           </div>
 
-          {/* Кнопки */}
+      
           <div className="flex justify-between gap-2">
             <Button
               variant="outline"

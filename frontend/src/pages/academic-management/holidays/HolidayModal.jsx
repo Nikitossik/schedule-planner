@@ -29,13 +29,11 @@ export default function HolidayModal({ isOpen, holiday, onClose, onSuccess }) {
         toast.success(t("holidays.messages.createSuccess"));
       }
 
-      // Сначала инвалидируем кеш
       queryClient.invalidateQueries({
         queryKey: ["university_holiday"],
         exact: false,
       });
 
-      // Потом вызываем коллбек
       if (onSuccess) {
         onSuccess();
       } else {

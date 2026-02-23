@@ -14,7 +14,7 @@ export function ProfessorSelector({
   value,
   onChange,
   workloads = [],
-  selectedGroupIds, // Массив выбранных групп (для справки, не блокирует селект)
+  selectedGroupIds, 
   isProfessorAvailable,
   error,
   disabled = false,

@@ -77,19 +77,16 @@ class UniversityHolidayUpdate(BaseModel):
 
     @model_validator(mode="after")
     def validate_update_dates(self):
-        """Валидация при обновлении - если указан тип, проверяем соответствующие поля"""
+        """Validate date fields based on is_date_range and is_annual flags for updates"""
         if not self.is_date_range:
-            # Для одиночного дня очищаем поля отрезка если они переданы
             if self.start_date is not None or self.end_date is not None:
                 self.start_date = None
                 self.end_date = None
 
         elif self.is_date_range:
-            # Для отрезка очищаем поле одиночной даты если оно передано
             if self.date is not None:
                 self.date = None
 
-            # Если указан тип отрезка, проверяем что есть обе даты
             if self.start_date and self.end_date and self.end_date <= self.start_date:
                 raise ValueError("End date must be after start date")
 

@@ -20,7 +20,6 @@ export default function WorkloadsPage() {
   const [editingWorkload, setEditingWorkload] = useState(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
 
-  // Отслеживаем изменения refetchTrigger
   useEffect(() => {
     console.log("🎯 WorkloadsPage: refetchTrigger changed to:", refetchTrigger);
   }, [refetchTrigger]);
@@ -30,33 +29,28 @@ export default function WorkloadsPage() {
     setIsModalOpen(true);
   };
 
-  // Редактирование через отдельную страницу EditWorkloadPage
-  // const handleEdit не нужен для модального окна
-
+ 
   const handleModalClose = () => {
     setIsModalOpen(false);
     setEditingWorkload(null);
   };
 
   const handleSuccess = () => {
-    // Триггерим обновление таблицы
     setRefetchTrigger((prev) => prev + 1);
     handleModalClose();
   };
 
   const handleRefresh = () => {
-    // Функция для обновления таблицы
     setRefetchTrigger((prev) => prev + 1);
   };
 
-  // Композируем все фильтры с правильными зависимостями для workloads
   const { filterSchema, isLoading, hasError } = useFilterComposer([
-    useFacultyFilter, // Независимый
-    useDirectionFilter, // Зависит от Faculty
-    useStudyFormFilter, // Независимый (статический)
-    useAcademicYearFilter, // Независимый
-    usePeriodFilter, // Зависит от Academic Year (статический)
-    useSemesterFilter, // Зависит от Academic Year + Period
+    useFacultyFilter, 
+    useDirectionFilter, 
+    useStudyFormFilter, 
+    useAcademicYearFilter,
+    usePeriodFilter, 
+    useSemesterFilter, 
   ]);
 
   return (

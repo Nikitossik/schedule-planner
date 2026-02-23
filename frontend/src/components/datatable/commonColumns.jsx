@@ -1,4 +1,3 @@
-// components/datatable/commonColumns.js
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -45,7 +44,6 @@ export const selectColumn = {
   enableHiding: false,
 };
 
-// Компонент для ячеек действий
 function ActionsCell({
   row,
   onEdit,
@@ -71,11 +69,11 @@ function ActionsCell({
 
   const deleteMutation = useEntityMutation(entity, "delete");
 
-  // Проверяем разрешения
+  // Check permissions
   const canEdit = entity === "user" ? canManageUsers() : true;
   const canDelete = entity === "user" ? canManageUsers() : true;
 
-  // Если нет разрешений на редактирование и удаление, не показываем колонку
+  // If no permissions to edit and delete, do not show the column
   if (!canEdit && !canDelete) {
     return null;
   }

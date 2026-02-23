@@ -34,13 +34,11 @@ export default function WorkloadModal({
         toast.success(t("workloads.messages.createSuccess"));
       }
 
-      // Сначала инвалидируем кеш
       queryClient.invalidateQueries({
         queryKey: ["professor_workload"],
         exact: false,
       });
 
-      // Потом вызываем коллбек
       if (onSuccess) {
         onSuccess();
       } else {
@@ -58,7 +56,6 @@ export default function WorkloadModal({
     }
   };
 
-  // Преобразуем данные для формы
   const defaultValues = isEdit
     ? {
         contract_id: workload?.contract?.id || "",

@@ -11,12 +11,12 @@ export function useScheduleExport() {
         format: format,
       });
 
-      // Добавляем группы если указаны
+    
       if (groupIds && groupIds.length > 0) {
         groupIds.forEach((id) => params.append("group_ids", id));
       }
 
-      // Добавляем имя файла если указано
+  
       if (filename) {
         params.append("filename", filename);
       }
@@ -30,7 +30,7 @@ export function useScheduleExport() {
         throw new Error(errorData.detail || "Export failed");
       }
 
-      // Получаем имя файла из заголовка Content-Disposition
+     
       const blob = await response.blob();
       const contentDisposition = response.headers.get("Content-Disposition");
       const filenameMatch = contentDisposition?.match(/filename="([^"]+)"/);
@@ -48,7 +48,7 @@ export function useScheduleExport() {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = filename; // Имя файла уже содержит расширение
+      link.download = filename; 
       document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);

@@ -28,7 +28,6 @@ export default function EditSchedulePage() {
   const updateSchedule = useEntityMutation("schedule", "patch");
 
   const handleSubmit = (values) => {
-    // При редактировании отправляем только имя, semester_id не меняется
     const updateData = {
       name: values.name,
     };

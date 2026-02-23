@@ -110,11 +110,7 @@ class RoomService(BaseService[Room, RoomIn]):
                 Lesson.room_id.isnot(None),
                 not_(Lesson.is_online),
                 # Time interval overlap check:
-                # Intervals [A_start, A_end) and [B_start, B_end) overlap if:
-                # - A_start is within B, or
-                # - A_end is within B, or
-                # - A fully contains B, or
-                # - B fully contains A
+               
                 or_(
                     # New lesson starts during an existing one
                     and_(Lesson.start_time <= start_time, Lesson.end_time > start_time),

@@ -1,10 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useIndependentFilter } from "./useIndependentFilter";
 
-/**
- * Фильтр по факультетам
- * Загружает список факультетов и создает фильтр для множественного выбора
- */
 export const useFacultyFilter = () => {
   const { t } = useTranslation();
 

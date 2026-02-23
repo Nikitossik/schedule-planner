@@ -1,5 +1,3 @@
-# backend/app/routes/config.py (новый файл)
-
 from fastapi import APIRouter
 from ..config import setting
 

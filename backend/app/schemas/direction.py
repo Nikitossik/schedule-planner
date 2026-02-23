@@ -103,7 +103,7 @@ class DirectionOut(DirectionBase):
     study_forms: list[StudyFormMiniOut] = Field(
         serialization_alias="forms",
         description="Available study forms for this direction.",
-        examples=[[{"id": 1, "form": "FULL_TIME"}, {"id": 2, "form": "PART_TIME"}]],
+        examples=[[{"id": 1, "form": "full-time"}, {"id": 2, "form": "part-time"}]],
     )
 
 
@@ -119,8 +119,8 @@ class DirectionFilters(BaseFilterParams):
     )
     study_forms: list[str] | None = Field(
         default=[],
-        description="Filter by study form values (e.g., FULL_TIME, PART_TIME).",
-        examples=[["FULL_TIME"]],
+        description="Filter by study form values (e.g., full-time, part-time).",
+        examples=[["full-time"]],
     )
 
 

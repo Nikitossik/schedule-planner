@@ -34,13 +34,11 @@ export default function ContractModal({
         toast.success(t("contracts.messages.createSuccess"));
       }
 
-      // Сначала инвалидируем кеш
       queryClient.invalidateQueries({
         queryKey: ["professor_contract"],
         exact: false,
       });
 
-      // Потом вызываем коллбек
       if (onSuccess) {
         onSuccess();
       } else {

@@ -14,7 +14,6 @@ export default function HolidaysPage() {
   });
 
   const handleRefresh = () => {
-    // Функция для обновления таблицы
     setRefetchTrigger((prev) => prev + 1);
   };
 

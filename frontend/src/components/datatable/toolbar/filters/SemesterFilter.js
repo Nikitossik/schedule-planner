@@ -1,10 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useDependentFilter } from "./useDependentFilter";
 
-/**
- * Фильтр по семестрам с каскадной зависимостью от академических годов и периодов
- * Показывает только семестры выбранных академических годов и периодов
- */
 export const useSemesterFilter = () => {
   const { t } = useTranslation();
 
@@ -19,7 +15,6 @@ export const useSemesterFilter = () => {
       const selectedYearIds = currentFilters.academic_year_ids || [];
       const selectedPeriods = currentFilters.periods || [];
 
-      // Фильтруем по выбранным годам
       if (
         selectedYearIds.length > 0 &&
         !selectedYearIds.includes(semester.academic_year.id)
@@ -27,7 +22,6 @@ export const useSemesterFilter = () => {
         return false;
       }
 
-      // Фильтруем по выбранным периодам
       if (
         selectedPeriods.length > 0 &&
         !selectedPeriods.includes(semester.period)

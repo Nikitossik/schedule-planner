@@ -13,7 +13,6 @@ import { ChevronDown } from "lucide-react";
 
 export default function EntityFilter({ filters, setFilters, filterSchema }) {
   const { t } = useTranslation();
-  // Получаем актуальную схему фильтров (если это функция)
   const currentFilterSchema =
     typeof filterSchema === "function"
       ? filterSchema(filters)

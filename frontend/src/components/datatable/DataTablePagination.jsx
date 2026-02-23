@@ -20,12 +20,6 @@ export default function DataTablePagination({ table }) {
 
   return (
     <div className="flex items-center justify-center px-2">
-      {/* <div className="text-muted-foreground flex-1 text-sm">
-        {t("datatable.selectedRows", {
-          selected: table.getFilteredSelectedRowModel().rows.length,
-          total: table.getFilteredRowModel().rows.length,
-        })}
-      </div> */}
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">{t("datatable.rowsPerPage")}</p>

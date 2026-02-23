@@ -10,7 +10,6 @@ import "./LessonsCalendar.css";
 
 import { Users, User, MapPin } from "lucide-react";
 
-// Настройка локализатора date-fns
 const locales = {
   'en': enUS,
   'pl': pl,
@@ -19,7 +18,7 @@ const locales = {
 const localizer = dateFnsLocalizer({
   format: dateFnsFormat,
   parse,
-  startOfWeek: (date) => startOfWeek(date, { weekStartsOn: 1 }), // Понедельник как начало недели
+  startOfWeek: (date) => startOfWeek(date, { weekStartsOn: 1 }), 
   getDay,
   locales,
 });
@@ -40,7 +39,6 @@ import { ConflictsDropdown } from "./components/ConflictsDropdown";
 import { WorkloadWarningsDropdown } from "./components/WorkloadWarningsDropdown";
 import { EventComponent } from "./components/EventComponent";
 
-// Импортируем все утилиты
 import {
   getDateRange,
   createResourcesFromLessons,
@@ -59,7 +57,6 @@ import {
 
 const DnDCalendar = withDragAndDrop(Calendar);
 
-// Локализованные сообщения для календаря
 const getCalendarMessages = (t, language) => {
   const baseMessages = {
     allDay: t("lessons.calendar.navigation.allDay"),
@@ -75,7 +72,6 @@ const getCalendarMessages = (t, language) => {
     showMore: (total) => t("lessons.calendar.navigation.showMore", { total }),
   };
 
-  // Дополнительные сообщения для польского языка
   if (language === "pl") {
     return {
       ...baseMessages,
@@ -85,7 +81,6 @@ const getCalendarMessages = (t, language) => {
     };
   }
 
-  // Дополнительные сообщения для английского языка
   return {
     ...baseMessages,
     month: "Month",
@@ -104,13 +99,10 @@ export function LessonsCalendar({
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
-  // Получаем текущую локаль для date-fns
   const currentLocale = i18n.language === "pl" ? pl : enUS;
 
-  // Получаем локализованные сообщения
   const calendarMessages = getCalendarMessages(t, i18n.language);
 
-  // Функции для инвалидации кеша
   const invalidateConflictsCache = () => {
     queryClient.invalidateQueries(["conflicts-summary", schedule?.id]);
   };
@@ -119,43 +111,34 @@ export function LessonsCalendar({
     queryClient.invalidateQueries(["combined-warnings", schedule?.id]);
   };
 
-  // Получаем даты начала и конца семестра для ограничения календаря
   const semesterStart = schedule?.semester?.start_date;
   const semesterEnd = schedule?.semester?.end_date;
 
-  // Состояние для навигации и вида календаря
   const [currentDate, setCurrentDate] = useState(() => {
     const today = new Date();
 
-    // Если есть данные семестра - проверяем границы
     if (semesterStart && semesterEnd) {
       const semesterStartDate = new Date(semesterStart);
       const semesterEndDate = new Date(semesterEnd);
 
-      // Если сегодня в пределах семестра - используем сегодня
       if (today >= semesterStartDate && today <= semesterEndDate) {
         return today;
       }
-      // Если сегодня до начала семестра - используем начало семестра
       else if (today < semesterStartDate) {
         return semesterStartDate;
       }
-      // Если сегодня после конца семестра - используем конец семестра
       else {
         return semesterEndDate;
       }
     }
 
-    // Если нет данных семестра - используем сегодня
     return today;
   });
   const [currentView, setCurrentView] = useState("week");
   const [groupBy, setGroupBy] = useState("none");
 
-  // Вычисляем период для загрузки уроков
   const dateRange = getDateRange(currentDate, currentView);
 
-  // Получаем данные из контекста (с защитой от отсутствия провайдера)
   const scheduleDataContext = useContext(ScheduleDataContext);
   const scheduleData = scheduleDataContext || {
     expandedHolidays: [],
@@ -163,7 +146,6 @@ export function LessonsCalendar({
   };
   const { expandedHolidays, filterHolidaysByDateRange } = scheduleData;
 
-  // Загружаем уроки для данного расписания и периода
   const {
     data: lessonsData,
     isLoading,
@@ -173,15 +155,12 @@ export function LessonsCalendar({
   const lessons = lessonsData?.items || [];
 
 
-
-  // Фильтруем праздники для текущего периода календаря
   const holidaysForPeriod = useMemo(() => {
     return (
       filterHolidaysByDateRange(dateRange.date_from, dateRange.date_to) || []
     );
   }, [filterHolidaysByDateRange, dateRange.date_from, dateRange.date_to]);
 
-  // Создаем Set для быстрой проверки праздничных дат и мапу с информацией о праздниках
   const holidayDatesSet = useMemo(() => {
     const dates = new Set();
     if (holidaysForPeriod && Array.isArray(holidaysForPeriod)) {
@@ -206,7 +185,6 @@ export function LessonsCalendar({
     return map;
   }, [holidaysForPeriod]);
 
-  // Функция проверки праздника
   const isHolidayDate = useMemo(
     () => (date) => {
       const dateStr = format(date, "yyyy-MM-dd");
@@ -215,7 +193,6 @@ export function LessonsCalendar({
     [holidayDatesSet]
   );
 
-  // Функция получения информации о празднике
   const getHolidayInfo = useMemo(
     () => (date) => {
       const dateStr = format(date, "yyyy-MM-dd");
@@ -224,11 +201,9 @@ export function LessonsCalendar({
     [holidayInfoMap]
   );
 
-  // Создаем ресурсы и события
   const resources = createResourcesFromLessons(lessons, groupBy);
   const events = transformLessonsToEvents(lessons, groupBy);
 
-  // Кастомные форматы календаря с поддержкой праздников
   const customFormats = useMemo(
     () => ({
       dayFormat: (date) => {
@@ -298,7 +273,6 @@ export function LessonsCalendar({
     [getHolidayInfo, t, currentLocale]
   );
 
-  // Создаем обработчики
   const handleNavigateToLessons = createNavigateToLessonsHandler(
     setCurrentDate,
     setCurrentView
@@ -310,12 +284,10 @@ export function LessonsCalendar({
   const handleSelectEvent = createSelectEventHandler(onEditLesson);
   const handleSelectSlot = useMemo(() => {
     return (slotInfo) => {
-      // Блокируем создание событий в праздничные дни
       if (isHolidayDate(slotInfo.start)) {
         console.log("Blocked slot selection on holiday:", slotInfo.start);
         return false;
       }
-      // Используем оригинальный обработчик для обычных дней
       return createSelectSlotHandler(
         onCreateLesson,
         isHolidayDate,
@@ -325,7 +297,6 @@ export function LessonsCalendar({
   }, [onCreateLesson, isHolidayDate, t]);
   const handleNavigate = useMemo(() => {
     return (newDate) => {
-      // Если нет данных о семестре - используем обычную навигацию
       if (!semesterStart || !semesterEnd) {
         return createNavigateHandler(setCurrentDate)(newDate);
       }
@@ -333,11 +304,9 @@ export function LessonsCalendar({
       const semesterStartDate = new Date(semesterStart);
       const semesterEndDate = new Date(semesterEnd);
 
-      // Проверяем, находится ли новая дата в пределах семестра
       if (newDate >= semesterStartDate && newDate <= semesterEndDate) {
         setCurrentDate(newDate);
       }
-      // Если дата выходит за пределы - устанавливаем граничную дату
       else if (newDate < semesterStartDate) {
         setCurrentDate(semesterStartDate);
       } else if (newDate > semesterEndDate) {
@@ -349,12 +318,10 @@ export function LessonsCalendar({
 
   const handleEventDrop = useMemo(() => {
     return (args) => {
-      // Проверяем, не пытаемся ли мы сбросить событие на праздничный день
       if (args.start && isHolidayDate(args.start)) {
         return false;
       }
 
-      // Используем оригинальный обработчик для обычных дней
       return createEventDropHandler(
         lessons,
         schedule,
@@ -379,7 +346,6 @@ export function LessonsCalendar({
 
   const handleEventResize = useMemo(() => {
     return (args) => {
-      // Проверяем, не пытаемся ли мы изменить размер события на праздничный день
       if (
         (args.start && isHolidayDate(args.start)) ||
         (args.end && isHolidayDate(args.end))
@@ -387,7 +353,6 @@ export function LessonsCalendar({
         return false;
       }
 
-      // Используем оригинальный обработчик для обычных дней
       return createEventResizeHandler(
         schedule,
         onUpdateLesson,
@@ -406,21 +371,18 @@ export function LessonsCalendar({
     t,
   ]);
 
-  // Рефетч данных при изменении refreshTrigger
   useEffect(() => {
     if (refreshTrigger > 0) {
       refetch();
     }
   }, [refreshTrigger, refetch]);
 
-  // Обновляем currentDate когда загружаются данные семестра
   useEffect(() => {
     if (semesterStart && semesterEnd) {
       const today = new Date();
       const semesterStartDate = new Date(semesterStart);
       const semesterEndDate = new Date(semesterEnd);
 
-      // Если текущая дата вне семестра - корректируем её
       if (currentDate < semesterStartDate) {
         setCurrentDate(semesterStartDate);
       } else if (currentDate > semesterEndDate) {
@@ -429,12 +391,10 @@ export function LessonsCalendar({
     }
   }, [semesterStart, semesterEnd, currentDate]);
 
-  // Рефетч при изменении даты или вида календаря
   useEffect(() => {
     refetch();
   }, [currentDate, currentView, refetch]);
 
-  // Отладочная информация
   useEffect(() => {
     logDebugInfo(currentView, groupBy, lessons, resources, events);
   }, [lessons, groupBy, currentView, resources, events]);
@@ -565,7 +525,6 @@ export function LessonsCalendar({
               ),
             }}
             eventPropGetter={(event) => {
-              // Стили для уроков - используем цвет преподавателя
               const professorColor =
                 event.resource?.lesson?.professor?.professor_profile?.color;
               const textColor =

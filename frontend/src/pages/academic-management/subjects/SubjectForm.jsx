@@ -63,7 +63,6 @@ export default function SubjectForm({
 }) {
   const { t } = useTranslation();
 
-  // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
     direction_id: String(defaultValues?.direction?.id ?? ""),
@@ -95,13 +94,12 @@ export default function SubjectForm({
   );
   const semesters = semestersData?.items || [];
 
-  // Обработчик для изменения академического года
   const handleAcademicYearChange = (value) => {
     form.setValue("academic_year_id", value);
-    form.setValue("semester_id", ""); // Очищаем семестр при смене года
+    form.setValue("semester_id", ""); 
   };
 
-  // Обработчик отправки формы
+  
   const handleFormSubmit = (data) => {
     onSubmit(data);
   };
@@ -311,8 +309,7 @@ export default function SubjectForm({
               <FormControl>
                 <Input
                   type="number"
-                  min={0}
-                  step={1}
+                  min={1}
                   placeholder={t("subjects.form.placeholders.allocatedHours")}
                   {...field}
                   value={field.value || ""}

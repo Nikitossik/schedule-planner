@@ -34,7 +34,6 @@ class Lesson(Base):
     Fields overview:
     - id: numeric primary key.
     - schedule_id: FK to Schedule (owning timetable).
-    - group_id: FK to Group (attending cohort).
     - subject_assignment_id: FK to SubjectAssignment (subject/professor/workload).
     - room_id: optional FK to Room (physical location) when not online.
     - is_online: marks whether the lesson is conducted online.

@@ -1,8 +1,5 @@
 import { useTranslation } from "react-i18next";
 
-/**
- * Фильтр по формам обучения (статический - не загружается с сервера)
- */
 export const useStudyFormFilter = () => {
   const { t } = useTranslation();
 

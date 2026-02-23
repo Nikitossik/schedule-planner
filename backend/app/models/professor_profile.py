@@ -21,9 +21,12 @@ class ProfessorProfile(Base):
 
     Fields overview:
     - user_id: primary key and FK to User; enforces a one-to-one mapping with User.
+    - niotes: optional text field for arbitrary professor notes.
+    - unavailable_days: optional string (e.g., JSON array) listing professor's unavailable weekdays
+    - academic_title: required string for the professor's academic title (e.g., "Dr.", "Prof.").
+    - color: hex color code for UI display of the professor's lessons.
     - user: one-to-one relationship back to the User entity.
     - contracts: one-to-many collection of ProfessorContract items with cascading delete.
-    - workloads/subject_assignments: optional relations (currently commented out).
     """
 
     __tablename__ = "professor_profile"

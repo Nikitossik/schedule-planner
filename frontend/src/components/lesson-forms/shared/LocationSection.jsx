@@ -45,7 +45,6 @@ export function LocationSection({
                 onRoomChange(null);
               } else {
                 onRoomChange(Number(value));
-                // Если выбран кабинет, убираем онлайн
                 if (isOnline) {
                   onIsOnlineChange(false);
                 }
@@ -63,7 +62,6 @@ export function LocationSection({
               />
             </SelectTrigger>
             <SelectContent>
-              {/* Опция "Без кабинета" */}
               <SelectItem value="no-room">
                 <div className="flex items-center">
                   <MapPin className="h-4 w-4 mr-2 opacity-50" />
@@ -103,7 +101,6 @@ export function LocationSection({
             checked={isOnline}
             onCheckedChange={(checked) => {
               onIsOnlineChange(checked);
-              // Если выбран онлайн, убираем кабинет
               if (checked && roomId) {
                 onRoomChange(null);
               }

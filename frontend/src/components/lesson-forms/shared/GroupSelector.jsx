@@ -22,21 +22,18 @@ export function GroupSelector({
 }) {
   const { t } = useTranslation();
 
-  // Определяем placeholder
   const getPlaceholder = () => {
     if (isLoading) return t("common.loading");
     if (placeholder) return placeholder;
     return t("lessons.form.placeholders.selectGroups");
   };
 
-  // Обработка значений для мульти-селекта
   const handleMultiChange = (selectedValues) => {
-    // Конвертируем строковые ID в числа
+    
     const numericValues = selectedValues.map((val) => parseInt(val));
     onChange(numericValues);
   };
 
-  // Конвертируем значение для мульти-селекта в строки (только для UI)
   const multiValue = Array.isArray(value)
     ? value.map((id) => id.toString())
     : [];

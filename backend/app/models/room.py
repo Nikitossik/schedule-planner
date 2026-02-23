@@ -18,7 +18,6 @@ class Room(Base):
     - id: numeric primary key.
     - number: unique room identifier (e.g., "B-201"), indexed for fast lookup.
     - capacity: optional seating capacity; null if unknown.
-    - lessons: optional one-to-many relation to Lesson (currently commented out).
     """
 
     __tablename__ = "room"

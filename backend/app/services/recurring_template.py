@@ -55,18 +55,18 @@ class RecurringLessonTemplateService(
         return super().apply_filters(query, params)
 
     def create(self, data: RecurringLessonTemplateIn) -> RecurringLessonTemplate:
-        """Переопределенный метод создания - создаем шаблон и генерируем уроки"""
+        """Redefined create method to handle template creation and lesson generation"""
 
         template_data = data.model_dump(exclude={"group_ids"})
         group_ids = data.group_ids
 
-        # Создаем шаблон
+        # Create the template
         template = super().create(template_data)
 
-        # Привязываем группы к шаблону
+        # Assign groups to the template
         self._assign_groups_to_template(template, group_ids)
 
-        # Генерируем уроки
+        # Generate lessons
         self._generate_lessons_from_template(template)
 
         return template
@@ -74,41 +74,40 @@ class RecurringLessonTemplateService(
     def update(
         self, id: int, data: RecurringLessonTemplateUpdate
     ) -> RecurringLessonTemplate:
-        """Переопределенный метод обновления - обновляем шаблон и пересоздаем уроки"""
+        """Redefined update method to handle template updates and lesson regeneration"""
 
-        # Обновляем шаблон
+        # Update the template
         template_data = data.model_dump(exclude_unset=True, exclude={"group_ids"})
         template = super().update(id, template_data)
 
-        # Обновляем группы если они переданы
+        # Update groups if provided
         if hasattr(data, "group_ids") and data.group_ids is not None:
             self._assign_groups_to_template(template, data.group_ids)
 
-        # Удаляем старые будущие уроки
+        # Delete old future lessons
         self._delete_future_lessons_by_template(id)
 
-        # Генерируем новые уроки
+        # Generate new lessons
         self._generate_lessons_from_template(template)
 
         return template
 
     def delete(self, id: int) -> bool:
-        """Переопределенный метод удаления - удаляем шаблон (уроки удаляются автоматически)"""
-        # Удаляем будущие уроки (на всякий случай)
+        """Redefined delete method - delete template (lessons are deleted automatically)"""
+        # Delete future lessons (just in case)
         self._delete_future_lessons_by_template(id)
 
-        # Удаляем шаблон (остальные уроки удаляются по CASCADE)
+        # Delete the template (other lessons are deleted via CASCADE)
         return super().delete(id)
 
     def _generate_lessons_from_template(
         self, template: RecurringLessonTemplate
     ) -> List[Lesson]:
-        """Генерируем уроки по шаблону - ОДИН урок на дату со ВСЕМИ группами"""
-
-        # Вычисляем даты уроков
+        """Generate lessons from the template - ONE lesson per date for ALL groups"""
+        # Calculate lesson dates
         lesson_dates = self._calculate_lesson_dates(template)
 
-        # Создаем ОДИН урок на каждую дату для ВСЕХ групп сразу
+        # Create ONE lesson per date for ALL groups
         lessons = []
         for lesson_date in lesson_dates:
             lesson_data = LessonIn(
@@ -132,48 +131,48 @@ class RecurringLessonTemplateService(
     def _assign_groups_to_template(
         self, template: RecurringLessonTemplate, group_ids: List[int]
     ) -> None:
-        """Привязываем группы к шаблону"""
+        """Assign groups to the template"""
         from ..models.group import Group
 
-        # Получаем группы по их ID
+        # Get groups by their IDs
         groups = self.db.query(Group).filter(Group.id.in_(group_ids)).all()
 
-        # Привязываем группы к шаблону
+        # Assign groups to the template
         template.groups = groups
 
-        # Сохраняем изменения
+        # Commit changes
         self.db.commit()
 
     def _calculate_lesson_dates(self, template: RecurringLessonTemplate) -> List[date]:
-        """Вычисляем все даты уроков с учетом праздников и недоступных дней профессора"""
+        """Calculate all lesson dates considering holidays and professor's unavailable days"""
 
         dates = []
         current_date = template.start_date
         end_date = template.end_date or template.schedule.semester.end_date
 
-        # Получаем праздники для исключения
+        # Get holidays for exclusion
         expanded_holidays = self.holiday_service.get_expanded_holiday_dates(
             current_date, end_date
         )
-        # Конвертируем строки дат в объекты date для корректного сравнения
+        # Convert holiday date strings to date objects for proper comparison
         holiday_dates = set(holiday["date"] for holiday in expanded_holidays)
 
-        # Получаем недоступные дни профессора
+        # Get professor's unavailable days
         unavailable_days = self._get_professor_unavailable_days(template)
 
-        # Получаем дни недели (работаем со строкой напрямую)
+        # Get days of the week (work directly with the string)
         days_of_week = template.days_of_week
 
-        # Проходим по всем дням в диапазоне
+        # Iterate over all days in the range
         while current_date <= end_date:
-            # Проверяем день недели (0=Понедельник в ISO)
+            # Check the day of the week (0=Monday in ISO)
             day_of_week = current_date.weekday()
 
-            # Конвертируем номер дня в строку и проверяем его наличие в JSON строке
+            # Convert the day number to a string and check its presence in the JSON string
             if str(day_of_week) in days_of_week:
-                # Исключаем праздники
+                # Exclude holidays
                 if current_date not in holiday_dates:
-                    # Исключаем недоступные дни профессора
+                    # Exclude professor's unavailable days
                     if unavailable_days is None or day_of_week not in unavailable_days:
                         dates.append(current_date)
 
@@ -184,13 +183,13 @@ class RecurringLessonTemplateService(
     def _get_professor_unavailable_days(
         self, template: RecurringLessonTemplate
     ) -> set[int] | None:
-        """Получаем недоступные дни профессора из subject_assignment"""
+        """Get professor's unavailable days from subject_assignment"""
         import json
 
         if not template.subject_assignment:
             return None
 
-        # Получаем профессора через subject_assignment -> workload -> contract -> professor_profile
+        # Get professor through subject_assignment -> workload -> contract -> professor_profile
         professor_profile = (
             template.subject_assignment.workload.contract.professor_profile
         )
@@ -199,14 +198,14 @@ class RecurringLessonTemplateService(
             return None
 
         try:
-            # Парсим JSON строку в список дней
+            # Parse JSON string into a list of days
             unavailable_days_list = json.loads(professor_profile.unavailable_days)
             return set(unavailable_days_list)
         except (json.JSONDecodeError, TypeError):
             return None
 
     def _delete_future_lessons_by_template(self, template_id: int) -> int:
-        """Удаляем только будущие уроки по шаблону"""
+        """Delete only future lessons by template"""
 
         today = date.today()
 
@@ -214,7 +213,7 @@ class RecurringLessonTemplateService(
             self.db.query(Lesson)
             .filter(
                 Lesson.recurring_template_id == template_id,
-                Lesson.date >= today,  # Только будущие
+                Lesson.date >= today,  # Only future lessons
             )
             .delete(synchronize_session=False)
         )
@@ -223,7 +222,7 @@ class RecurringLessonTemplateService(
         return deleted
 
     def get_lessons_count_by_template(self, template_id: int) -> int:
-        """Получаем количество созданных уроков по шаблону"""
+        """Get the number of lessons created by template"""
         return (
             self.db.query(Lesson)
             .filter(Lesson.recurring_template_id == template_id)
@@ -231,7 +230,7 @@ class RecurringLessonTemplateService(
         )
 
     def get_future_lessons_count_by_template(self, template_id: int) -> int:
-        """Получаем количество будущих уроков"""
+        """Get the number of future lessons"""
         today = date.today()
         return (
             self.db.query(Lesson)

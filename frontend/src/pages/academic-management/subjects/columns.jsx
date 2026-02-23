@@ -59,5 +59,4 @@ export const useSubjectColumns = () => {
   ];
 };
 
-// Для обратной совместимости
 export const columns = [];

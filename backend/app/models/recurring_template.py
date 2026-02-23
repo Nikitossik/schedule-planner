@@ -40,7 +40,6 @@ class RecurringLessonTemplate(Base):
     - id: numeric primary key
     - name: optional human-readable name for the template
     - schedule_id: FK to Schedule this template belongs to
-    - group_id: FK to Group that will attend these lessons
     - subject_assignment_id: FK to SubjectAssignment (professor + subject + workload)
     - room_id: optional FK to Room (can be null for online lessons)
     - lesson_type: type of lesson (lecture, practice, lab, seminar)

@@ -6,7 +6,7 @@ export const useRecurringLessonsColumns = () => {
   const { t, i18n } = useTranslation();
 
   const formatDaysOfWeek = (days) => {
-    // Конвертируем JSON строку в массив, если нужно
+    
     const daysArray = typeof days === "string" ? JSON.parse(days) : days;
     if (!Array.isArray(daysArray)) return "";
     const locale = i18n?.language === "pl" ? "pl" : "en";
@@ -21,7 +21,7 @@ export const useRecurringLessonsColumns = () => {
 
   const formatTime = (time) => {
     if (!time) return "";
-    return time.slice(0, 5); // Remove seconds, show HH:MM
+    return time.slice(0, 5); 
   };
 
   const formatLessonType = (type) => {

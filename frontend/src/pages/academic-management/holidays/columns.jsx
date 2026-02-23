@@ -18,7 +18,6 @@ export const useHolidayColumns = () => {
           return name;
         }
 
-        // Если нет названия, показываем дефолтное в зависимости от типа
         const isDateRange = holiday.is_date_range;
         const defaultKey = isDateRange
           ? "holidays.defaultNameRange"
@@ -74,5 +73,4 @@ export const useHolidayColumns = () => {
   ];
 };
 
-// Для обратной совместимости
 export const columns = [];

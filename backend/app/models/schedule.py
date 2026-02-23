@@ -21,9 +21,9 @@ class Schedule(Base):
     - id: numeric primary key.
     - name: human-readable schedule name.
     - semester_id: FK to Semester this schedule belongs to.
-    - direction_id: FK to Direction this schedule is created for.
-    - relationships: semester, direction, lessons.
-    - properties: academic_year, faculty.
+    - study_form_id: FK to StudyForm (direction/program) this schedule is for.
+    - relationships: semester, study_form, lessons.
+    - properties: academic_year, faculty, direction, workloads, groups.
     """
 
     __tablename__ = "schedule"

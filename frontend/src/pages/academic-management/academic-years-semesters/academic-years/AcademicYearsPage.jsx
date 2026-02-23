@@ -11,7 +11,6 @@ export const AcademicYearsPage = () => {
   const [editingYear, setEditingYear] = useState(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
 
-  // Отслеживаем изменения refetchTrigger
   useEffect(() => {
     console.log(
       "🎯 AcademicYearTab: refetchTrigger changed to:",
@@ -37,13 +36,13 @@ export const AcademicYearsPage = () => {
   };
 
   const handleSuccess = () => {
-    // Триггерим обновление таблицы
+   
     setRefetchTrigger((prev) => prev + 1);
     handleModalClose();
   };
 
   const handleRefresh = () => {
-    // Функция для обновления таблицы
+   
     setRefetchTrigger((prev) => prev + 1);
   };
 

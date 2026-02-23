@@ -1,4 +1,3 @@
-// components/users/UserForm.jsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -58,7 +57,6 @@ const createSchema = (t, isEdit = false) =>
     })
     .refine(
       (data) => {
-        // Email обязателен для admin/coordinator
         if (data.role === "admin" || data.role === "coordinator") {
           return data.email && data.email.length > 0;
         }
@@ -71,7 +69,6 @@ const createSchema = (t, isEdit = false) =>
     )
     .refine(
       (data) => {
-        // Email должен быть валидным, если не пустой
         if (data.email && data.email.length > 0) {
           return z.string().email().safeParse(data.email).success;
         }
@@ -84,7 +81,6 @@ const createSchema = (t, isEdit = false) =>
     )
     .refine(
       (data) => {
-        // Password обязателен для admin/coordinator
         if (data.role === "admin" || data.role === "coordinator") {
           return data.password && data.password.length >= 6;
         }
@@ -97,7 +93,6 @@ const createSchema = (t, isEdit = false) =>
     )
     .refine(
       (data) => {
-        // Academic title обязателен для professor только при создании
         if (!isEdit && data.role === "user" && data.user_type === "professor") {
           return data.academic_title && data.academic_title.length > 0;
         }
@@ -119,7 +114,6 @@ export function UserForm({
   const { t, i18n } = useTranslation();
   const { disableStudentAccounts } = useFeatureFlags();
 
-  // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
     surname: defaultValues?.surname || "",
@@ -159,19 +153,17 @@ export function UserForm({
   const watchedSemesterId = form.watch("semester_id");
   const watchedUnavailableDays = form.watch("unavailable_days");
 
-  // Автоматически устанавливаем user_type = "professor" если студенты отключены и role = "user"
   React.useEffect(() => {
     if (disableStudentAccounts && role === "user" && !userType) {
       form.setValue("user_type", "professor");
     }
   }, [disableStudentAccounts, role, userType, form]);
 
-  // Дни недели для селектора
   const daysOfWeek = useMemo(() => {
     const locale = i18n?.language === "pl" ? "pl" : "en";
 
     return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(2024, 0, 1 + index); // Начинаем с понедельника
+      const date = new Date(2024, 0, 1 + index); 
       const dayName = date.toLocaleDateString(locale, { weekday: "short" });
 
       return {
@@ -181,7 +173,6 @@ export function UserForm({
     });
   }, [i18n?.language]);
 
-  // Загружаем академические годы (только если студенты не отключены)
   const { data: academicYearsData, isLoading: academicYearsLoading } =
     useEntityList("academic_year", {
       enabled:
@@ -189,7 +180,6 @@ export function UserForm({
     });
   const academicYears = academicYearsData?.items || [];
 
-  // Загружаем семестры для выбранного академического года (только если студенты не отключены)
   const { data: semestersData, isLoading: semestersLoading } = useEntityList(
     "semester",
     {
@@ -205,7 +195,6 @@ export function UserForm({
   );
   const semesters = semestersData?.items || [];
 
-  // Загружаем группы для выбранного семестра (только если студенты не отключены)
   const { data: groupsData, isLoading: groupsLoading } = useEntityList(
     "group",
     {
@@ -221,7 +210,6 @@ export function UserForm({
   );
   const groups = groupsData?.items || [];
 
-  // Очищаем зависимые поля при изменении родительских
   const handleAcademicYearChange = (value) => {
     form.setValue("academic_year_id", value);
     form.setValue("semester_id", "");
@@ -233,7 +221,6 @@ export function UserForm({
     form.setValue("group_id", "");
   };
 
-  // Функция для переключения дня недели
   const toggleUnavailableDay = (dayValue) => {
     const currentDays = watchedUnavailableDays || [];
     const newDays = currentDays.includes(dayValue)
@@ -242,7 +229,6 @@ export function UserForm({
     form.setValue("unavailable_days", newDays);
   };
 
-  // Генерация email и password для профессоров
   const generateProfessorCredentials = (name, surname) => {
     if (!name || !surname) return { email: "", password: "" };
 
@@ -261,9 +247,8 @@ export function UserForm({
     };
   };
 
-  // Обработка отправки формы
   const handleSubmit = (data) => {
-    // Тримим все строковые поля
+    
     const trimmedData = {
       ...data,
       name: data.name?.trim() || "",
@@ -273,7 +258,6 @@ export function UserForm({
       notes: data.notes?.trim() || "",
     };
 
-    // Для профессоров генерируем email и password только при создании
     if (
       !isEdit &&
       trimmedData.role === "user" &&
@@ -287,7 +271,6 @@ export function UserForm({
       trimmedData.password = credentials.password;
     }
 
-    // Трансформируем данные в правильный формат для API
     const transformedData = {
       name: trimmedData.name,
       surname: trimmedData.surname,
@@ -296,17 +279,14 @@ export function UserForm({
       user_type: trimmedData.user_type || null,
     };
 
-    // Добавляем пароль только если он заполнен или это создание нового пользователя
     if (trimmedData.password && trimmedData.password.length > 0) {
       transformedData.password = trimmedData.password;
     }
 
-    // Для admin/coordinator очищаем user_type
     if (trimmedData.role === "admin" || trimmedData.role === "coordinator") {
       transformedData.user_type = null;
     }
 
-    // Добавляем профили в зависимости от типа пользователя
     if (trimmedData.role === "user" && trimmedData.user_type === "student") {
       transformedData.student_profile = {
         academic_year_id: trimmedData.academic_year_id
@@ -337,9 +317,7 @@ export function UserForm({
     onSubmit(transformedData);
   };
 
-  // Обработчик ошибок формы
   const handleFormError = (errors) => {
-    // Ошибки валидации уже отображаются в форме через FormMessage
   };
 
   return (
@@ -391,7 +369,6 @@ export function UserForm({
                 <FormItem>
                   <FormLabel>{t("users.form.fields.userType")}</FormLabel>
                   {disableStudentAccounts ? (
-                    // Если студенты отключены, показываем только "professor" как disabled input
                     <Input
                       value={t("users.form.userTypes.professor")}
                       disabled
@@ -425,13 +402,11 @@ export function UserForm({
           )}
         </div>
 
-        {/* Podstawowe informacje - показываем для всех, но поля зависят от роли */}
         <div className="space-y-4">
           <h3 className="text-lg font-medium">
             {t("users.form.sections.basicInfo")}
           </h3>
 
-          {/* Имя и фамилия - всегда показываем */}
           {["name", "surname"].map((field) => (
             <FormField
               key={field}
@@ -453,7 +428,6 @@ export function UserForm({
             />
           ))}
 
-          {/* Email и password только для admin/coordinator */}
           {(role === "admin" || role === "coordinator") && (
             <>
               {["email", "password"].map((field) => (

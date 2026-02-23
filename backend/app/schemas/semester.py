@@ -27,7 +27,7 @@ class SemesterBase(BaseModel):
     period: SemesterPeriodEnum = Field(
         ...,
         description="Semester period enum value.",
-        examples=["AUTUMN"],
+        examples=["winter"],
     )
     number: int = Field(
         gt=0,
@@ -105,7 +105,7 @@ class SemesterFilters(BaseModel):
     periods: Optional[list[SemesterPeriodEnum]] = Field(
         default=[],
         description="Filter by one or more semester periods.",
-        examples=[["AUTUMN", "SPRING"]],
+        examples=[["winter", "summer"]],
     )
     numbers: Optional[list[int]] = Field(
         default=[],

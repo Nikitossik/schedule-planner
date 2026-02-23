@@ -15,7 +15,6 @@ export function ProtectedRoute({
     return <Navigate to="/login" replace />;
   }
 
-  // Проверяем, есть ли роль пользователя в списке разрешенных ролей
   if (requiredRoles && !requiredRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />;
   }

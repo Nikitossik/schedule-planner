@@ -1,9 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useIndependentFilter } from "./useIndependentFilter";
 
-/**
- * Фильтр по академическим годам (независимый фильтр)
- */
 export const useAcademicYearFilter = () => {
   const { t } = useTranslation();
 

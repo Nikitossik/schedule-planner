@@ -1,9 +1,5 @@
 import { useTranslation } from "react-i18next";
 
-/**
- * Независимый фильтр по периодам (статические опции)
- * Используется когда периоды должны быть независимыми от других фильтров
- */
 export const usePeriodFilter = () => {
   const { t } = useTranslation();
 

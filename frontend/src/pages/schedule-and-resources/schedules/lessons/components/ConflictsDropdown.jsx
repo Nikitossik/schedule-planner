@@ -24,8 +24,6 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
     analysisLoading,
   } = useScheduleAnalysisData();
 
-  // Функции для работы с конфликтами
-
   const getConflictColor = (type) => {
     switch (type) {
       case "room_double_booking":
@@ -223,7 +221,6 @@ export function ConflictsDropdown({ onNavigateToConflict }) {
   );
 }
 
-// Компонент для отображения секции конфликтов определенного типа
 function ConflictSection({
   type,
   conflicts,
@@ -266,7 +263,6 @@ function ConflictSection({
   );
 }
 
-// Вынесенный компонент для отображения одного конфликта
 function ConflictItem({
   conflict,
   onNavigateToConflict,
@@ -276,12 +272,10 @@ function ConflictItem({
   const { t, i18n } = useTranslation();
   const { schedule } = useScheduleAnalysisData();
 
-  // Функция для форматирования времени без секунд
   const formatTime = (timeString) => {
-    return timeString.slice(0, 5); // "08:00:00" -> "08:00"
+    return timeString.slice(0, 5); 
   };
 
-  // Функция для форматирования даты
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString(i18n.language, {
@@ -290,17 +284,14 @@ function ConflictItem({
     });
   };
 
-  // Функция для построения сообщения о конфликте
   const buildConflictMessage = (conflict) => {
     const firstLesson = conflict.lessons[0];
     const timeRange = `${formatTime(firstLesson.start_time)}-${formatTime(
       firstLesson.end_time
     )}`;
 
-    // Определяем, есть ли конфликт между разными расписаниями
     const isCrossSchedule = conflict.schedules_involved?.length > 1;
 
-    // Используем resource_name из схемы конфликта
     const resourceName = conflict.resource_name;
 
     switch (conflict.type) {
@@ -383,7 +374,7 @@ function ConflictItem({
                 key={lessonIndex}
                 className="text-xs bg-white bg-opacity-60 rounded px-3 py-2 space-y-1"
               >
-                {/* Информация о предмете и группе (если не конфликт группы) */}
+                
                 <div className="flex flex-col space-y-1">
                   {conflict.type !== "group_schedule_conflict" &&
                     conflict.type !== "group" && (
@@ -394,7 +385,7 @@ function ConflictItem({
 
                   <div className="text-gray-700">{lesson.subject_name}</div>
 
-                  {/* Преподаватель (если не конфликт преподавателя) */}
+                 
                   {conflict.type !== "professor_time_conflict" &&
                     conflict.type !== "professor" && (
                       <div className="text-gray-600">
@@ -402,13 +393,13 @@ function ConflictItem({
                       </div>
                     )}
 
-                  {/* Комната (если не конфликт комнаты) */}
+               
                   {conflict.type !== "room_double_booking" &&
                     conflict.type !== "room" && (
                       <div className="text-gray-600">{lesson.room_number}</div>
                     )}
 
-                  {/* Название плана (если это другой план) */}
+                
                   {lesson.schedule_name !== schedule?.name && (
                     <div className="text-blue-700 font-medium">
                       {t("entities.plan")}: {lesson.schedule_name}

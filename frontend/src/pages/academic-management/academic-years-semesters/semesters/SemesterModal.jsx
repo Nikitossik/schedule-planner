@@ -28,13 +28,12 @@ export const SemesterModal = ({ isOpen, semester, onClose, onSuccess }) => {
         toast.success(t("semesters.messages.createSuccess"));
       }
 
-      // Сначала инвалидируем кеш
       queryClient.invalidateQueries({
         queryKey: ["semester"],
         exact: false,
       });
 
-      // Потом вызываем коллбек
+      
       if (onSuccess) {
         onSuccess();
       } else {

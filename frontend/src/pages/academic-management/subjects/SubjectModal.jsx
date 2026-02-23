@@ -29,13 +29,11 @@ export default function SubjectModal({ isOpen, subject, onClose, onSuccess }) {
         toast.success(t("subjects.messages.createSuccess"));
       }
 
-      // Сначала инвалидируем кеш
       queryClient.invalidateQueries({
         queryKey: ["subject"],
         exact: false,
       });
 
-      // Потом вызываем коллбек
       if (onSuccess) {
         onSuccess();
       } else {

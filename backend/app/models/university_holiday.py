@@ -6,6 +6,20 @@ from sqlalchemy import String, Boolean, Date, Index
 
 
 class UniversityHoliday(Base):
+    
+    """
+    Represents a university holiday.
+
+    Fields overview:
+    - id: numeric primary key.
+    - name: human-readable holiday name.
+    - is_annual: boolean indicating if the holiday occurs annually.
+    - is_date_range: boolean indicating if the holiday spans a date range.
+    - date: specific date of the holiday (if not a range).
+    - start_date: start date of the holiday (if a range).
+    - end_date: end date of the holiday (if a range).
+    """
+    
     __tablename__ = "university_holiday"
 
     id: Mapped[int] = mapped_column(primary_key=True)

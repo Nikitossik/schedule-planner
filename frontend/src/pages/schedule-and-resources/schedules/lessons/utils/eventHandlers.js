@@ -1,13 +1,6 @@
 import { toast } from "sonner";
 import { formatTime } from "./dateUtils";
 
-/**
- * Обработчики событий календаря
- */
-
-/**
- * Функция для поиска валидного subject_assignment для конкретного предмета
- */
 export const findValidSubjectAssignment = (
   lessons,
   subjectId,
@@ -18,7 +11,6 @@ export const findValidSubjectAssignment = (
     targetAssignmentId,
   });
 
-  // Находим урок с целевым subject_assignment_id
   const lessonWithTargetAssignment = lessons.find(
     (lesson) => lesson.subject_assignment_id === parseInt(targetAssignmentId)
   );
@@ -33,10 +25,9 @@ export const findValidSubjectAssignment = (
     lessonWithTargetAssignment
   );
 
-  // Проверяем, что предмет совпадает
   if (lessonWithTargetAssignment.subject?.id === subjectId) {
     console.log("Subject matches!");
-    return { id: parseInt(targetAssignmentId) }; // Возвращаем объект с ID
+    return { id: parseInt(targetAssignmentId) }; 
   }
 
   console.log("Subject mismatch:", {
@@ -46,9 +37,7 @@ export const findValidSubjectAssignment = (
   return null;
 };
 
-/**
- * Функция для создания полных данных урока как в форме
- */
+
 export const buildFullLessonData = (lesson, schedule, updates = {}) => {
   console.log("Building full lesson data from:", lesson);
   console.log("Schedule from props:", schedule);
@@ -65,13 +54,11 @@ export const buildFullLessonData = (lesson, schedule, updates = {}) => {
     start_time: lesson.start_time,
     end_time: lesson.end_time,
     lesson_type: lesson.lesson_type || "lecture",
-    ...updates, // Применяем обновления поверх существующих данных
+    ...updates, 
   };
 };
 
-/**
- * Создает обработчик перемещения события (drag)
- */
+
 export const createEventDropHandler = (
   lessons,
   schedule,
@@ -84,24 +71,20 @@ export const createEventDropHandler = (
   return ({ event, start, end, resourceId, isAllDay }) => {
     console.log("Event drop:", { event, start, end, resourceId, isAllDay });
 
-    // Базовые обновления времени и даты
     const timeUpdates = {
       date: start.toISOString().split("T")[0],
       start_time: formatTime(start),
       end_time: formatTime(end),
     };
 
-    // Если изменился ресурс, добавляем соответствующие поля
     if (resourceId && resourceId !== event.resourceId) {
       switch (groupBy) {
         case "group":
           if (resourceId !== "no-group") {
-            // При перетаскивании в другую группу, заменяем все группы на одну целевую
             timeUpdates.group_ids = [parseInt(resourceId)];
           }
           break;
         case "professor":
-          // Меняем subject_assignment при перетаскивании между преподавателями
           if (resourceId !== "no-assignment") {
             const currentSubjectId = event.resource.lesson.subject?.id;
             console.log("Attempting professor change:", {
@@ -142,7 +125,6 @@ export const createEventDropHandler = (
       }
     }
 
-    // Создаем полные данные урока с обновлениями
     const fullLessonData = buildFullLessonData(
       event.resource.lesson,
       schedule,
@@ -159,9 +141,9 @@ export const createEventDropHandler = (
       {
         onSuccess: () => {
           toast.success("Lesson updated successfully");
-          refetch(); // Обновляем данные календаря
-          invalidateConflictsCache(); // Обновляем конфликты
-          invalidateWorkloadCache(); // Обновляем workload warnings
+          refetch(); 
+          invalidateConflictsCache(); 
+          invalidateWorkloadCache(); 
         },
         onError: (error) => {
           console.error("Failed to update lesson:", error);
@@ -174,9 +156,7 @@ export const createEventDropHandler = (
   };
 };
 
-/**
- * Создает обработчик изменения размера события (resize)
- */
+
 export const createEventResizeHandler = (
   schedule,
   onUpdateLesson,
@@ -187,14 +167,12 @@ export const createEventResizeHandler = (
   return ({ event, start, end }) => {
     console.log("Event resize:", { event, start, end });
 
-    // Обновления времени для resize
     const timeUpdates = {
       date: start.toISOString().split("T")[0],
       start_time: formatTime(start),
       end_time: formatTime(end),
     };
 
-    // Создаем полные данные урока с обновлениями
     const fullLessonData = buildFullLessonData(
       event.resource.lesson,
       schedule,
@@ -211,9 +189,9 @@ export const createEventResizeHandler = (
       {
         onSuccess: () => {
           toast.success("Lesson duration updated");
-          refetch(); // Обновляем данные календаря
-          invalidateConflictsCache(); // Обновляем конфликты
-          invalidateWorkloadCache(); // Обновляем workload warnings
+          refetch(); 
+          invalidateConflictsCache(); 
+          invalidateWorkloadCache();
         },
         onError: (error) => {
           console.error("Failed to resize lesson:", error);

@@ -50,9 +50,9 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
             expanded_dates = self._expand_holiday_dates(holiday, start_date, end_date)
 
             for holiday_date in expanded_dates:
-                # Отмечаем что эта дата - праздничная
+                
                 all_holiday_dates.add(holiday_date)
-                # Добавляем название праздника только если оно существует
+                
                 if holiday.name and holiday.name.strip():
                     date_names_map[holiday_date].append(holiday.name.strip())
 
@@ -67,8 +67,8 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
         self, start_date: date, end_date: date
     ) -> Dict:
         """
-        Возвращает развернутые праздничные даты в формате PaginatedResponse
-        для использования в API endpoint.
+        Returns expanded holiday dates in the PaginatedResponse format
+        for use in the API endpoint.
         """
         expanded_dates = self.get_expanded_holiday_dates(start_date, end_date)
 
@@ -96,21 +96,17 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
             return dates
 
         if holiday.is_annual:
-            # Ежегодный праздник - генерируем для каждого года в диапазоне
             start_year = start_date.year
             end_year = end_date.year
 
             for year in range(start_year, end_year + 1):
                 try:
-                    # Используем месяц и день из оригинальной даты, но год текущий
                     annual_date = date(year, holiday.date.month, holiday.date.day)
                     if start_date <= annual_date <= end_date:
                         dates.append(annual_date)
                 except ValueError:
-                    # Обработка случаев как 29 февраля в невисокосном году
                     pass
         else:
-            # Обычный однократный день
             if start_date <= holiday.date <= end_date:
                 dates.append(holiday.date)
 
@@ -119,20 +115,17 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
     def _expand_date_range(
         self, holiday: UniversityHoliday, start_date: date, end_date: date
     ) -> List[date]:
-        """Обработка диапазона дат"""
         dates: List[date] = []
 
         if not holiday.start_date or not holiday.end_date:
             return dates
 
         if holiday.is_annual:
-            # Ежегодный диапазон - генерируем для каждого года в нужном диапазоне
             start_year = start_date.year
             end_year = end_date.year
 
             for year in range(start_year, end_year + 1):
                 try:
-                    # Используем месяц и день из оригинального периода, но год текущий
                     annual_start = date(
                         year, holiday.start_date.month, holiday.start_date.day
                     )
@@ -140,7 +133,6 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
                         year, holiday.end_date.month, holiday.end_date.day
                     )
 
-                    # Находим пересечение с запрашиваемым диапазоном
                     range_start = max(annual_start, start_date)
                     range_end = min(annual_end, end_date)
 
@@ -150,10 +142,8 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
                             dates.append(current)
                             current += timedelta(days=1)
                 except ValueError:
-                    # Обработка случаев как 29 февраля в невисокосном году
                     pass
         else:
-            # Обычный диапазон
             range_start = max(holiday.start_date, start_date)
             range_end = min(holiday.end_date, end_date)
 
@@ -169,8 +159,8 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
         """
         Apply filters for university holidays.
 
-        Возвращает все записи из university_holiday, которые могут попасть
-        в указанный диапазон дат, включая annual праздники.
+        Returns all records from university_holiday that may fall
+        within the specified date range, including annual holidays.
         """
 
         # Date range filtering
@@ -183,34 +173,34 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
             conditions = []
 
             if date_from and date_to:
-                # 1. Annual праздники - только те, что могут попасть в период
+                # 1. Annual holidays - only those that may fall within the period
                 from sqlalchemy import extract
 
-                # Для annual single day
+                # For annual single day
                 annual_single_condition = and_(
                     UniversityHoliday.is_annual == True,
                     UniversityHoliday.is_date_range == False,
                     UniversityHoliday.date.isnot(None),
                     or_(
-                        # Если период в одном году
+                        # If the period is within the same year
                         and_(
                             date_from.year == date_to.year,
                             or_(
-                                # Месяц между началом и концом
+                                # Month between start and end
                                 and_(
                                     extract("month", UniversityHoliday.date)
                                     > date_from.month,
                                     extract("month", UniversityHoliday.date)
                                     < date_to.month,
                                 ),
-                                # В месяце начала, но день подходит
+                                # In the start month, but day fits
                                 and_(
                                     extract("month", UniversityHoliday.date)
                                     == date_from.month,
                                     extract("day", UniversityHoliday.date)
                                     >= date_from.day,
                                 ),
-                                # В месяце конца, но день подходит
+                                # In the end month, but day fits
                                 and_(
                                     extract("month", UniversityHoliday.date)
                                     == date_to.month,
@@ -219,14 +209,14 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
                                 ),
                             ),
                         ),
-                        # Если период пересекает годы
+                        # If the period spans years
                         and_(
                             date_from.year != date_to.year,
                             or_(
-                                # После начала периода
+                                # After the start of the period
                                 extract("month", UniversityHoliday.date)
                                 >= date_from.month,
-                                # До конца периода
+                                # Before the end of the period
                                 extract("month", UniversityHoliday.date)
                                 <= date_to.month,
                             ),
@@ -235,32 +225,32 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
                 )
                 conditions.append(annual_single_condition)
 
-                # Для annual date range - проверяем более точное пересечение
+                # For annual date range - check more precise intersection
                 annual_range_condition = and_(
                     UniversityHoliday.is_annual == True,
                     UniversityHoliday.is_date_range == True,
                     UniversityHoliday.start_date.isnot(None),
                     UniversityHoliday.end_date.isnot(None),
                     or_(
-                        # Если период в одном году - простая проверка
+                        # If the period is within the same year - simple check
                         and_(
                             date_from.year == date_to.year,
                             or_(
-                                # Начало annual попадает в период
+                                # Start of annual falls within the period
                                 and_(
                                     extract("month", UniversityHoliday.start_date)
                                     >= date_from.month,
                                     extract("month", UniversityHoliday.start_date)
                                     <= date_to.month,
                                 ),
-                                # Конец annual попадает в период
+                                # End of annual falls within the period
                                 and_(
                                     extract("month", UniversityHoliday.end_date)
                                     >= date_from.month,
                                     extract("month", UniversityHoliday.end_date)
                                     <= date_to.month,
                                 ),
-                                # Annual охватывает весь период
+                                # Annual covers the entire period
                                 and_(
                                     extract("month", UniversityHoliday.start_date)
                                     <= date_from.month,
@@ -269,16 +259,16 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
                                 ),
                             ),
                         ),
-                        # Если период пересекает годы - берем все annual в нужных месяцах
+                        # If the period spans years - take all annual in the required months
                         and_(
                             date_from.year != date_to.year,
                             or_(
-                                # Месяц больше или равен началу периода
+                                # Month greater than or equal to the start of the period
                                 extract("month", UniversityHoliday.start_date)
                                 >= date_from.month,
                                 extract("month", UniversityHoliday.end_date)
                                 >= date_from.month,
-                                # Месяц меньше или равен концу периода
+                                # Month less than or equal to the end of the period
                                 extract("month", UniversityHoliday.start_date)
                                 <= date_to.month,
                                 extract("month", UniversityHoliday.end_date)
@@ -289,7 +279,7 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
                 )
                 conditions.append(annual_range_condition)
 
-                # 2. Обычные одиночные дни в диапазоне
+                # 2. Regular single days within the range
                 single_day_condition = and_(
                     UniversityHoliday.is_date_range == False,
                     UniversityHoliday.is_annual == False,
@@ -299,20 +289,20 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
                 )
                 conditions.append(single_day_condition)
 
-                # 3. Обычные диапазоны, которые пересекаются с запрашиваемым периодом
+                # 3. Regular date ranges that intersect with the requested period
                 date_range_condition = and_(
                     UniversityHoliday.is_date_range == True,
                     UniversityHoliday.is_annual == False,
                     UniversityHoliday.start_date.isnot(None),
                     UniversityHoliday.end_date.isnot(None),
-                    # Пересечение диапазонов: start1 <= end2 AND end1 >= start2
+                    # Range intersection: start1 <= end2 AND end1 >= start2
                     UniversityHoliday.start_date <= date_to,
                     UniversityHoliday.end_date >= date_from,
                 )
                 conditions.append(date_range_condition)
 
             elif date_from:
-                # Только дата начала
+                # Only start date
                 annual_condition = UniversityHoliday.is_annual == True
                 conditions.append(annual_condition)
 
@@ -333,7 +323,7 @@ class UniversityHolidayService(BaseService[UniversityHoliday, UniversityHolidayI
                 conditions.append(date_range_condition)
 
             elif date_to:
-                # Только дата окончания
+                # Only end date
                 annual_condition = UniversityHoliday.is_annual == True
                 conditions.append(annual_condition)
 

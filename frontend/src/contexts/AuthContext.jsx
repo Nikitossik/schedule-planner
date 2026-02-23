@@ -78,11 +78,9 @@ export function AuthProvider({ children }) {
     return data.access_token;
   };
 
-  // Простые функции для проверки ролей
   const isAdmin = () => user?.role === "admin";
   const isCoordinator = () => user?.role === "coordinator";
 
-  // Для координатора скрываем кнопки управления пользователями
   const canManageUsers = () => isAdmin();
 
   return (

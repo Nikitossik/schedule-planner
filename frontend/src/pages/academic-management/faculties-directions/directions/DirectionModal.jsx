@@ -34,13 +34,11 @@ export default function DirectionModal({
         toast.success(t("directions.messages.createSuccess"));
       }
 
-      // Сначала инвалидируем кеш
       queryClient.invalidateQueries({
         queryKey: ["direction"],
         exact: false,
       });
 
-      // Потом вызываем коллбек
       if (onSuccess) {
         onSuccess();
       } else {

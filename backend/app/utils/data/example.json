@@ -1,11 +1,11 @@
 {
     "academic_year": [
         {
-            "end_date": "2027-06-21",
+            "end_date": "2026-06-21",
             "id": 1,
             "is_current": 1,
-            "name": "2026/2027",
-            "start_date": "2026-10-01"
+            "name": "2025/2026",
+            "start_date": "2025-10-01"
         }
     ],
     "direction": [
@@ -25,24 +25,24 @@
     "group": [
         {
             "id": 1,
-            "name": "Group-1",
+            "name": "Gropa-1-st",
             "semester_id": 1,
             "student_count": 10,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "id": 2,
-            "name": "Group-2",
+            "name": "Gropa-2-st",
             "semester_id": 1,
             "student_count": 10,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "id": 3,
-            "name": "Group-3",
+            "name": "Gropa-3-st",
             "semester_id": 1,
             "student_count": 10,
-            "study_form_id": 2
+            "study_form_id": 1
         }
     ],
     "professor_contract": [
@@ -288,109 +288,109 @@
             "assigned_hours": 1000,
             "contract_id": 1,
             "id": 1,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 2,
             "id": 2,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 3,
             "id": 3,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 4,
             "id": 4,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 5,
             "id": 5,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 6,
             "id": 6,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 7,
             "id": 7,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 8,
             "id": 8,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 9,
             "id": 9,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 10,
             "id": 10,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 11,
             "id": 11,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 12,
             "id": 12,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 13,
             "id": 13,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 14,
             "id": 14,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 15,
             "id": 15,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 16,
             "id": 16,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 17,
             "id": 17,
-            "study_form_id": 2
+            "study_form_id": 1
         },
         {
             "assigned_hours": 1000,
             "contract_id": 18,
             "id": 18,
-            "study_form_id": 2
+            "study_form_id": 1
         }
     ],
     "room": [
@@ -398,26 +398,36 @@
             "capacity": 30,
             "id": 1,
             "number": "B102"
+        },
+        {
+            "capacity": 30,
+            "id": 2,
+            "number": "B103"
+        },
+        {
+            "capacity": 30,
+            "id": 3,
+            "number": "B104"
         }
     ],
     "semester": [
         {
             "academic_year_id": 1,
-            "end_date": "2027-02-20",
+            "end_date": "2026-06-21",
             "id": 1,
-            "name": "Semester 3 2026/2027",
-            "number": 3,
-            "period": "winter",
-            "start_date": "2026-10-01"
-        }, 
-        {
-            "academic_year_id": 1,
-            "end_date": "2027-06-21",
-            "id": 2,
-            "name": "Semester 4 2026/2027",
+            "name": "Semester 4 2025/2026",
             "number": 4,
             "period": "summer",
-            "start_date": "2027-03-01"
+            "start_date": "2026-03-02"
+        },
+        {
+            "academic_year_id": 1,
+            "end_date": "2026-06-21",
+            "id": 2,
+            "name": "Semester 6 2025/2026",
+            "number": 6,
+            "period": "summer",
+            "start_date": "2026-03-02"
         }
     ],
     "study_form": [
@@ -636,30 +646,21 @@
     "university_holiday": [
         {
             "date": null,
-            "end_date": "2025-05-03",
+            "end_date": "2025-05-04",
             "id": 1,
             "is_annual": 1,
             "is_date_range": 1,
-            "name": "Example holidays",
+            "name": "Majówka",
             "start_date": "2025-05-01"
         },
         {
             "date": null,
-            "end_date": "2025-04-05",
+            "end_date": "2025-04-22",
             "id": 2,
             "is_annual": 1,
             "is_date_range": 1,
-            "name": null,
-            "start_date": "2025-04-03"
-        },
-        {
-            "date": "2026-05-24",
-            "end_date": null,
-            "id": 3,
-            "is_annual": 0,
-            "is_date_range": 0,
-            "name": null,
-            "start_date": null
+            "name": "Przerwa Świąteczna",
+            "start_date": "2025-04-17"
         }
     ],
     "user": [

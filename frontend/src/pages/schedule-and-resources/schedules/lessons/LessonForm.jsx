@@ -32,7 +32,6 @@ export function LessonForm({
 }) {
   const { t } = useTranslation();
 
-  // Управление данными формы и состоянием
   const {
     formMethods,
     startTimeDate,
@@ -58,14 +57,12 @@ export function LessonForm({
     formState: { errors, isDirty, isValid },
   } = formMethods;
 
-  // Отслеживаемые поля
   const watchedGroupIds = watch("group_ids");
   const watchedWorkloadId = watch("workload_id");
   const watchedIsOnline = watch("is_online");
   const watchedDate = watch("date");
   const watchedRoomId = watch("room_id");
 
-  // Загрузка и фильтрация данных
   const { groups, workloads, assignments, rooms, disabledDayMatchers } =
     useLessonFilters({
       selectedGroupIds: watchedGroupIds,
@@ -79,7 +76,6 @@ export function LessonForm({
       initialGroup: lesson?.groups?.[0] || lesson?.group,
     });
 
-  // Проверка доступности профессора
   const { isProfessorAvailable } = useUnavailabilityCheck({
     workloads,
     selectedWorkloadId: watchedWorkloadId,

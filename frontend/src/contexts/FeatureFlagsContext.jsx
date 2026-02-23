@@ -39,8 +39,5 @@ export function FeatureFlagsProvider({ children }) {
   );
 }
 
-/**
- * Hook to access feature flags
- * @returns {Object} flags - { disableStudentAccounts: boolean, isLoading: boolean }
- */
+
 export const useFeatureFlags = () => useContext(FeatureFlagsContext);

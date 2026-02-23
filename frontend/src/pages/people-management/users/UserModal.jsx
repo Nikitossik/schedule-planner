@@ -30,13 +30,11 @@ export default function UserModal({ isOpen, user, onClose, onSuccess }) {
         toast.success(t("users.messages.createSuccess"));
       }
 
-      // Сначала инвалидируем кеш
       queryClient.invalidateQueries({
         queryKey: ["user"],
         exact: false,
       });
 
-      // Потом вызываем коллбек
       if (onSuccess) {
         onSuccess();
       } else {

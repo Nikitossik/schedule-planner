@@ -31,20 +31,19 @@ export default function ContractsPage() {
   };
 
   const handleSuccess = () => {
-    // Триггерим обновление таблицы
+  
     setRefetchTrigger((prev) => prev + 1);
     handleModalClose();
   };
 
   const handleRefresh = () => {
-    // Функция для обновления таблицы
+    
     setRefetchTrigger((prev) => prev + 1);
   };
-  // Композируем фильтры с каскадными зависимостями для контрактов
   const { filterSchema, isLoading, hasError } = useFilterComposer([
-    useAcademicYearFilter, // независимый
-    usePeriodFilter, // зависит от academic_year_ids
-    useSemesterFilter, // зависит от academic_year_ids и periods
+    useAcademicYearFilter, 
+    usePeriodFilter, 
+    useSemesterFilter, 
   ]);
 
   return (

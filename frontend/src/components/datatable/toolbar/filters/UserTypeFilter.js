@@ -1,9 +1,5 @@
 import { useTranslation } from "react-i18next";
 
-/**
- * Статический фильтр для типов пользователей
- * Показывается только когда выбрана роль "user"
- */
 export const useUserTypeFilter = () => {
   const { t } = useTranslation();
 

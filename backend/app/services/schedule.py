@@ -102,7 +102,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Universal schedule export method with error handling
         Returns a ready StreamingResponse for return from the route
         """
-        # Вызываем соответствующий метод экспорта
         if export_params.format == "excel":
             file_buffer, generated_filename = self.export_schedule_excel(
                 schedule_id, export_params.filename
@@ -116,13 +115,11 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
             )
             media_type = "application/pdf"
 
-        # Формируем заголовки
         headers = {
             "Content-Disposition": f'attachment; filename="{generated_filename}"',
             "Content-Type": media_type,
         }
 
-        # Возвращаем StreamingResponse
         return StreamingResponse(
             file_buffer,
             media_type=media_type,
@@ -151,70 +148,53 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             Tuple[io.BytesIO, str]: (buffer, filename) where buffer is positioned at start.
         """
-        """Экспорт расписания в Excel в формате как на картинке"""
 
-        # Получаем расписание
         schedule = self.get_by_id(schedule_id)
 
-        # Получаем уроки для расписания (все группы)
         lessons = self._get_lessons_for_schedule(schedule_id)
 
-        # Создаем временные слоты (с 8:00 до 18:00 с интервалом 45 минут)
         time_slots = self._generate_time_slots()
 
-        # Создаем Excel файл
         workbook = openpyxl.Workbook()
         worksheet = workbook.active
         worksheet.title = "Schedule"
 
-        # Устанавливаем базовый шрифт Arial 9 для всего листа
         workbook.properties.application = "Schedule Planner"
 
-        # УСТАНАВЛИВАЕМ ARIAL 9 КАК БАЗОВЫЙ ШРИФТ ДЛЯ ВСЕГО WORKBOOK
         from openpyxl.styles import NamedStyle
 
-        # Создаем базовый стиль Arial 9
         base_style = NamedStyle(name="base_style")
         base_style.font = Font(name="Arial", size=9, color="000000")
 
-        # Добавляем стиль в workbook
         if "base_style" not in workbook.named_styles:
             workbook.add_named_style(base_style)
 
-        # Устанавливаем стандартную ширину колонок точно 8.5 символов для Arial 9
         worksheet.sheet_format.defaultColWidth = 10
         worksheet.sheet_format.baseColWidth = 10
 
-        # Устанавливаем ширину колонки A (дни недели) - 12 символов
         worksheet.column_dimensions["A"].width = 12
 
-        # Определяем период дат из уроков или семестра
         if lessons:
             start = min(lesson.date for lesson in lessons)
             end = max(lesson.date for lesson in lessons)
         else:
-            # Если уроков нет, используем даты семестра
             start = schedule.semester.start_date
             end = schedule.semester.end_date
 
-        # Получаем выходные дни для этого периода
         holiday_service = UniversityHolidayService(self.db)
         holiday_dates_list = holiday_service.get_expanded_holiday_dates(start, end)
         holiday_dates = {holiday["date"] for holiday in holiday_dates_list}
 
-        # Настройка стилей
         self._setup_styles(
             worksheet, schedule, start, end, time_slots, [], lessons, holiday_dates
         )
 
-        # Генерируем имя файла
         if custom_filename:
             filename = f"{custom_filename}.xlsx"
         else:
             filename = f"schedule_{schedule.direction.name}_{schedule.semester.number}_{start.strftime('%Y-%m-%d')}_to_{end.strftime('%Y-%m-%d')}.xlsx"
         filename = filename.replace(" ", "_").replace("/", "_")
 
-        # Сохранение в BytesIO
         output = io.BytesIO()
         workbook.save(output)
         output.seek(0)
@@ -242,35 +222,26 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             Tuple[io.BytesIO, str]: (buffer, filename) where buffer is positioned at start.
         """
-        """Экспорт расписания в PDF в том же формате что и Excel"""
 
-        # Получаем расписание
         schedule = self.get_by_id(schedule_id)
 
-        # Получаем уроки для расписания (все группы)
         lessons = self._get_lessons_for_schedule(schedule_id)
 
-        # Создаем временные слоты (с 8:00 до 18:00 с интервалом 45 минут)
         time_slots = self._generate_time_slots()
 
-        # Определяем период дат из уроков или семестра
         if lessons:
             start = min(lesson.date for lesson in lessons)
             end = max(lesson.date for lesson in lessons)
         else:
-            # Если уроков нет, используем даты семестра
             start = schedule.semester.start_date
             end = schedule.semester.end_date
 
-        # Получаем выходные дни для этого периода
         holiday_service = UniversityHolidayService(self.db)
         holiday_dates_list = holiday_service.get_expanded_holiday_dates(start, end)
         holiday_dates = {holiday["date"] for holiday in holiday_dates_list}
 
-        # Создаем PDF
         output = io.BytesIO()
 
-        # Используем landscape ориентацию для лучшего размещения таблицы
         doc = SimpleDocTemplate(
             output,
             pagesize=landscape(A4),
@@ -280,82 +251,73 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
             bottomMargin=15 * mm,
         )
 
-        # Создаем содержимое PDF
         story = []
 
-        # Заголовок на польском как в Excel
         title_style = ParagraphStyle(
             "CustomTitle",
             parent=getSampleStyleSheet()["Heading1"],
-            fontSize=9,  # Arial размер 9
-            alignment=1,  # CENTER
-            spaceAfter=8,  # Уменьшенный отступ
-            fontName="Helvetica-Bold",  # Используем поддерживаемый шрифт
+            fontSize=9, 
+            alignment=1,  
+            spaceAfter=8,  
+            fontName="Helvetica-Bold",  
         )
 
         title_text = f"PLAN ZAJĘĆ - ROK AKADEMICKI {schedule.academic_year.name}"
         story.append(Paragraph(title_text, title_style))
 
-        # Подзаголовок на польском как в Excel
         subtitle_style = ParagraphStyle(
             "CustomSubtitle",
             parent=getSampleStyleSheet()["Heading2"],
-            fontSize=9,  # Arial размер 9
-            alignment=1,  # CENTER
-            spaceAfter=12,  # Уменьшенный отступ
-            fontName="Helvetica-Bold",  # Используем поддерживаемый шрифт
+            fontSize=9,  
+            alignment=1,  
+            spaceAfter=12,  
+            fontName="Helvetica-Bold",  
         )
 
         subtitle_text = f"{schedule.direction.name} - {schedule.direction.faculty.name} - ROK {schedule.semester.number} SEMESTR"
         story.append(Paragraph(subtitle_text, subtitle_style))
 
-        # Создаем таблицу данных
         table_data, cell_colors, cell_text_colors = self._create_pdf_table_data(
             start, end, time_slots, lessons, holiday_dates
         )
 
-        # Создаем таблицу
         table = Table(table_data)
 
-        # Стили таблицы (оптимизировано для landscape)
         table_style = TableStyle(
             [
-                # Границы
                 ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
-                # Заголовки временных слотов
                 ("BACKGROUND", (1, 0), (-2, 0), colors.lightgrey),
                 ("ALIGN", (1, 0), (-2, 0), "CENTER"),
                 ("VALIGN", (1, 0), (-2, 0), "MIDDLE"),
                 ("FONTNAME", (1, 0), (-2, 0), "Helvetica-Bold"),
-                ("FONTSIZE", (1, 0), (-2, 0), 7),  # Уменьшенный размер для времени
-                # Колонка GRUPA
+                ("FONTSIZE", (1, 0), (-2, 0), 7),  
+                
                 ("BACKGROUND", (-1, 0), (-1, 0), colors.lightgrey),
                 ("ALIGN", (-1, 0), (-1, 0), "CENTER"),
                 ("VALIGN", (-1, 0), (-1, 0), "MIDDLE"),
                 ("FONTNAME", (-1, 0), (-1, 0), "Helvetica-Bold"),
                 ("FONTSIZE", (-1, 0), (-1, 0), 8),
-                # Колонка дат
+                
                 ("BACKGROUND", (0, 1), (0, -1), colors.whitesmoke),
                 ("ALIGN", (0, 1), (0, -1), "CENTER"),
                 ("VALIGN", (0, 1), (0, -1), "MIDDLE"),
                 ("FONTNAME", (0, 1), (0, -1), "Helvetica-Bold"),
-                ("FONTSIZE", (0, 1), (0, -1), 7),  # Уменьшенный размер для дат
-                # Ячейки уроков
+                ("FONTSIZE", (0, 1), (0, -1), 7),  
+                
                 ("ALIGN", (1, 1), (-2, -1), "CENTER"),
                 ("VALIGN", (1, 1), (-2, -1), "MIDDLE"),
                 ("FONTNAME", (1, 1), (-2, -1), "Helvetica"),
-                ("FONTSIZE", (1, 1), (-2, -1), 9),  # Helvetica размер 9 обычный
-                # Колонка групп
+                ("FONTSIZE", (1, 1), (-2, -1), 9),  
+                
                 ("ALIGN", (-1, 1), (-1, -1), "CENTER"),
                 ("VALIGN", (-1, 1), (-1, -1), "MIDDLE"),
                 ("FONTNAME", (-1, 1), (-1, -1), "Helvetica"),
-                ("FONTSIZE", (-1, 1), (-1, -1), 9),  # Helvetica размер 9 обычный
+                ("FONTSIZE", (-1, 1), (-1, -1), 9),  
             ]
         )
 
         table.setStyle(table_style)
 
-        # Применяем цвета фона к ячейкам с уроками
         for (row, col), hex_color in cell_colors.items():
             rgb_color = self._hex_to_rgb(hex_color)
             table.setStyle(
@@ -366,7 +328,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                 )
             )
 
-        # Применяем цвета текста к ячейкам с уроками
         for (row, col), text_color_hex in cell_text_colors.items():
             text_rgb_color = self._hex_to_rgb(text_color_hex)
             table.setStyle(
@@ -377,37 +338,30 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                 )
             )
 
-        # Создаем объединенные ячейки для многочасовых уроков и дат
         self._apply_pdf_cell_spans(table, table_data, lessons, time_slots)
 
-        # Устанавливаем ширину колонок (оптимизировано для landscape A4)
-        available_width = landscape(A4)[0] - 20 * mm  # Общая ширина минус отступы
-        date_col_width = 25 * mm  # Колонка дат
-        group_col_width = 20 * mm  # Колонка групп
+        available_width = landscape(A4)[0] - 20 * mm 
+        date_col_width = 25 * mm  
+        group_col_width = 20 * mm  
 
-        # Распределяем оставшуюся ширину между временными слотами
         remaining_width = available_width - date_col_width - group_col_width
         time_slot_width = remaining_width / len(time_slots)
 
-        # Если слишком много временных слотов, уменьшаем ширину колонок
         if len(time_slots) > 10:
-            # Уменьшаем колонки дат и групп для экономии места
             date_col_width = 20 * mm
             group_col_width = 15 * mm
             remaining_width = available_width - date_col_width - group_col_width
             time_slot_width = remaining_width / len(time_slots)
 
-        col_widths = [date_col_width]  # Колонка дат
-        col_widths.extend([time_slot_width] * len(time_slots))  # Временные слоты
-        col_widths.append(group_col_width)  # Колонка групп
+        col_widths = [date_col_width]  
+        col_widths.extend([time_slot_width] * len(time_slots))  
+        col_widths.append(group_col_width)  
         table._argW = col_widths
 
         story.append(table)
 
-        # Генерируем PDF
         doc.build(story)
 
-        # Генерируем имя файла
         if custom_filename:
             filename = f"{custom_filename}.pdf"
         else:
@@ -438,40 +392,37 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                 (table_data, cell_colors) where cell_colors keys are (row_index, col_index)
                 and values are hex colors for background.
         """
-        """Создание данных для PDF таблицы"""
         table_data = []
-        cell_colors = {}  # Словарь для хранения цветов фона ячеек: {(row, col): color}
-        cell_text_colors = {}  # Словарь для хранения цветов текста: {(row, col): color}
+        cell_colors = {}  
+        cell_text_colors = {}  
 
-        # Заголовочная строка (используем пустую ячейку как в Excel)
+       
         header_row = [""] + time_slots + ["GRUPA"]
         table_data.append(header_row)
 
         current_date = start_date
-        table_row = 1  # Начинаем с 1, так как 0-я строка - заголовок
+        table_row = 1 
 
-        # Получаем расписание для контекста
+        
         schedule = self.get_by_id(lessons[0].schedule_id if lessons else 1)
 
         while current_date <= end_date:
-            # Получаем уроки на этот день
+            
             day_lessons = [lesson for lesson in lessons if lesson.date == current_date]
             is_holiday = self._is_holiday(current_date, schedule, holiday_dates)
 
             if not day_lessons:
-                # Пустая строка для дня без уроков
+                
                 date_text = f"{self._get_weekday_polish(current_date)}\n{current_date.strftime('%d.%m.%Y')}"
                 row = [date_text] + [""] * len(time_slots) + [""]
                 table_data.append(row)
 
-                # Если это выходной день, отмечаем все ячейки серым цветом
                 if is_holiday:
-                    for col_idx in range(len(time_slots) + 2):  # +2 для даты и группы
+                    for col_idx in range(len(time_slots) + 2):  
                         cell_colors[(table_row, col_idx)] = "a6a6a6"
 
                 table_row += 1
             else:
-                # Определяем уникальные группы для этого дня (теперь у урока может быть несколько групп)
                 groups_for_day = {}
                 for lesson in day_lessons:
                     if lesson.groups:
@@ -481,18 +432,15 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                                 groups_for_day[group_name] = []
                             groups_for_day[group_name].append(lesson)
                     else:
-                        # Урок без групп
                         if "No Group" not in groups_for_day:
                             groups_for_day["No Group"] = []
                         groups_for_day["No Group"].append(lesson)
 
                 if len(groups_for_day) <= 1:
-                    # Одна группа или уроки без группы
                     date_text = f"{self._get_weekday_polish(current_date)}\n{current_date.strftime('%d.%m.%Y')}"
                     row = [date_text]
 
-                    # Заполняем временные слоты с учетом объединения для многочасовых уроков
-                    processed_lessons = set()  # Отслеживаем обработанные уроки
+                    processed_lessons = set()  
                     for col_idx, time_slot in enumerate(time_slots):
                         lesson_in_slot = self._find_lesson_in_slot(
                             day_lessons, time_slot
@@ -502,13 +450,10 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                             and lesson_in_slot.id not in processed_lessons
                         ):
                             cell_text = self._format_lesson_for_pdf(lesson_in_slot)
-                            # Сохраняем цвет для этой ячейки
                             if lesson_in_slot.professor.professor_profile.color:
-                                # Вычисляем сколько слотов занимает урок
                                 slots_count = self._get_lesson_time_slots_count(
                                     lesson_in_slot, time_slots
                                 )
-                                # Сохраняем цвет для всех ячеек урока
                                 for slot_offset in range(slots_count):
                                     if col_idx + slot_offset < len(time_slots):
                                         cell_colors[
@@ -516,13 +461,11 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                                         ] = lesson_in_slot.professor.professor_profile.color
                             processed_lessons.add(lesson_in_slot.id)
                         elif lesson_in_slot and lesson_in_slot.id in processed_lessons:
-                            # Урок уже обработан, пустая ячейка для объединения
                             cell_text = ""
                         else:
                             cell_text = ""
                         row.append(cell_text)
 
-                    # Колонка групп
                     groups_text = (
                         "\n".join(sorted(groups_for_day.keys()))
                         if groups_for_day
@@ -531,16 +474,14 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                     row.append(groups_text)
                     table_data.append(row)
 
-                    # Отмечаем выходной день серым цветом
                     if is_holiday:
                         for col_idx in range(
                             len(time_slots) + 2
-                        ):  # +2 для даты и группы
+                        ):  
                             cell_colors[(table_row, col_idx)] = "a6a6a6"
 
                     table_row += 1
                 else:
-                    # Несколько групп - отдельные строки для каждой группы
                     num_groups = len(groups_for_day)
                     day_end_row = table_row + num_groups - 1
 
@@ -556,7 +497,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
 
                         row = [date_text]
 
-                        # Заполняем временные слоты для этой группы с учетом объединения
                         processed_lessons = set()
                         for col_idx, time_slot in enumerate(time_slots):
                             lesson_in_slot = self._find_lesson_in_slot(
@@ -567,17 +507,17 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                                 and lesson_in_slot.id not in processed_lessons
                             ):
                                 cell_text = self._format_lesson_for_pdf(lesson_in_slot)
-                                # Сохраняем цвета фона и текста для этой ячейки
+                                
                                 if lesson_in_slot.professor.professor_profile:
                                     slots_count = self._get_lesson_time_slots_count(
                                         lesson_in_slot, time_slots
                                     )
 
-                                    # Получаем цвета через связи урока
+                                    
                                     bg_color = (
                                         lesson_in_slot.professor.professor_profile.color
                                     )
-                                    text_color = lesson_in_slot.professor.professor_profile.text_color  # По умолчанию черный
+                                    text_color = lesson_in_slot.professor.professor_profile.text_color  
 
                                     for slot_offset in range(slots_count):
                                         if col_idx + slot_offset < len(time_slots):
@@ -601,17 +541,15 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                                 cell_text = ""
                             row.append(cell_text)
 
-                        # Колонка групп
                         row.append(group_name)
                         table_data.append(row)
                         table_row += 1
 
-                    # Отмечаем выходной день серым цветом для всех строк групп
                     if is_holiday:
                         for row_idx in range(day_row_start, table_row):
                             for col_idx in range(
                                 len(time_slots) + 2
-                            ):  # +2 для даты и группы
+                            ):  
                                 cell_colors[(row_idx, col_idx)] = "a6a6a6"
 
             current_date += timedelta(days=1)
@@ -628,13 +566,11 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             reportlab.lib.colors.Color: RGB color for ReportLab.
         """
-        """Конвертация hex цвета в RGB для ReportLab используя библиотеку colour"""
         try:
             color = Color(hex_color)
             r, g, b = color.rgb
             return colors.Color(r, g, b)
         except Exception:
-            # Fallback на черный цвет в случае ошибки
             return colors.Color(0, 0, 0)
 
     def _is_holiday(self, date_obj, schedule=None, holiday_dates=None) -> bool:
@@ -652,12 +588,10 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         if holiday_dates is not None:
             return date_obj in holiday_dates
 
-        # Используем только get_expanded_holiday_dates для получения выходных дней
         try:
             if not schedule:
                 return False
 
-            # Используем UniversityHolidayService для получения выходных дней
             holiday_service = UniversityHolidayService(self.db)
             semester_start = schedule.semester.start_date
             semester_end = schedule.semester.end_date
@@ -666,7 +600,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                 semester_start, semester_end
             )
 
-            # Проверяем, есть ли наша дата среди выходных
             return any(holiday["date"] == date_obj for holiday in holiday_dates_list)
 
         except Exception:
@@ -682,17 +615,15 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
             lessons (list): List of lessons.
             time_slots (list): List of time slots.
         """
-        """Применяем объединение ячеек для многочасовых уроков и дат в PDF"""
 
-        # Сначала обрабатываем объединение дат для дней с несколькими группами
         current_date_text = None
         date_start_row = None
 
         for row_idx in range(1, len(table_data)):
-            date_cell = table_data[row_idx][0]  # Первая колонка - даты
+            date_cell = table_data[row_idx][0]  
 
             if date_cell and date_cell != current_date_text:
-                # Завершаем предыдущее объединение если было
+                
                 if (
                     current_date_text
                     and date_start_row is not None
@@ -706,14 +637,11 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                         )
                     )
 
-                # Начинаем новую дату
                 current_date_text = date_cell
                 date_start_row = row_idx
             elif not date_cell and current_date_text:
-                # Пустая ячейка даты - продолжение предыдущей даты
                 continue
 
-        # Завершаем последнее объединение если нужно
         if (
             current_date_text
             and date_start_row is not None
@@ -727,19 +655,16 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                 )
             )
 
-        # Теперь обрабатываем объединение многочасовых уроков
         for row_idx in range(1, len(table_data)):
             processed_lessons = set()
 
-            # Проходим по всем временным слотам
             for col_idx in range(
                 1, len(time_slots) + 1
-            ):  # +1 потому что первая колонка - дата
+            ):  
                 cell_content = table_data[row_idx][col_idx]
 
-                # Если ячейка не пустая и содержит урок
                 if cell_content and cell_content not in processed_lessons:
-                    # Ищем урок по содержимому ячейки
+                    
                     lesson = self._find_lesson_by_content(lessons, cell_content)
                     if lesson:
                         slots_count = self._get_lesson_time_slots_count(
@@ -747,11 +672,9 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                         )
 
                         if slots_count > 1:
-                            # Создаем объединение ячеек
                             start_col = col_idx
                             end_col = min(col_idx + slots_count - 1, len(time_slots))
 
-                            # Применяем стиль объединения через SPAN
                             table.setStyle(
                                 TableStyle(
                                     [
@@ -777,7 +700,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             Lesson or None: Matching lesson if found.
         """
-        """Поиск урока по отформатированному содержимому"""
         for lesson in lessons:
             formatted_content = self._format_lesson_for_pdf(lesson)
             if formatted_content == content:
@@ -799,28 +721,22 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             str: Compact string for the PDF cell.
         """
-        """Форматирование урока для PDF (компактная версия)"""
-        # Формируем название предмета с типом
         lesson_text = lesson.subject.name
         if hasattr(lesson, "lesson_type") and lesson.lesson_type:
             lesson_text += f" - {lesson.lesson_type}"
 
-        # Сокращаем для PDF если слишком длинное
         if len(lesson_text) > 25:
             lesson_text = lesson_text[:22] + "..."
 
-        # Добавляем полное имя преподавателя со званием
         professor_full = f"{lesson.professor.name} {lesson.professor.surname}"
         if hasattr(lesson.professor, "title") and lesson.professor.title:
             professor_full = f"{lesson.professor.title} {professor_full}"
 
-        # Сокращаем имя преподавателя для PDF если слишком длинное
         if len(professor_full) > 25:
             professor_full = professor_full[:22] + "..."
 
         lesson_text += f"\n{professor_full}"
 
-        # Добавляем информацию о формате проведения
         if lesson.is_online:
             lesson_text += "\nonline"
         elif lesson.room:
@@ -839,7 +755,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             List[Lesson]: Lessons ordered by date and start time.
         """
-        """Получение уроков для расписания (все группы)"""
         return (
             self.db.query(Lesson)
             .filter(Lesson.schedule_id == schedule_id)
@@ -860,7 +775,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             List[Group]: Groups ordered by name.
         """
-        """Получение групп для расписания (все группы)"""
         schedule = self.db.query(Schedule).filter(Schedule.id == schedule_id).first()
 
         return (
@@ -885,7 +799,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             List[str]: Sequence of time slot labels.
         """
-        """Генерация временных слотов"""
         slots = []
         start_time = datetime.strptime("08:00", "%H:%M")
         end_time = datetime.strptime("21:15", "%H:%M")
@@ -897,7 +810,7 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
             slots.append(slot)
             current = next_time + timedelta(
                 minutes=5
-            )  # 5 минут перерыв между академическими часами
+            )  
 
         return slots
 
@@ -933,14 +846,11 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             None
         """
-        """Настройка стилей и заполнение данных"""
-
-        # Стили Arial размер 9 для всей таблицы
         header_font = Font(name="Arial", bold=True, size=9, color="000000")
         title_font = Font(name="Arial", bold=True, size=9, color="000000")
         cell_font = Font(
             name="Arial", size=9, color="000000"
-        )  # Обычный текст для групп и занятий
+        )  
         border = Border(
             left=Side(style="thin"),
             right=Side(style="thin"),
@@ -948,50 +858,41 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
             bottom=Side(style="thin"),
         )
 
-        # Заголовок на польском (строка 1)
         title_text = f"PLAN ZAJĘĆ - ROK AKADEMICKI {schedule.academic_year.name}"
         worksheet.merge_cells(f"A1:{get_column_letter(len(time_slots) + 2)}1")
         title_cell = worksheet.cell(row=1, column=1, value=title_text)
         title_cell.font = title_font
         title_cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # Подзаголовок на польском (строка 2)
         subtitle_text = f"{schedule.direction.name} - {schedule.direction.faculty.name} - ROK {schedule.semester.number} SEMESTR"
         worksheet.merge_cells(f"A2:{get_column_letter(len(time_slots) + 2)}2")
         subtitle_cell = worksheet.cell(row=2, column=1, value=subtitle_text)
         subtitle_cell.font = header_font
         subtitle_cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # Временные слоты (строка 3)
         for col, time_slot in enumerate(time_slots, 2):
             cell = worksheet.cell(row=3, column=col, value=time_slot)
             cell.font = header_font
             cell.border = border
             cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # Колонка "GRUPA" (строка 3, последняя колонка)
         group_col = len(time_slots) + 2
         group_cell = worksheet.cell(row=3, column=group_col, value="GRUPA")
         group_cell.font = header_font
         group_cell.border = border
         group_cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        # Закрепляем первые 3 строки (заголовки и временные слоты)
         worksheet.freeze_panes = "A4"
 
-        # Заполнение дней и уроков
         current_date = start_date
         row = 4
 
         while current_date <= end_date:
-            # Получаем уроки на этот день
             day_lessons = [lesson for lesson in lessons if lesson.date == current_date]
 
-            # Проверяем, является ли день выходным
             is_holiday = holiday_dates and current_date in holiday_dates
 
             if not day_lessons:
-                # Если нет уроков, создаем пустую строку
                 date_text = f"{self._get_weekday_polish(current_date)}\n{current_date.strftime('%d.%m.%Y')}"
                 date_cell = worksheet.cell(row=row, column=1, value=date_text)
                 date_cell.font = header_font
@@ -1000,28 +901,23 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                     horizontal="center", vertical="center", wrap_text=True
                 )
 
-                # Проверяем, является ли день выходным
                 is_holiday = self._is_holiday(current_date, schedule, holiday_dates)
 
-                # Заполняем пустые временные слоты
                 for col, time_slot in enumerate(time_slots, 2):
                     cell = worksheet.cell(row=row, column=col)
                     cell.font = Font(
                         name="Arial", size=9, color="000000"
-                    )  # Применяем базовый шрифт
+                    )  
                     cell.border = border
 
-                    # Если это выходной день, закрашиваем ячейку серым
                     if is_holiday:
                         cell.fill = PatternFill(
                             start_color="a6a6a6", end_color="a6a6a6", fill_type="solid"
                         )
 
-                # Пустая колонка групп
                 groups_cell = worksheet.cell(row=row, column=group_col, value="")
                 groups_cell.border = border
 
-                # Если это выходной день, закрашиваем ячейку даты и группы серым
                 if is_holiday:
                     date_cell.fill = PatternFill(
                         start_color="a6a6a6", end_color="a6a6a6", fill_type="solid"
@@ -1032,7 +928,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
 
                 row += 1
             else:
-                # Определяем уникальные группы для этого дня (теперь у урока может быть несколько групп)
                 groups_for_day = {}
                 for lesson in day_lessons:
                     if lesson.groups:
@@ -1042,14 +937,12 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                                 groups_for_day[group_name] = []
                             groups_for_day[group_name].append(lesson)
                     else:
-                        # Урок без групп
                         if "No Group" not in groups_for_day:
                             groups_for_day["No Group"] = []
                         groups_for_day["No Group"].append(lesson)
 
-                # Если есть только одна группа или уроки без группы
                 if len(groups_for_day) <= 1:
-                    # Стандартная строка
+                    
                     date_text = f"{self._get_weekday_polish(current_date)}\n{current_date.strftime('%d.%m.%Y')}"
                     date_cell = worksheet.cell(row=row, column=1, value=date_text)
                     date_cell.font = header_font
@@ -1058,16 +951,15 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                         horizontal="center", vertical="center", wrap_text=True
                     )
 
-                    # Заполняем временные слоты с объединением для многочасовых уроков
-                    processed_lessons = set()  # Отслеживаем обработанные уроки
+                    processed_lessons = set()  
                     for col, time_slot in enumerate(time_slots, 2):
                         cell = worksheet.cell(row=row, column=col)
                         cell.font = Font(
                             name="Arial", size=9, color="000000"
-                        )  # Применяем базовый шрифт
+                        )  
                         cell.border = border
 
-                        # Ищем урок в этом временном слоте
+                        
                         lesson_in_slot = self._find_lesson_in_slot(
                             day_lessons, time_slot
                         )
@@ -1075,31 +967,28 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                             lesson_in_slot
                             and lesson_in_slot.id not in processed_lessons
                         ):
-                            # Вычисляем сколько слотов занимает урок
+                            
                             slots_count = self._get_lesson_time_slots_count(
                                 lesson_in_slot, time_slots
                             )
 
                             if slots_count > 1:
-                                # Объединяем ячейки для многочасового урока
+                                
                                 start_col = col
                                 end_col = col + slots_count - 1
                                 try:
                                     worksheet.merge_cells(
                                         f"{get_column_letter(start_col)}{row}:{get_column_letter(end_col)}{row}"
                                     )
-                                    # Заполняем только первую ячейку
+                                    
                                     self._fill_lesson_cell(cell, lesson_in_slot)
                                 except:
-                                    # Если объединение не удалось, просто заполняем текущую ячейку
                                     self._fill_lesson_cell(cell, lesson_in_slot)
                             else:
-                                # Обычный урок на один слот
                                 self._fill_lesson_cell(cell, lesson_in_slot)
 
                             processed_lessons.add(lesson_in_slot.id)
 
-                    # Заполняем колонку групп
                     groups_text = (
                         "\n".join(sorted(groups_for_day.keys()))
                         if groups_for_day
@@ -1116,11 +1005,9 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
 
                     row += 1
                 else:
-                    # Несколько групп - создаем отдельные строки для каждой группы
                     start_row = row
                     num_groups = len(groups_for_day)
 
-                    # Создаем объединенную ячейку для даты
                     date_text = f"{self._get_weekday_polish(current_date)}\n{current_date.strftime('%d.%m.%Y')}"
                     worksheet.merge_cells(f"A{start_row}:A{start_row + num_groups - 1}")
                     date_cell = worksheet.cell(row=start_row, column=1, value=date_text)
@@ -1130,20 +1017,19 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                         horizontal="center", vertical="center", wrap_text=True
                     )
 
-                    # Создаем строки для каждой группы
+                    
                     for group_name in sorted(groups_for_day.keys()):
                         group_lessons = groups_for_day[group_name]
 
-                        # Заполняем временные слоты только для этой группы с объединением
                         processed_lessons = set()
                         for col, time_slot in enumerate(time_slots, 2):
                             cell = worksheet.cell(row=row, column=col)
                             cell.font = Font(
                                 name="Arial", size=9, color="000000"
-                            )  # Применяем базовый шрифт
+                            )  
                             cell.border = border
 
-                            # Ищем урок в этом временном слоте для этой группы
+                            
                             lesson_in_slot = self._find_lesson_in_slot(
                                 group_lessons, time_slot
                             )
@@ -1151,31 +1037,28 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
                                 lesson_in_slot
                                 and lesson_in_slot.id not in processed_lessons
                             ):
-                                # Вычисляем сколько слотов занимает урок
+                                
                                 slots_count = self._get_lesson_time_slots_count(
                                     lesson_in_slot, time_slots
                                 )
 
                                 if slots_count > 1:
-                                    # Объединяем ячейки для многочасового урока
+                                    
                                     start_col = col
                                     end_col = col + slots_count - 1
                                     try:
                                         worksheet.merge_cells(
                                             f"{get_column_letter(start_col)}{row}:{get_column_letter(end_col)}{row}"
                                         )
-                                        # Заполняем только первую ячейку
+                                        
                                         self._fill_lesson_cell(cell, lesson_in_slot)
                                     except:
-                                        # Если объединение не удалось, просто заполняем текущую ячейку
                                         self._fill_lesson_cell(cell, lesson_in_slot)
                                 else:
-                                    # Обычный урок на один слот
                                     self._fill_lesson_cell(cell, lesson_in_slot)
 
                                 processed_lessons.add(lesson_in_slot.id)
 
-                        # Заполняем колонку групп
                         groups_cell = worksheet.cell(
                             row=row, column=group_col, value=group_name
                         )
@@ -1189,7 +1072,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
 
             current_date += timedelta(days=1)
 
-        # Устанавливаем высоту 48 для всех строк данных (начиная с 4-й строки)
         for row_num in range(4, row):
             worksheet.row_dimensions[row_num].height = 48
 
@@ -1204,7 +1086,7 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
             str: Polish weekday name.
         """
         polish_weekdays = {
-            0: "PONIEDZIALEK",  # Monday (убираем диакритические знаки для PDF)
+            0: "PONIEDZIALEK",  # Monday 
             1: "WTOREK",  # Tuesday
             2: "SRODA",  # Wednesday
             3: "CZWARTEK",  # Thursday
@@ -1224,7 +1106,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             str: Weekday name (e.g., "MONDAY").
         """
-        """Получение дня недели на английском"""
         weekdays = {
             0: "MONDAY",
             1: "TUESDAY",
@@ -1254,13 +1135,11 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             Optional[Lesson]: Matching lesson if found, otherwise None.
         """
-        """Поиск урока в временном слоте"""
         slot_start, slot_end = time_slot.split("-")
         slot_start_time = datetime.strptime(slot_start, "%H:%M").time()
         slot_end_time = datetime.strptime(slot_end, "%H:%M").time()
 
         for lesson in lessons:
-            # Проверяем пересечение времени
             if (
                 lesson.start_time <= slot_start_time < lesson.end_time
                 or lesson.start_time < slot_end_time <= lesson.end_time
@@ -1289,7 +1168,6 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         lesson_start = lesson.start_time
         lesson_end = lesson.end_time
 
-        # Convert times to minutes for easier calculation
         lesson_start_minutes = lesson_start.hour * 60 + lesson_start.minute
         lesson_end_minutes = lesson_end.hour * 60 + lesson_end.minute
 
@@ -1334,21 +1212,16 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
         Returns:
             None
         """
-        """Заполнение ячейки урока"""
-        # Формируем текст урока
         lesson_text = lesson.subject.name
 
-        # Добавляем тип урока если есть
         if hasattr(lesson, "lesson_type") and lesson.lesson_type:
             lesson_text += f" - {lesson.lesson_type}"
 
-        # Добавляем полное имя преподавателя со званием
         professor_full = f"{lesson.professor.name} {lesson.professor.surname}"
         if hasattr(lesson.professor, "title") and lesson.professor.title:
             professor_full = f"{lesson.professor.title} {professor_full}"
         lesson_text += f" - {professor_full}"
 
-        # Добавляем информацию о формате проведения
         if lesson.is_online:
             lesson_text += "\nonline"
         elif lesson.room:
@@ -1359,21 +1232,19 @@ class ScheduleService(BaseService[Schedule, ScheduleIn]):
             horizontal="center", vertical="center", wrap_text=True
         )
 
-        # Получаем цвет текста из профиля преподавателя через связи урока
-        text_color = "000000"  # По умолчанию черный
+        text_color = "000000"  
         text_color = lesson.professor.professor_profile.text_color.lstrip("#")
 
         cell.font = Font(name="Arial", size=9, color=text_color, bold=False)
 
-        # Устанавливаем цвет фона из цвета преподавателя
         if lesson.professor.professor_profile.color:
-            # Убираем # из hex цвета
+            
             color_hex = lesson.professor.professor_profile.color.replace("#", "")
             cell.fill = PatternFill(
                 start_color=color_hex, end_color=color_hex, fill_type="solid"
             )
         else:
-            # Цвет по умолчанию (черный)
+            
             cell.fill = PatternFill(
                 start_color="000000", end_color="000000", fill_type="solid"
             )

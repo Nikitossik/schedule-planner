@@ -14,7 +14,6 @@ function RoleGuard({ children, allowedRoles, fallback = null }) {
   return children;
 }
 
-// Компонент для админов
 export function AdminOnly({ children, fallback = null }) {
   const { isAdmin } = useAuth();
 

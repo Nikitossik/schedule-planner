@@ -158,8 +158,8 @@ class ProfessorWorkloadFilters(BaseFilterParams):
     )
     study_forms: list[str] | None = Field(
         default=[],
-        description="Filter by study form values (e.g., FULL_TIME, PART_TIME).",
-        examples=[["FULL_TIME"]],
+        description="Filter by study form values (e.g., full-time, part-time).",
+        examples=[["full-time"]],
     )
     academic_year_ids: list[int] | None = Field(
         default=[],
@@ -169,7 +169,7 @@ class ProfessorWorkloadFilters(BaseFilterParams):
     periods: list[SemesterPeriodEnum] | None = Field(
         default=[],
         description="Filter by semester periods.",
-        examples=[["AUTUMN", "SPRING"]],
+        examples=[["winter", "summer"]],
     )
     semester_ids: list[int] | None = Field(
         default=[],

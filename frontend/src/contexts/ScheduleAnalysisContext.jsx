@@ -7,7 +7,6 @@ const ScheduleAnalysisContext = createContext();
 export function ScheduleAnalysisProvider({ children, schedule }) {
   const protectedFetch = useProtectedFetch();
 
-  // Получаем полный анализ расписания (конфликты + предупреждения о нагрузке)
   const { data: analysisData, isLoading: analysisLoading } = useQuery({
     queryKey: ["schedule-analysis", schedule?.id],
     queryFn: async () => {
@@ -21,24 +20,20 @@ export function ScheduleAnalysisProvider({ children, schedule }) {
       return res.json();
     },
     enabled: !!schedule?.id,
-    staleTime: 30000, // Кешируем на 30 секунд
+    staleTime: 30000, 
   });
 
-  // Используем данные напрямую с бэкенда без лишних трансформаций
   const timeConflicts = analysisData?.time_conflicts || {};
   const workloadIssues = analysisData?.workload_issues || {};
 
-  // Прямые ссылки на данные с бэкенда
   const roomConflicts = timeConflicts.room_conflicts || {};
   const professorConflicts = timeConflicts.professor_conflicts || {};
   const groupConflicts = timeConflicts.group_conflicts || {};
 
-  // Счетчики напрямую с бэкенда
   const totalConflicts = timeConflicts.total_conflicts || 0;
   const totalSingleScheduleConflicts = timeConflicts.total_single_schedule || 0;
   const totalCrossScheduleConflicts = timeConflicts.total_cross_schedule || 0;
 
-  // Предупреждения напрямую с бэкенда
   const professorWarnings = workloadIssues.professor_overloads || [];
   const subjectWarnings = workloadIssues.subject_overallocations || [];
   const totalProfessorWarnings = workloadIssues.total_professor_overloads || 0;
@@ -46,7 +41,6 @@ export function ScheduleAnalysisProvider({ children, schedule }) {
     workloadIssues.total_subject_overallocations || 0;
   const totalWorkloadIssues = workloadIssues.total_workload_issues || 0;
 
-  // Состояния на основе счетчиков с бэкенда
   const hasConflicts = totalConflicts > 0;
   const hasWorkloadIssues = totalWorkloadIssues > 0;
   const hasIssues = hasConflicts || hasWorkloadIssues;
@@ -55,27 +49,24 @@ export function ScheduleAnalysisProvider({ children, schedule }) {
   const isLoading = analysisLoading;
 
   const value = {
-    // Основные данные
     schedule,
     analysisData,
 
-    // Структурированные данные с бэкенда
     timeConflicts,
     workloadIssues,
     roomConflicts,
     professorConflicts,
     groupConflicts,
 
-    // Предупреждения о нагрузке
     professorWarnings,
     subjectWarnings,
-    workloadWarnings: professorWarnings, // Алиас для обратной совместимости
+    workloadWarnings: professorWarnings, 
 
-    // Группы из расписания
+    
     scheduleGroups: schedule?.groups || [],
-    groupsInvolved: schedule?.groups || [], // Алиас
+    groupsInvolved: schedule?.groups || [], 
 
-    // Состояния и счетчики
+    
     hasConflicts,
     hasWorkloadIssues,
     hasIssues,
@@ -88,11 +79,11 @@ export function ScheduleAnalysisProvider({ children, schedule }) {
     totalProfessorWarnings,
     totalSubjectWarnings,
 
-    // Загрузка
+   
     isLoading: analysisLoading,
     analysisLoading,
-    conflictsLoading: analysisLoading, // Алиас для обратной совместимости
-    workloadLoading: analysisLoading, // Алиас для обратной совместимости
+    conflictsLoading: analysisLoading, 
+    workloadLoading: analysisLoading, 
     groupsLoading: false,
   };
 
@@ -113,6 +104,6 @@ export function useScheduleAnalysisData() {
   return context;
 }
 
-// Обратная совместимость
+
 export const useSchedulePageData = useScheduleAnalysisData;
 export const SchedulePageProvider = ScheduleAnalysisProvider;

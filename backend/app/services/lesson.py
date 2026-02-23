@@ -41,34 +41,34 @@ class LessonService(BaseService[Lesson, LessonIn]):
         super().__init__(db, Lesson, LessonRepository(db))
 
     def create(self, data: LessonIn) -> Lesson:
-        """Переопределенный метод создания - создаем урок и привязываем группы"""
+        """Redefined create method to handle group associations when creating a lesson."""
 
         lesson_data = data.model_dump(exclude={"group_ids"})
         group_ids = data.group_ids
 
-        # Создаем урок
+        # Create the lesson
         lesson = super().create(lesson_data)
 
-        # Привязываем группы к уроку
+        # Assign groups to the lesson
         if group_ids:
             self._assign_groups_to_lesson(lesson, group_ids)
 
         return lesson
 
     def update(self, id: int, data) -> Lesson:
-        """Переопределенный метод обновления - обновляем урок и группы"""
+        """Redefined update method to handle lesson and group updates"""
 
-        # Исключаем group_ids из основных данных
+        # Exclude group_ids from main data
         lesson_data = (
             data.model_dump(exclude_unset=True, exclude={"group_ids"})
             if hasattr(data, "model_dump")
             else {k: v for k, v in data.items() if k != "group_ids"}
         )
 
-        # Обновляем урок
+        # Update the lesson
         lesson = super().update(id, lesson_data)
 
-        # Обновляем группы если они переданы
+        # Update groups if provided
         if hasattr(data, "group_ids") and data.group_ids is not None:
             self._assign_groups_to_lesson(lesson, data.group_ids)
         elif isinstance(data, dict) and "group_ids" in data:
@@ -77,16 +77,16 @@ class LessonService(BaseService[Lesson, LessonIn]):
         return lesson
 
     def _assign_groups_to_lesson(self, lesson: Lesson, group_ids: List[int]) -> None:
-        """Привязываем группы к уроку"""
+        """Assign groups to the lesson"""
         from ..models.group import Group
 
-        # Получаем группы по их ID
+        # Get groups by their IDs
         groups = self.db.query(Group).filter(Group.id.in_(group_ids)).all()
 
-        # Привязываем группы к уроку
+        # Assign groups to the lesson
         lesson.groups = groups
 
-        # Сохраняем изменения
+        # Commit changes
         self.db.commit()
 
     def apply_filters(self, query, params):

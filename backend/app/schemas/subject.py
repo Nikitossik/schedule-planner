@@ -106,7 +106,7 @@ class SubjectFilters(BaseFilterParams):
     periods: list[SemesterPeriodEnum] | None = Field(
         default=[],
         description="Filter by one or more semester periods.",
-        examples=[["AUTUMN", "SPRING"]],
+        examples=[["winter", "summer"]],
     )
     semester_ids: list[int] | None = Field(
         default=[],

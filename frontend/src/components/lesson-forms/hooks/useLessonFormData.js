@@ -5,9 +5,6 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
-/**
- * Хук для управления данными формы урока
- */
 export function useLessonFormData({
   initialData,
   isEdit,
@@ -17,9 +14,7 @@ export function useLessonFormData({
 }) {
   const { t } = useTranslation();
 
-  // Validation schema
   const validationSchema = useMemo(() => {
-    // Схема для групп - всегда множественные
     const groupsSchema = {
       group_ids: z
         .array(z.number())
@@ -43,10 +38,8 @@ export function useLessonFormData({
       is_online: z.boolean(),
     };
 
-    // Всегда используем множественные группы для обеих форм
     const groupSchema = groupsSchema;
 
-    // Валидация location: оба поля опциональны, можно не выбирать ни кабинет, ни онлайн
     const locationSchema = z.object({
       is_online: z.boolean(),
       room_id: z.union([z.string(), z.number(), z.null()]).optional(),
@@ -105,11 +98,9 @@ export function useLessonFormData({
     }
   }, [formType, t]);
 
-  // Состояния для TimePicker - null означает что время не выбрано
   const [startTimeDate, setStartTimeDate] = useState(null);
   const [endTimeDate, setEndTimeDate] = useState(null);
 
-  // Функция для получения дефолтных значений
   const getDefaultValues = useCallback(() => {
     if (initialData && isEdit) {
       const baseValues = {
@@ -118,20 +109,18 @@ export function useLessonFormData({
         room_id: initialData.room_id || initialData.room?.id || null,
         is_online: initialData.is_online || false,
         lesson_type: initialData.lesson_type || "lecture",
-        // Для recurring templates workload_id хранится напрямую, для lessons - в объекте workload
         workload_id:
           initialData.workload_id || initialData.workload?.id || null,
       };
 
-      // Всегда используем group_ids (массив групп)
       if (initialData.groups && Array.isArray(initialData.groups)) {
-        // Новая структура: множественные группы
+        
         baseValues.group_ids = initialData.groups.map((g) => g.id);
       } else if (initialData.group) {
-        // Старая структура: одна группа - преобразуем в массив
+        
         baseValues.group_ids = [initialData.group.id];
       } else {
-        // По умолчанию - пустой массив
+        
         baseValues.group_ids = [];
       }
 
@@ -165,7 +154,6 @@ export function useLessonFormData({
       }
     }
 
-    // Дефолтные значения для создания
     const baseValues = {
       schedule_id: schedule?.id,
       subject_assignment_id: null,
@@ -175,7 +163,6 @@ export function useLessonFormData({
       workload_id: null,
     };
 
-    // Добавляем поля для групп в зависимости от формы
     if (formType === "lesson") {
       baseValues.group_ids = [];
     } else {
@@ -213,7 +200,6 @@ export function useLessonFormData({
 
   const { reset, setValue, formState } = formMethods;
 
-  // Сбрасываем форму когда меняются данные
   useEffect(() => {
     reset(getDefaultValues(), {
       keepErrors: false,
@@ -226,7 +212,6 @@ export function useLessonFormData({
       keepSubmitCount: false,
     });
 
-    // Устанавливаем время для TimePicker в режиме редактирования или если есть предзаполненные данные (DnD)
     if (initialData?.start_time) {
       const [hours, minutes, seconds] = initialData.start_time.split(":");
       const date = new Date();
@@ -237,7 +222,6 @@ export function useLessonFormData({
       );
       setStartTimeDate(date);
     } else {
-      // При создании без предзаполнения - сбрасываем в null
       setStartTimeDate(null);
     }
 
@@ -251,12 +235,10 @@ export function useLessonFormData({
       );
       setEndTimeDate(date);
     } else {
-      // При создании без предзаполнения - сбрасываем в null
       setEndTimeDate(null);
     }
   }, [initialData, getDefaultValues, reset]);
 
-  // Вычисляем время в формате HH:MM:SS из Date объектов
   const watchedStartTime = useMemo(() => {
     if (!startTimeDate) return "";
     const hours = String(startTimeDate.getHours()).padStart(2, "0");
@@ -273,16 +255,14 @@ export function useLessonFormData({
     return `${hours}:${minutes}:${seconds}`;
   }, [endTimeDate]);
 
-  // Синхронизируем время с react-hook-form для валидации
   useEffect(() => {
     setValue("start_time", watchedStartTime, { shouldValidate: true });
-  }, [watchedStartTime]); // Убрали setValue из зависимостей
+  }, [watchedStartTime]); 
 
   useEffect(() => {
     setValue("end_time", watchedEndTime, { shouldValidate: true });
-  }, [watchedEndTime]); // Убрали setValue из зависимостей
+  }, [watchedEndTime]); 
 
-  // Функция для форматирования времени
   const formatTime = useCallback((date) => {
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
@@ -290,11 +270,9 @@ export function useLessonFormData({
     return `${hours}:${minutes}:${seconds}`;
   }, []);
 
-  // Функция submit для обработки данных формы
   const handleFormSubmit = useCallback(
     async (data) => {
       try {
-        // Базовые трансформации
         const transformedData = {
           ...data,
           schedule_id: schedule?.id || data.schedule_id,
@@ -306,21 +284,17 @@ export function useLessonFormData({
           end_time: formatTime(endTimeDate),
         };
 
-        // Всегда используем group_ids для обеих форм
         transformedData.group_ids = data.group_ids || [];
 
-        // Дополнительные трансформации для recurring
         if (formType === "recurring") {
           transformedData.days_of_week =
             typeof data.days_of_week === "string"
               ? data.days_of_week
               : JSON.stringify(data.days_of_week || []);
         } else {
-          // Для обычных уроков добавляем дату
           transformedData.date = data.date;
         }
 
-        // Удаляем workload_id из данных, он нужен только для UI
         delete transformedData.workload_id;
 
         await onSave(transformedData);

@@ -55,8 +55,6 @@ export const useSemesterColumns = () => {
   ];
 };
 
-// Для обратной совместимости
 export const semesterColumns = [];
 
-// Экспортируем старые колонки для обратной совместимости
 export const columns = semesterColumns;

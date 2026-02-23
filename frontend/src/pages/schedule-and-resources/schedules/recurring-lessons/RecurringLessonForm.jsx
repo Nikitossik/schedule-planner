@@ -40,15 +40,11 @@ export function RecurringLessonForm({
 }) {
   const { t } = useTranslation();
 
-
-
-
-
   const [showUnavailabilityWarning, setShowUnavailabilityWarning] =
     useState(false);
   const [pendingFormData, setPendingFormData] = useState(null);
   const [isSubmittingFromDialog, setIsSubmittingFromDialog] = useState(false);
-  const [userEditedName, setUserEditedName] = useState(false); // Флаг что пользователь сам ввел имя
+  const [userEditedName, setUserEditedName] = useState(false); 
 
   const createRecurringTemplate = useEntityMutation(
     "recurring_template",
@@ -61,14 +57,12 @@ export function RecurringLessonForm({
     "patch"
   );
 
-  // Получаем сегодняшнюю дату для валидации
   const today = useMemo(() => {
     const date = new Date();
     date.setHours(0, 0, 0, 0);
     return date;
   }, []);
 
-  // Управление данными формы и состоянием
   const {
     formMethods,
     startTimeDate,
@@ -81,7 +75,7 @@ export function RecurringLessonForm({
   } = useLessonFormData({
     initialData: template,
     isEdit,
-    onSave: null, // Мы используем свой submitForm
+    onSave: null,
     schedule,
     formType: "recurring",
   });
@@ -94,7 +88,7 @@ export function RecurringLessonForm({
     formState: { errors },
   } = formMethods;
 
-  // Отслеживаемые поля
+
   const watchedGroupIds = watch("group_ids");
   const watchedWorkloadId = watch("workload_id");
   const watchedIsOnline = watch("is_online");
@@ -103,51 +97,44 @@ export function RecurringLessonForm({
   const watchedSubjectAssignmentId = watch("subject_assignment_id");
   const watchedRoomId = watch("room_id");
 
-  // Загрузка и фильтрация данных (без фильтрации комнат по времени для recurring)
+ 
   const { groups, workloads, assignments, rooms, disabledDayMatchers } =
     useLessonFilters({
       selectedGroupIds: watchedGroupIds,
       selectedWorkloadId: watchedWorkloadId,
       isEdit,
       initialGroup: template?.groups?.[0] || template?.group,
-      // Для recurring templates не фильтруем комнаты по времени
+      
       selectedDate: null,
       startTime: null,
       endTime: null,
       isOnline: watchedIsOnline,
     });
 
-  // Получаем дни недели
+ 
   const daysOfWeek = useDaysOfWeek();
 
-  // Проверка недоступности профессора
+ 
   const { unavailabilityInfo } = useUnavailabilityCheck({
     workloads,
     selectedWorkloadId: watchedWorkloadId,
     selectedDaysOfWeek: watchedDaysOfWeek,
   });
 
-
-
-  // Дополнительный эффект для установки workload_id когда данные workloads загружены
-  // Используем useState чтобы отслеживать, была ли начальная инициализация
   const [isWorkloadInitialized, setIsWorkloadInitialized] = useState(false);
 
   useEffect(() => {
     if (!isEdit || !template?.workload_id) return;
 
-    // Если уже инициализировали - не перезаписываем выбор пользователя
     if (isWorkloadInitialized) return;
 
     const templateWorkloadId = template.workload_id.toString();
 
-    // Если workload_id уже установлен корректно - помечаем как инициализированный
     if (watchedWorkloadId === templateWorkloadId) {
       setIsWorkloadInitialized(true);
       return;
     }
 
-    // Ждем пока workloads загрузятся
     if (workloads.length === 0) return;
 
     const workloadExists = workloads.find(
@@ -175,14 +162,8 @@ export function RecurringLessonForm({
     isWorkloadInitialized,
   ]);
 
-  // Автоматическое обновление названия шаблона (только если пользователь не вводил свое)
   useEffect(() => {
 
-    
-    // Не генерируем автоматически если:
-    // - В режиме редактирования
-    // - Пользователь сам ввел имя
-    // - Не выбраны все необходимые поля
     if (isEdit || userEditedName) return;
 
     const hasRequiredFields =
@@ -199,7 +180,6 @@ export function RecurringLessonForm({
         (a) => a.id.toString() === watchedSubjectAssignmentId
       );
 
-      // Всегда используем watchedGroupIds для recurring lessons
       const selectedGroups = groups.filter((g) =>
         watchedGroupIds.includes(g.id)
       );
@@ -223,11 +203,9 @@ export function RecurringLessonForm({
     userEditedName,
   ]);
 
-  // Функция submit
   const submitForm = async (data) => {
 
     try {
-      // Форматируем время
       const formatTime = (date) => {
         const hours = String(date.getHours()).padStart(2, "0");
         const minutes = String(date.getMinutes()).padStart(2, "0");
@@ -235,7 +213,6 @@ export function RecurringLessonForm({
         return `${hours}:${minutes}:${seconds}`;
       };
 
-      // Преобразуем данные для API
       const transformedData = {
         ...data,
         schedule_id: schedule?.id || parseInt(data.schedule_id),
@@ -249,7 +226,6 @@ export function RecurringLessonForm({
         days_of_week: JSON.stringify(data.days_of_week || []),
       };
 
-      // Удаляем workload_id
       delete transformedData.workload_id;
 
       if (isEdit) {
@@ -273,8 +249,6 @@ export function RecurringLessonForm({
 
   const handleFormSubmit = async (data) => {
 
-
-    // Если есть конфликт с недоступными днями - показываем предупреждение
     if (unavailabilityInfo) {
 
       setPendingFormData(data);
@@ -331,13 +305,11 @@ export function RecurringLessonForm({
                     "recurringLessons.form.placeholders.templateName"
                   )}
                   onChange={(e) => {
-                    // Если пользователь вводит что-то вручную - отключаем автогенерацию
                     if (e.target.value.trim()) {
                       setUserEditedName(true);
                     } else {
                       setUserEditedName(false);
                     }
-                    // Вызываем стандартный onChange от register
                     setValue("name", e.target.value);
                   }}
                 />

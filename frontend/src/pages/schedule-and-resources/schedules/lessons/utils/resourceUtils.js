@@ -1,17 +1,10 @@
-/**
- * Утилиты для работы с ресурсами календаря
- */
 
-/**
- * Получает ID ресурса для урока на основе типа группировки
- */
 export const getResourceId = (lesson, groupBy) => {
   switch (groupBy) {
     case "group":
-      // Для множественных групп берем первую группу как основной ресурс
       return lesson.groups?.[0]?.id?.toString() || "no-group";
     case "professor":
-      // Используем subject_assignment_id как ресурс, так как преподаватель привязан через него
+      
       const assignmentId =
         lesson.subject_assignment?.id || lesson.subject_assignment_id;
       return assignmentId?.toString() || "no-assignment";
@@ -23,13 +16,10 @@ export const getResourceId = (lesson, groupBy) => {
   }
 };
 
-/**
- * Получает заголовок ресурса для урока на основе типа группировки
- */
+
 export const getResourceTitle = (lesson, groupBy) => {
   switch (groupBy) {
     case "group":
-      // Для множественных групп показываем все имена групп
       return lesson.groups?.map((group) => group.name).join(", ") || "No Group";
     case "professor":
       const professor = lesson.professor;
@@ -46,9 +36,7 @@ export const getResourceTitle = (lesson, groupBy) => {
   }
 };
 
-/**
- * Создает список ресурсов из массива уроков
- */
+
 export const createResourcesFromLessons = (lessons, groupBy) => {
   if (groupBy === "none") return undefined;
 

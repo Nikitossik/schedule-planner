@@ -17,13 +17,12 @@ export default function DataTableToolbar({
   setSelectedIds,
   setRowSelection,
   entity,
-  pageLabel, // Добавляем pageLabel
-  resetAll, // Используем resetAll из useServerTableQuery
+  pageLabel, 
+  resetAll, 
 }) {
   const [showDrawer, setShowDrawer] = useState(false);
 
   if (showSearch) {
-    // Если поиск показан - используем старую структуру
     return (
       <div className="space-y-3">
         <ToolbarHeader
@@ -52,7 +51,6 @@ export default function DataTableToolbar({
     );
   }
 
-  // Если поиск скрыт - кнопка добавления на одной строке с контролами
   return (
     <div className="space-y-3">
       <ToolbarControls

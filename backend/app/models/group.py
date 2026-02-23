@@ -57,9 +57,6 @@ class Group(Base):
     students: Mapped[list["StudentProfile"]] = relationship(
         "StudentProfile", back_populates="group"
     ) 
-    # One-to-many: student profiles assigned to this group
-    # lessons: Mapped[list["Lesson"]] = relationship("Lesson", back_populates="group")  # One-to-many: lessons scheduled for this group (currently disabled)
-
     @property
     def students_count_display(self):
         # Returns manual count if set, otherwise actual count from relationship

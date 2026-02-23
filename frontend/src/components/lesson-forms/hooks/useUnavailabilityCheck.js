@@ -1,32 +1,28 @@
 import { useCallback, useMemo } from "react";
 
-/**
- * Хук для проверки доступности профессора
- */
 export function useUnavailabilityCheck({
   workloads = [],
   selectedWorkloadId,
-  selectedDate, // для LessonForm
-  selectedDaysOfWeek, // для RecurringLessonForm
-  daysOfWeek, // для RecurringLessonForm
+  selectedDate, 
+  selectedDaysOfWeek, 
+  daysOfWeek, 
 }) {
-  // Получаем день недели из выбранной даты (0 = Monday, 6 = Sunday)
+  
   const selectedDayOfWeek = useMemo(() => {
     if (!selectedDate) return null;
     const date = new Date(selectedDate);
     const day = date.getDay();
-    // Преобразуем из JS формата (0=Sunday) в наш формат (0=Monday)
+    
     return day === 0 ? 6 : day - 1;
   }, [selectedDate]);
 
-  // Функция для проверки доступности профессора в выбранный день (для LessonForm)
   const isProfessorAvailable = useCallback(
     (workload) => {
-      if (selectedDayOfWeek === null) return true; // Если дата не выбрана, показываем всех
+      if (selectedDayOfWeek === null) return true; 
 
       const unavailableDays =
         workload?.professor?.professor_profile?.unavailable_days;
-      if (!unavailableDays) return true; // Если нет данных о недоступности, профессор доступен
+      if (!unavailableDays) return true; 
 
       try {
         const daysArray =
@@ -35,17 +31,15 @@ export function useUnavailabilityCheck({
             : unavailableDays;
         return !daysArray.includes(selectedDayOfWeek);
       } catch {
-        return true; // В случае ошибки парсинга считаем профессора доступным
+        return true; 
       }
     },
     [selectedDayOfWeek]
   );
 
-  // Получаем выбранный workload
   const selectedWorkload = useMemo(() => {
     if (!selectedWorkloadId) return null;
     
-    // Сравниваем и по числу, и по строке для надежности
     const found = workloads.find((w) => 
       w.id === selectedWorkloadId || 
       w.id.toString() === selectedWorkloadId.toString()
@@ -54,7 +48,6 @@ export function useUnavailabilityCheck({
     return found || null;
   }, [selectedWorkloadId, workloads]);
 
-  // Вычисляем конфликтующие дни (для RecurringLessonForm)
   const unavailabilityInfo = useMemo(() => {
 
 

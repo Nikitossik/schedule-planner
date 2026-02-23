@@ -28,7 +28,6 @@ export function NavUser() {
   const { user: authUser, logout } = useAuth();
   const { t } = useTranslation();
 
-  // Загружаем полные данные пользователя из API
   const {
     data: fullUserData,
     isLoading,
@@ -44,7 +43,6 @@ export function NavUser() {
     error,
   });
 
-  // Используем полные данные если они загружены, иначе данные из контекста
   const user = fullUserData || authUser;
 
   if (!user || isLoading) {

@@ -219,7 +219,7 @@ class UserService(BaseService[User, UserIn]):
         Retrieve users of a specific user_type (for base users).
 
         Args:
-            user_type (str): Target user type (e.g., STUDENT, PROFESSOR).
+            user_type (str): Target user type (e.g., student, professor).
 
         Returns:
             list[User]: Matching users.

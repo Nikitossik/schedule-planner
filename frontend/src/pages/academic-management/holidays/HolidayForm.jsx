@@ -33,7 +33,6 @@ const createSchema = (isEdit, isDateRange, t) => {
     });
   }
 
-  // Валидация для создания
   if (isDateRange) {
     return z.object({
       ...baseSchema,
@@ -61,7 +60,6 @@ export default function HolidayForm({
 }) {
   const { t } = useTranslation();
 
-  // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
     is_annual: defaultValues?.is_annual || false,
@@ -78,23 +76,20 @@ export default function HolidayForm({
     defaultValues: transformedDefaultValues,
   });
 
-  // Отслеживаем значения для условного рендеринга
   const watchedIsAnnual = form.watch("is_annual");
   const watchedIsDateRange = form.watch("is_date_range");
 
-  // Создаем динамическую схему валидации
   const currentSchema = React.useMemo(() => {
     return createSchema(isEdit, watchedIsDateRange, t);
   }, [isEdit, watchedIsDateRange, t]);
 
-  // Выполняем валидацию перед отправкой формы с актуальной схемой
   const validateFormData = (data) => {
     try {
       const validData = currentSchema.parse(data);
       return { success: true, data: validData };
     } catch (error) {
       if (error instanceof z.ZodError) {
-        // Устанавливаем ошибки в форму
+        
         error.errors.forEach((err) => {
           const fieldName = err.path[0];
           form.setError(fieldName, {
@@ -107,13 +102,11 @@ export default function HolidayForm({
     }
   };
 
-  // Обработчик отправки формы
   const handleFormSubmit = (data) => {
-    // Сначала выполняем кастомную валидацию с актуальной схемой
     const validation = validateFormData(data);
 
     if (!validation.success) {
-      return; // Ошибки уже установлены в форму
+      return; 
     }
 
     const submitData = {
@@ -122,7 +115,6 @@ export default function HolidayForm({
       is_date_range: data.is_date_range,
     };
 
-    // Добавляем поля дат в зависимости от типа
     if (data.is_date_range) {
       submitData.start_date = data.start_date;
       submitData.end_date = data.end_date;
@@ -213,7 +205,6 @@ export default function HolidayForm({
         />
 
         {watchedIsDateRange ? (
-          // Отрезок дат - два календаря в ряду
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -269,7 +260,6 @@ export default function HolidayForm({
             />
           </div>
         ) : (
-          // Одиночная дата
           <FormField
             control={form.control}
             name="date"

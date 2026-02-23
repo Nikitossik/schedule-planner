@@ -93,10 +93,10 @@ class SemesterMiniOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
     id: int = Field(..., description="Unique identifier of the semester.", examples=[1])
-    name: str = Field(..., description="Semester display name.", examples=["Fall 2024"])
+    name: str = Field(..., description="Semester display name.", examples=["Winter 2024"])
     number: int = Field(..., description="Sequential semester number.", examples=[1])
     period: SemesterPeriodEnum = Field(
-        ..., description="Semester period enum value.", examples=["AUTUMN"]
+        ..., description="Semester period enum value.", examples=["winter"]
     )
     start_date: date = Field(
         ..., description="Semester start date (inclusive).", examples=["2024-09-01"]
@@ -139,8 +139,8 @@ class StudyFormMiniOut(BaseModel):
     )
     form: str = Field(
         ...,
-        description="Study form (e.g., FULL_TIME, PART_TIME).",
-        examples=["FULL_TIME"],
+        description="Study form (e.g., full-time, part-time).",
+        examples=["full-time"],
     )
 
 

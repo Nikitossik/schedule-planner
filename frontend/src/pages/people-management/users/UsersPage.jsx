@@ -33,19 +33,16 @@ export default function UsersPage() {
   };
 
   const handleSuccess = () => {
-    // Триггерим обновление таблицы
     setRefetchTrigger((prev) => prev + 1);
     handleModalClose();
   };
 
   const handleRefresh = () => {
-    // Функция для обновления таблицы
     setRefetchTrigger((prev) => prev + 1);
   };
-  // Композируем статические фильтры для пользователей
   const { filterSchema, isLoading, hasError } = useFilterComposer([
-    useUserRoleFilter, // независимый статический фильтр
-    useUserTypeFilter, // независимый статический фильтр с showWhen
+    useUserRoleFilter, 
+    useUserTypeFilter, 
   ]);
 
   return (

@@ -5,7 +5,7 @@ import { useServerTableQuery } from "@/hooks/useServerTableQuery";
 
 export default function DataTableWrapper({
   entity,
-  pageLabel, // Новый параметр для отображения в UI
+  pageLabel, 
   columns,
   defaultFilters,
   defaultSorting,
@@ -17,12 +17,11 @@ export default function DataTableWrapper({
   showSearch = true,
   onEdit,
   onDelete,
-  onRefresh, // Новый параметр для обновления
+  onRefresh, 
   additionalFilters = {},
-  refetchTrigger = 0, // Новый параметр для принудительного обновления
-  hideCreateButton = false, // Новый параметр для скрытия кнопки создания
+  refetchTrigger = 0, 
+  hideCreateButton = false, 
 }) {
-  // Логика скрытия кнопки создания теперь в компонентах страниц
   const shouldHideCreateButton = hideCreateButton;
 
   const {
@@ -48,7 +47,6 @@ export default function DataTableWrapper({
   const [selectedIds, setSelectedIds] = useState([]);
   const [rowSelection, setRowSelection] = useState({});
 
-  // Обогащаем колонки обработчиками
   const enrichedColumns = columns.map((column) => {
     if (column.id === "actions" || column.accessorKey === "actions") {
       return {

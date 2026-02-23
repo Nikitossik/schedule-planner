@@ -95,12 +95,12 @@ class GroupOut(BaseModel):
     semester: Optional[SemesterMiniOut] = Field(
         default=None,
         description="Semester the group belongs to.",
-        examples=[{"id": 1, "name": "Fall 2024"}],
+        examples=[{"id": 1, "name": "Winter 2024"}],
     )
     study_form: Optional[StudyFormMiniOut] = Field(
         default=None,
         description="Study form of the group.",
-        examples=[{"id": 2, "form": "FULL_TIME"}],
+        examples=[{"id": 2, "form": "full-time"}],
     )
     direction: Optional[DirectionMiniOut] = Field(
         default=None,
@@ -129,8 +129,8 @@ class GroupFilters(BaseFilterParams):
     )
     study_forms: list[str] | None = Field(
         default=[],
-        description="Filter by study form values (e.g., FULL_TIME, PART_TIME).",
-        examples=[["FULL_TIME"]],
+        description="Filter by study form values (e.g., full-time, part-time).",
+        examples=[["full-time", "part-time"]],
     )
     academic_year_ids: list[int] | None = Field(
         default=[],
@@ -140,7 +140,7 @@ class GroupFilters(BaseFilterParams):
     periods: list[SemesterPeriodEnum] | None = Field(
         default=[],
         description="Filter by semester periods.",
-        examples=[["AUTUMN"]],
+        examples=[["winter"]],
     )
     semester_ids: list[int] | None = Field(
         default=[],

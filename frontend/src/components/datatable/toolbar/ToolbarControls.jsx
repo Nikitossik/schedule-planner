@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Filter, XIcon, Trash } from "lucide-react";
+import { XIcon, Trash } from "lucide-react";
 import { Link } from "react-router-dom";
 import SortFieldSelector from "./sorting/SortFieldSelector";
 import SortOrderSelector from "./sorting/SortOrderSelector";
 import EntityFilter from "./filters/EntityFilter";
-import MoreFiltersDrawer from "./MoreFiltersDrawer";
 import { useEntityMutation } from "@/hooks/useEntityMutation";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { toast } from "sonner";
@@ -60,7 +59,7 @@ export default function ToolbarControls({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Сортировка */}
+
       {sortFields && sortFields.length > 0 && (
         <div className="flex flex-col gap-2">
           <h4 className="text-sm font-medium text-muted-foreground">
@@ -81,7 +80,7 @@ export default function ToolbarControls({
         </div>
       )}
 
-      {/* Фильтрация */}
+     
       {filterSchema && filterSchema.length > 0 && (
         <div className="flex flex-col gap-2">
           <h4 className="text-sm font-medium text-muted-foreground">
@@ -105,7 +104,7 @@ export default function ToolbarControls({
         </div>
       )}
 
-      {/* Действия */}
+     
       <div className="flex gap-2 items-center justify-end">
         {selectedIds.length > 0 && (
           <Button variant="destructive" onClick={() => setOpenConfirm(true)}>

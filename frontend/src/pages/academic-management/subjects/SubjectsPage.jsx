@@ -33,17 +33,14 @@ export default function SubjectsPage() {
   };
 
   const handleSuccess = () => {
-    // Триггерим обновление таблицы
     setRefetchTrigger((prev) => prev + 1);
     handleModalClose();
   };
 
   const handleRefresh = () => {
-    // Функция для обновления таблицы
     setRefetchTrigger((prev) => prev + 1);
   };
 
-  // Композируем все фильтры с правильными зависимостями
   const { filterSchema, isLoading, hasError } = useFilterComposer([
     useFacultyFilter,
     useDirectionFilter,

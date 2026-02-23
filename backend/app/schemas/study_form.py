@@ -7,7 +7,7 @@ from .minis import DirectionMiniOut
 class StudyFormBase(BaseModel):
     """
     Base schema for StudyForm data shared by input/output models.
-    Describes a study format (e.g., FULL_TIME, PART_TIME) linked to a Direction.
+    Describes a study format (e.g., full-time, part-time) linked to a Direction.
     """
 
     model_config = ConfigDict(from_attributes=True)
@@ -15,7 +15,7 @@ class StudyFormBase(BaseModel):
     form: StudyFormEnum = Field(
         ...,
         description="Study format value (enum).",
-        examples=["FULL_TIME"],
+        examples=["full-time"],
     )
     direction_id: int = Field(
         gt=0,
@@ -36,7 +36,7 @@ class StudyFormUpdate(BaseModel):
     form: StudyFormEnum | None = Field(
         None,
         description="Optional new study format value.",
-        examples=["PART_TIME"],
+        examples=["part-time"],
     )
     direction_id: int | None = Field(
         None,
@@ -57,7 +57,7 @@ class StudyFormOut(BaseModel):
     form: StudyFormEnum = Field(
         ...,
         description="Study format value (enum).",
-        examples=["FULL_TIME"],
+        examples=["full-time"],
     )
     direction: DirectionMiniOut = Field(
         ...,

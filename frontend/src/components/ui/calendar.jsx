@@ -27,9 +27,8 @@ function Calendar({
   const defaultClassNames = getDefaultClassNames();
   const { i18n } = useTranslation();
 
-  // Определяем локаль date-fns на основе i18n
   const getDateFnsLocale = () => {
-    if (locale) return locale; // Если передана явно
+    if (locale) return locale; 
 
     switch (i18n.language) {
       case "pl":

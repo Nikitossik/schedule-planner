@@ -14,10 +14,10 @@ export const SemestersPage = () => {
   const [editingSemester, setEditingSemester] = useState(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
 
-  // Композируем независимые фильтры для семестров
+
   const { filterSchema, isLoading, hasError } = useFilterComposer([
-    useAcademicYearFilter, // независимый
-    usePeriodFilter, // независимый (статические опции)
+    useAcademicYearFilter, 
+    usePeriodFilter, 
   ]);
 
   const handleCreate = () => {
@@ -36,13 +36,13 @@ export const SemestersPage = () => {
   };
 
   const handleSuccess = () => {
-    // Триггерим обновление таблицы
+  
     setRefetchTrigger((prev) => prev + 1);
     handleModalClose();
   };
 
   const handleRefresh = () => {
-    // Функция для обновления таблицы
+    
     setRefetchTrigger((prev) => prev + 1);
   };
 

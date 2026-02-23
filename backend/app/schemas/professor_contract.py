@@ -112,9 +112,9 @@ class ProfessorContractOut(BaseModel):
         examples=[
             {
                 "id": 2,
-                "name": "Fall 2024",
+                "name": "Winter 2024",
                 "number": 1,
-                "period": "AUTUMN",
+                "period": "winter",
                 "start_date": "2024-09-01",
                 "end_date": "2024-12-31",
             }
@@ -138,7 +138,7 @@ class ProfessorContractFilterParams(BaseFilterParams):
     periods: list[SemesterPeriodEnum] = Field(
         default=[],
         description="Filter by semester periods.",
-        examples=[["AUTUMN", "SPRING"]],
+        examples=[["winter", "summer"]],
     )
     semester_ids: list[int] = Field(
         default=[],

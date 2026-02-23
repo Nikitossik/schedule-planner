@@ -25,7 +25,6 @@ export function NavMain({ items }) {
   const location = useLocation();
   const { t } = useTranslation();
 
-  // Функция для проверки активности группы
   const isGroupActive = (group) => {
     if (!group.items) return false;
     return group.items.some((item) => {
@@ -38,7 +37,6 @@ export function NavMain({ items }) {
     });
   };
 
-  // Функция для проверки активности конкретного элемента
   const isItemActive = (url) => {
     if (url === "/users/") {
       return (
@@ -53,7 +51,6 @@ export function NavMain({ items }) {
       <SidebarGroupLabel>{t("navigation.dashboard")}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
-          // Если у элемента есть подэлементы, используем выпадающий список
           if (item.items && item.items.length > 0) {
             const isActive = isGroupActive(item);
 
@@ -98,7 +95,6 @@ export function NavMain({ items }) {
               </Collapsible>
             );
           } else {
-            // Для элементов без подэлементов используем старую логику
             const isActive = isItemActive(item.url);
 
             return (

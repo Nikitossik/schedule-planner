@@ -57,7 +57,6 @@ export default function DirectionForm({
 }) {
   const { t } = useTranslation();
 
-  // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
     code: defaultValues?.code || "",
@@ -76,7 +75,6 @@ export default function DirectionForm({
   const { data, isLoading } = useEntityList("faculty");
   const faculties = data?.items || [];
 
-  // Преобразуем данные формы обратно в формат API
   const handleSubmit = (formData) => {
     const apiData = {
       name: formData.name,
@@ -239,7 +237,6 @@ export default function DirectionForm({
                   )}
                 />
 
-                {/* Общая ошибка валидации - только для создания */}
                 {!isEdit && (
                   <FormMessage>
                     {form.formState.errors.has_full_time?.message}

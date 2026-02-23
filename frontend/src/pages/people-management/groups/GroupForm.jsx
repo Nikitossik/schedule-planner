@@ -48,7 +48,6 @@ export default function GroupForm({
   const { t } = useTranslation();
   const { disableStudentAccounts } = useFeatureFlags();
 
-  // Преобразуем данные из API формата в формат формы
   const transformedDefaultValues = {
     name: defaultValues?.name || "",
     student_count:
@@ -85,15 +84,13 @@ export default function GroupForm({
   );
   const semesters = semestersData?.items || [];
 
-  // Обработчик для изменения академического года
   const handleAcademicYearChange = (value) => {
     form.setValue("academic_year_id", value);
-    form.setValue("semester_id", ""); // Очищаем семестр при смене года
+    form.setValue("semester_id", ""); 
   };
 
-  // Обработчик отправки формы
+  
   const handleFormSubmit = (data) => {
-    // Преобразуем student_count в null если пустое значение
     const transformedData = {
       ...data,
       student_count: data.student_count && data.student_count !== "" 
@@ -103,7 +100,6 @@ export default function GroupForm({
     onSubmit(transformedData);
   };
 
-  // Логирование для диагностики
   console.log("🔍 GroupForm - defaultValues (raw):", defaultValues);
   console.log("🔍 GroupForm - study_form object:", defaultValues?.study_form);
   console.log(

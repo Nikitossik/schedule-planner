@@ -35,5 +35,4 @@ export const useDirectionColumns = () => {
   ];
 };
 
-// Для обратной совместимости
 export const columns = [];

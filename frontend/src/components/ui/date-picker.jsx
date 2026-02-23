@@ -31,9 +31,8 @@ export function DatePicker({
   const [open, setOpen] = React.useState(false);
   const { i18n } = useTranslation();
 
-  // Автоматически определяем локаль на основе текущего языка i18n
   const getCalendarLocale = () => {
-    if (locale) return locale; // Если передана явно, используем её
+    if (locale) return locale; 
 
     console.log("LANG:", i18n.language);
 
@@ -48,15 +47,12 @@ export function DatePicker({
 
   const calendarLocale = getCalendarLocale();
 
-  // Преобразуем строковое значение в объект Date правильно (без проблем с часовыми поясами)
   const selectedDate =
     value && value !== "" ? new Date(value + "T00:00:00") : undefined;
   const isValid = selectedDate && !isNaN(selectedDate?.getTime());
 
-  // Определяем месяц для отображения в календаре
   const defaultMonth = isValid ? selectedDate : new Date();
 
-  // Устанавливаем диапазон лет по умолчанию
   const currentYear = new Date().getFullYear();
   const yearFrom = fromYear ?? currentYear;
   const yearTo = toYear ?? currentYear + 10;
@@ -70,12 +66,12 @@ export function DatePicker({
         >
           {isValid
             ? captionLayout === "dropdown-months"
-              ? // Показываем только день и месяц для dropdown-months
+              ? 
                 selectedDate.toLocaleDateString(i18n.language, {
                   day: "2-digit",
                   month: "2-digit",
                 })
-              : // Показываем полную дату для других режимов
+              : 
                 selectedDate.toLocaleDateString(i18n.language)
             : placeholder}
           <ChevronDownIcon className="h-4 w-4" />
@@ -92,14 +88,13 @@ export function DatePicker({
           fromYear={yearFrom}
           toYear={yearTo}
           disabled={[
-            // Объединяем различные disabled условия
+            
             ...(minDate
               ? [(date) => date < new Date(minDate + "T00:00:00")]
               : []),
             ...(maxDate
               ? [(date) => date > new Date(maxDate + "T00:00:00")]
               : []),
-            // Просто добавляем переданный disabled (может быть массивом функций или одной функцией)
             ...(disabled
               ? Array.isArray(disabled)
                 ? disabled
@@ -108,7 +103,6 @@ export function DatePicker({
           ].filter(Boolean)}
           onSelect={(date) => {
             if (date) {
-              // Форматируем дату правильно, избегая проблем с часовыми поясами
               const year = date.getFullYear();
               const month = String(date.getMonth() + 1).padStart(2, "0");
               const day = String(date.getDate()).padStart(2, "0");

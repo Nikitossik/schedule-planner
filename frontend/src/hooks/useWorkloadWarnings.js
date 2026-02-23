@@ -20,7 +20,7 @@ export function useLocalWorkloadWarnings(scheduleId) {
       return res.json();
     },
     enabled: !!scheduleId,
-    staleTime: 30000, // 30 секунд
+    staleTime: 30000, 
   });
 }
 
@@ -43,6 +43,6 @@ export function useCombinedWarnings(scheduleId) {
       return res.json();
     },
     enabled: !!scheduleId,
-    staleTime: 30000, // 30 секунд
+    staleTime: 30000, 
   });
 }
